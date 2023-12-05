@@ -1,8 +1,6 @@
-![CueCards Logo](/public/logo.png)
-
-<p style="display: block; width: 100%; text-align: center; border: 2px solid green">
-  <a href="" target="blank"><img src="/public/logo.png" width="87" alt="CueCards Logo"></a>
-</p>
+<div style="display: block; width: 100%; text-align: center;">
+  <a href="" target="blank"><img src="/public/logo.svg" width="200" alt="CueCards Logo"></a>
+</div>
 
 <p style="display: block; width: 100%; text-align:center;">An application for learning foreign languages</p>
 <p style="display: block; width: 100%; text-align:center;">
@@ -42,7 +40,6 @@
             <div style="width: 40%; height: fit-content;"><a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/prettier-v2.3.2-blue?style=for-the-badge&logo=prettier" alt="Prettier Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Nest.js-v9.4.2-blue?style=for-the-badge&logo=nestjs" alt="Nest.js Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://www.npmjs.com/" target="_blank"><img src="https://img.shields.io/badge/npm-v9.5.1-blue?style=for-the-badge&logo=npm" alt="npm Version" /></a></div>
-            <div style="width: 40%; height: fit-content;"><a href="https://www.npmjs.com/package/mongoose" target="_blank"><img src="https://img.shields.io/badge/mongoose-v7.6.2-blue?style=for-the-badge&logo=mongoose" alt="Mongoose Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/commitizen/cz-cli" target="_blank"><img src="https://img.shields.io/badge/commitizen-cz_cli-blue?style=for-the-badge" alt="Commitizen" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/typicode/husky" target="_blank"><img src="https://img.shields.io/badge/husky-v.8.0.3-blue?style=for-the-badge" alt="Husky Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions" target="_blank"><img src="https://img.shields.io/badge/CICD-Github_actions-blue?style=for-the-badge&logo=githubactions" alt="Github Actions" /></a></div>
@@ -52,75 +49,115 @@
 </div>
 
 ## Launch
-The project is prepared to launch via the docker.You need to install
-<a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
-and then run the corresponding command in the terminal.
 
-* for development mode use:
-``` bash
-$ docker stop $(docker ps -aq)
-$ docker-compose -f devops/docker-compose.yml --env-file env/.env.dev up -d
-$ docker logs nest-guide-node-dev -f --tail 30
-```
-* for debug mode use:
-``` bash
-$ docker stop $(docker ps -aq)
-$ docker-compose -f devops/docker-compose.yml --env-file env/.env.debug up -d
-$ docker logs nest-guide-node-debug -f --tail 30
-```
-* for product mode use:
-``` bash
-$ docker stop $(docker ps -aq)
-$ docker-compose -f devops/docker-compose-prod.yml --env-file env/.env.prod up -d
-```
-* for test mode use:
-``` bash
-$ docker stop $(docker ps -aq)
-$ docker-compose -f devops/docker-compose.yml --env-file env/.env.test up -d
-```
+[//]: # (The project is prepared to launch via the docker.You need to install)
+
+[//]: # (<a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>)
+
+[//]: # (and then run the corresponding command in the terminal.)
+
+[//]: # ()
+[//]: # (* for development mode use:)
+
+[//]: # (``` bash)
+
+[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+
+[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.dev up -d)
+
+[//]: # ($ docker logs nest-guide-node-dev -f --tail 30)
+
+[//]: # (```)
+
+[//]: # (* for debug mode use:)
+
+[//]: # (``` bash)
+
+[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+
+[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.debug up -d)
+
+[//]: # ($ docker logs nest-guide-node-debug -f --tail 30)
+
+[//]: # (```)
+
+[//]: # (* for product mode use:)
+
+[//]: # (``` bash)
+
+[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+
+[//]: # ($ docker-compose -f devops/docker-compose-prod.yml --env-file env/.env.prod up -d)
+
+[//]: # (```)
+
+[//]: # (* for test mode use:)
+
+[//]: # (``` bash)
+
+[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+
+[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.test up -d)
+
+[//]: # (```)
 
 ## Usage
 
-* After the service is launched it is available at http://localhost:3000/api/
+[//]: # (* After the service is launched it is available at http://localhost:3000/api/)
 
 ## Environment
 
-Environment variables are here: ./env. 
-Key environment variables are connected to the project using docker-compose files at the [env_file] section.
-Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".
+[//]: # (Environment variables are here: ./env. )
+
+[//]: # (Key environment variables are connected to the project using docker-compose files at the [env_file] section.)
+
+[//]: # (Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".)
 
 ## Settings
 
-* the settings are here: ./src/config/config.ts
+[//]: # (* the settings are here: ./src/config/config.ts)
 
 ## API
 
-* swagger (add to api)
+[//]: # (* swagger &#40;add to api&#41;)
 
 ## Documentation
 
-* compodoc (add to api)
+[//]: # (* compodoc &#40;add to api&#41;)
 
 ## Tests
 
-* To perform the tests you need to be loaded in [Test mode](#Launch). It's important because the tests use a database (!)
+[//]: # (* To perform the tests you need to be loaded in [Test mode]&#40;#Launch&#41;. It's important because the tests use a database &#40;!&#41;)
 
-```bash
-# unit tests
-$ docker exec nest-guide-node-test npm run test
-```
+[//]: # ()
+[//]: # (```bash)
 
-```bash
-# e2e tests
-$ docker exec nest-guide-node-test npm run test:e2e
-```
+[//]: # (# unit tests)
 
-```bash
-# test coverage
-$ docker exec nest-guide-node-test npm run test:cov
-```
+[//]: # ($ docker exec nest-guide-node-test npm run test)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (```bash)
+
+[//]: # (# e2e tests)
+
+[//]: # ($ docker exec nest-guide-node-test npm run test:e2e)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (```bash)
+
+[//]: # (# test coverage)
+
+[//]: # ($ docker exec nest-guide-node-test npm run test:cov)
+
+[//]: # (```)
 
 ## CI/CD
 
-GitHub actions + semantic-release
-the workflow files are here: .github/workflows
+[//]: # (GitHub actions + semantic-release)
+
+[//]: # (the workflow files are here: .github/workflows)
