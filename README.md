@@ -1,6 +1,6 @@
 ![CueCards Logo](/public/logo.png)
 
-<p style="display: block; width: 100%; text-align:center;">
+<p style="display: block; width: 100%; text-align: center; border: 2px solid green">
   <a href="" target="blank"><img src="/public/logo.png" width="87" alt="CueCards Logo"></a>
 </p>
 
