@@ -1,0 +1,29 @@
+version: '3'
+services:
+  node:
+    image: "cuecards-nodeimg-${NODE_ENV}"
+    container_name: "cuecards-node-${NODE_ENV}"
+    restart: on-failure
+    env_file:
+      - "../env/.env.project_root"
+    build:
+      context: ..
+      dockerfile: "devops/Dockerfile-${NODE_ENV}"
+    ports:
+      - '3000:3000'
+      - "30000:9229"
+    volumes:
+      - ../env:/projectFiles/env
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: "cuecards-mongodb-${NODE_ENV}"
+    restart: on-failure
+    env_file:
+      - "../env/.env.mongodb-${NODE_ENV}"
+    ports:
+      - '27017:27017'
+    volumes:
+      - "../db/${NODE_ENV}/data:/data/db"

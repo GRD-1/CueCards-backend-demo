@@ -1,0 +1,10 @@
+FROM node:18.16.0 as cuecards-nodeimg-debug
+
+WORKDIR /projectFiles
+
+COPY ../package.json ../tsconfig.json ../tsconfig.build.json ./
+COPY ../config/nodemon.json nodemon.json
+
+RUN npm install
+
+ENTRYPOINT ["npm", "run", "start:debug"]

@@ -1,9 +1,7 @@
-<div style="display: block; width: 100%; text-align: center;">
-  <a href="" target="blank"><img src="/public/logo.svg" width="200" alt="CueCards Logo"></a>
-</div>
+# CueCards
+<p style="display: block; width: 100%; text-align:left;">An application for learning foreign languages</p>
 
-<p style="display: block; width: 100%; text-align:center;">An application for learning foreign languages</p>
-<p style="display: block; width: 100%; text-align:center;">
+<p style="display: block; width: 100%; text-align:left;">
   <a href="https://nodejs.org/en/about" target="_blank"><img src="https://img.shields.io/badge/Node.js-v18.16.0-blue?logo=nodedotjs" alt="Node.js Version" /></a>
   <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-v4.7.4-blue?logo=typescript" alt="TypeScript Version" /></a>
   <a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Nest.js-v9.4.2-blue?logo=nestjs" alt="Nest.js Version" /></a>
@@ -50,56 +48,54 @@
 
 ## Launch
 
-[//]: # (The project is prepared to launch via the docker.You need to install)
+The project is prepared to launch via the docker.You need to install <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
 
-[//]: # (<a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>)
+and then run the corresponding command in the terminal.
 
-[//]: # (and then run the corresponding command in the terminal.)
 
-[//]: # ()
-[//]: # (* for development mode use:)
+* for development mode use:
 
-[//]: # (``` bash)
+``` bash
 
-[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+$ docker stop $(docker ps -aq)
 
-[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.dev up -d)
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.dev up -d
 
-[//]: # ($ docker logs nest-guide-node-dev -f --tail 30)
+$ docker logs cuecards-node-dev -f --tail 30
 
-[//]: # (```)
+```
 
-[//]: # (* for debug mode use:)
+* for debug mode use:
 
-[//]: # (``` bash)
+``` bash
 
-[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+$ docker stop $(docker ps -aq)
 
-[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.debug up -d)
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.debug up -d
 
-[//]: # ($ docker logs nest-guide-node-debug -f --tail 30)
+$ docker logs cuecards-node-debug -f --tail 30
 
-[//]: # (```)
+```
 
-[//]: # (* for product mode use:)
+* for product mode use:
 
-[//]: # (``` bash)
+``` bash
 
-[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+$ docker stop $(docker ps -aq)
 
-[//]: # ($ docker-compose -f devops/docker-compose-prod.yml --env-file env/.env.prod up -d)
+$ docker-compose -f docker/docker-compose-prod.yml --env-file env/.env.prod up -d
 
-[//]: # (```)
+```
 
-[//]: # (* for test mode use:)
+* for test mode use:
 
-[//]: # (``` bash)
+``` bash
 
-[//]: # ($ docker stop $&#40;docker ps -aq&#41;)
+$ docker stop $(docker ps -aq)
 
-[//]: # ($ docker-compose -f devops/docker-compose.yml --env-file env/.env.test up -d)
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.test up -d
 
-[//]: # (```)
+```
 
 ## Usage
 
@@ -134,7 +130,7 @@
 
 [//]: # (# unit tests)
 
-[//]: # ($ docker exec nest-guide-node-test npm run test)
+[//]: # ($ docker exec cuecards-node-test npm run test)
 
 [//]: # (```)
 
@@ -143,7 +139,7 @@
 
 [//]: # (# e2e tests)
 
-[//]: # ($ docker exec nest-guide-node-test npm run test:e2e)
+[//]: # ($ docker exec cuecards-node-test npm run test:e2e)
 
 [//]: # (```)
 
@@ -152,7 +148,7 @@
 
 [//]: # (# test coverage)
 
-[//]: # ($ docker exec nest-guide-node-test npm run test:cov)
+[//]: # ($ docker exec cuecards-node-test npm run test:cov)
 
 [//]: # (```)
 

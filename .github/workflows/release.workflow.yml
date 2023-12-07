@@ -1,0 +1,30 @@
+name: release-workflow
+run-name: release-workflow-runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        fetch-depth: 0
+
+    - name: Create Release
+      uses: cycjimmy/semantic-release-action@v2
+      with:
+        semantic_version: 18.0.0
+        extra_plugins: |
+          @semantic-release/changelog@6.0.0
+          @semantic-release/git@10.0.0
+          conventional-changelog-conventionalcommits@4.6.3
+          conventional-changelog-eslint@3.0.9
+      env:
+        GITHUB_TOKEN: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}

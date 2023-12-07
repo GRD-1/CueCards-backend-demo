@@ -1,0 +1,53 @@
+name: linting-workflow
+run-name: linting-workflow-runner
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  linting:
+    runs-on:
+      ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Staring Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Restoring cache
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/npm.lock') }}
+
+      - name: Installing packages
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Get file changes
+        id: file_changes
+        uses: trilom/file-changes-action@v1.2.4
+        with:
+          output: ' '
+
+      - name: Echo file changes
+        id: hello
+        run: |
+          echo Added files: ${{ steps.file_changes .outputs.files_added }}
+          echo Changed files: ${{ steps.file_changes .outputs.files_modified }}
+          echo Removed files: ${{ steps.file_changes .outputs.files_removed }}
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+
+      - name: Prettier Checking
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+        run: npm run format ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
+
+      - name: ESLint Checking
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+        run: npm run lint ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
+

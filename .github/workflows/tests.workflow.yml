@@ -1,0 +1,29 @@
+name: tests-workflow
+run-name: tests-workflow-runner
+
+on:
+#  push:
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker-compose -f devops/docker-compose.yml --env-file env/.env.test up -d
+
+      - name: run tests
+        run: |
+          docker exec cuecards-node-test npm run test
+          docker exec cuecards-node-test npm run test:e2e
+
+      - name: stop docker containers and quit
+        run: |
+          docker stop $(docker ps -aq)
