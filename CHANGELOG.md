@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/GRD-1/CueCards-demo/compare/v1.0.0...v1.1.0) (2023-12-09)
+
+
+### feat
+
+* create modules ([cbe5f06](https://github.com/GRD-1/CueCards-demo/commit/cbe5f06d6d649296461969e6df803d794c949926))
+
 # 1.0.0 (2023-12-07)
 
 
