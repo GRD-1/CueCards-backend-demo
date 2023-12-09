@@ -121,7 +121,7 @@ $ docker-compose -f docker/docker-compose.yml --env-file env/.env.test up -d
 
 To see the project structure run the script: 
 ``` bash
-npm run compodoc
+$ npm run compodoc
 ```
 The documentation will be available at: http://127.0.0.1:8080/
 
