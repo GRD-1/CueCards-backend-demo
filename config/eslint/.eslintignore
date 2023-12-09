@@ -1,8 +1,14 @@
 .idea/
 node_modules/
 git
-.github
 package.json
 package-lock.json
 app/
-.husky
+.husky/
+config/
+.github/
+public/
+*.json
+README.md
+.huskyrc
+.giignore
