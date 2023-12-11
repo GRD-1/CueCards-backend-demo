@@ -9,3 +9,4 @@ app/
 .prettierignore
 .eslintrc.json
 .eslintignore
+*.dto.ts

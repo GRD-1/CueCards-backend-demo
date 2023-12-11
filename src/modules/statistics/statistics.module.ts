@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { StatisticsController } from './statistics.controller';
 
-@Module({})
+@Module({
+  controllers: [StatisticsController]
+})
 export class StatisticsModule {}

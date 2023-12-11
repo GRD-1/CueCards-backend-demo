@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { DictionaryShelveModule } from './dictionary-shelve/dictionary-shelve.module';
-import { FileCabinetModule } from './file-cabinet/file-cabinet.module';
+import { CardsModule } from './cards/cards.module';
+import { DictionariesModule } from './dictionaries/dictionaries.module';
 
 @Module({
-  imports: [DictionaryShelveModule, FileCabinetModule]
+  imports: [DictionariesModule, CardsModule]
 })
 export class LibraryModule {}
