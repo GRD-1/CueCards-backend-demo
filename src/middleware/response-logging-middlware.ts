@@ -10,7 +10,7 @@ export class ResponseLoggingMiddleware implements NestMiddleware {
       const msg = `${req.method} ${req.originalUrl}`;
       logger.debug(msg);
       logger.debug(`statusCode: ${res.statusCode}`);
-      if (body) logger.debug(JSON.parse(body));
+      logger.debug(body);
       return originalSend.apply(res, [body]);
     };
     next();
