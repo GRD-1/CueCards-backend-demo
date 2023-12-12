@@ -1,4 +1,4 @@
-export class CardsModel {
+export class CardsEntity {
   fs_language: number;
   fs_value: string;
   fs_meaning_variants?: string[];

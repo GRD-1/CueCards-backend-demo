@@ -1,4 +1,4 @@
-export class DictionariesModel {}
+export class DictionariesEntity {}
 
 export class CardReference {
   cardId: number;
@@ -9,7 +9,7 @@ export class CardReference {
   bsHide?: boolean;
 }
 
-export class DictionaryModel {
+export class DictionaryEntity {
   dictionaryId: number;
   title: string;
   owner: number;

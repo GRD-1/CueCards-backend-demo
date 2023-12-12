@@ -1,4 +1,4 @@
-export class SettingsModel {
+export class SettingsEntity {
   appLanguage: string;
   trainingLanguage: string;
   notifications: boolean;
