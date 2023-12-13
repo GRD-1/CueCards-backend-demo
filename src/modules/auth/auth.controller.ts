@@ -1,22 +1,35 @@
-import { Body, Controller, HttpCode, Patch, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Patch, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthDto } from './dto/auth.dto';
-import { UserDto } from '../users/dto/user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UsersEntity } from '../users/entities/users.entity';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   @Post('sign-up')
-  async signUp(@Body() dto: UserDto): Promise<string> {
-    return 'new account were created';
+  @ApiOperation({ summary: 'Create a new account' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UsersEntity })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  async signUp(@Body() dto: CreateUserDto): Promise<string> {
+    return 'new account has been created';
   }
 
   @Post('sign-in')
   @HttpCode(200)
+  @ApiOperation({ summary: 'sign-in' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UsersEntity })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   async signIn(@Body() dto: AuthDto): Promise<string> {
     return 'authentication was successful';
   }
 
   @Patch('restore-password')
-  async restorePassword(@Body() dto: AuthDto): Promise<string> {
-    return 'your password was successfully changed';
+  @ApiOperation({ summary: 'restore the password' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UsersEntity })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  async restorePassword(@Body() dto: UpdateUserDto): Promise<string> {
+    return 'your password has been successfully changed';
   }
 }

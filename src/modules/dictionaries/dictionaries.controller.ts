@@ -9,7 +9,7 @@ import {
   Patch,
   Post
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateDictionaryDto } from './dto/create-dictionary.dto';
 import { DictionaryEntity } from './entities/dictionaries.entity';
 

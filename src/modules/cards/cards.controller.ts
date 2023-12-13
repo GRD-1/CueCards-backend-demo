@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param, ParseIntPipe,
   Patch,
-  Post, Query
+  Post
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dto/create-card.dto';
 import { CardEntity } from './entities/cards.entity';
+import { UpdateCardDto } from './dto/update-card.dto';
 
 @ApiTags('library/cards')
 @Controller('library/cards')
@@ -20,7 +21,7 @@ export class CardsController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async create(@Query('userId', new ParseIntPipe()) userId: number, @Body() dto: CreateCardDto): Promise<string> {
+  async create(@Body() dto: CreateCardDto): Promise<string> {
     return 'A new card has been created!';
   }
 
@@ -29,8 +30,8 @@ export class CardsController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findAll(@Query('userId', new ParseIntPipe()) userId: number): Promise<string> {
-    return `these is all available cards for user ${userId}`;
+  async findAll(): Promise<string> {
+    return 'these is all available cards';
   }
 
   @Get(':cardId')
@@ -49,7 +50,7 @@ export class CardsController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async update(@Param('cardId') cardId: number, @Body() dto: CreateCardDto): Promise<string> {
+  async update(@Param('cardId') cardId: number, @Body() dto: UpdateCardDto): Promise<string> {
     return `the card with id = ${cardId} has been updated!`;
   }
 
