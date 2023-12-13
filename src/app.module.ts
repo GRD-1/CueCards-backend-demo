@@ -6,11 +6,12 @@ import { ResponseLoggingMiddleware } from './middleware/response-logging-middlwa
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
 import { AuthModule } from './modules/auth/auth.module';
 import { TranslatorModule } from './modules/translator/translator.module';
-import { LibraryModule } from './modules/library/library.module';
 import { TrainingModule } from './modules/training/training.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { UsersModule } from './modules/users/users.module';
+import { CardsModule } from './modules/cards/cards.module';
+import { DictionariesModule } from './modules/dictionaries/dictionaries.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { UsersModule } from './modules/users/users.module';
     }),
     AuthModule,
     TranslatorModule,
-    LibraryModule,
+    CardsModule,
+    DictionariesModule,
     TrainingModule,
     StatisticsModule,
     SettingsModule,

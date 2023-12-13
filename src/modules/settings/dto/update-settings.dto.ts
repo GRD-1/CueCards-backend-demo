@@ -1,30 +1,24 @@
+import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class SettingsEntity {
-  constructor(
-    appLanguage: string,
-    trainingLanguage: string,
-    notifications: boolean,
-    voicing: boolean
-  ) {
-    this.app_language = appLanguage;
-    this.training_language = trainingLanguage;
-    this.notifications = notifications;
-    this.voicing = voicing;
-  }
-
+export class UpdateSettingsDto {
   @ApiProperty({ description: 'interface language', nullable: true })
+  @IsString()
     app_language: string;
 
   @ApiProperty({ description: 'training language', nullable: true })
+  @IsString()
     training_language: string;
 
   @ApiProperty({ description: 'turn on pop-up notifications', nullable: true })
+  @IsBoolean()
     notifications: boolean;
 
   @ApiProperty({ description: 'voicing the translation', nullable: true })
+  @IsBoolean()
     voicing: boolean;
 
   @ApiProperty({ description: 'switch to dark mode', nullable: true })
+  @IsBoolean()
     dark_mode: boolean;
 }

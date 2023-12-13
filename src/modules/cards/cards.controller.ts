@@ -10,15 +10,14 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dto/create-card.dto';
-import { CardsEntity } from './entities/cards.entity';
+import { CardEntity } from './entities/cards.entity';
 
 @ApiTags('library/cards')
 @Controller('library/cards')
 export class CardsController {
   @Post('create')
   @ApiOperation({ summary: 'Create a new card' })
-  @ApiQuery({ name: 'userId', required: true, description: 'User identifier' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardsEntity })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   async create(@Query('userId', new ParseIntPipe()) userId: number, @Body() dto: CreateCardDto): Promise<string> {
@@ -27,8 +26,7 @@ export class CardsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all available cards' })
-  @ApiQuery({ name: 'userId', required: false, description: 'User identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardsEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   async findAll(@Query('userId', new ParseIntPipe()) userId: number): Promise<string> {
@@ -38,30 +36,30 @@ export class CardsController {
   @Get(':cardId')
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardsEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findOne(@Param('cardId') cardId: string): Promise<string> {
+  async findOne(@Param('cardId', new ParseIntPipe()) cardId: number): Promise<string> {
     return `the card with id = ${cardId}`;
   }
 
   @Patch(':cardId')
-  @ApiOperation({ summary: 'Updates a card with a specified id' })
+  @ApiOperation({ summary: 'Update a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardsEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async update(@Param('cardId') cardId: string, @Body() dto: CreateCardDto): Promise<string> {
+  async update(@Param('cardId') cardId: number, @Body() dto: CreateCardDto): Promise<string> {
     return `the card with id = ${cardId} has been updated!`;
   }
 
   @Delete(':cardId')
-  @ApiOperation({ summary: 'Deletes a card with a specified id' })
+  @ApiOperation({ summary: 'Delete a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async remove(@Param('cardId') cardId: string): Promise<string> {
+  async remove(@Param('cardId') cardId: number): Promise<string> {
     return `the card with id = ${cardId} has been deleted!`;
   }
 }
