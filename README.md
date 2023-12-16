@@ -16,12 +16,11 @@
 3. [Usage](#usage)
 4. [Environment](#environment)
 5. [Settings](#settings)
-6. [API](#api)
-7. [Documentation](#documentation)
-8. [Tests](#tests)
-9. [Database](#tests)
-10. [Logs](#tests)
-11. [CI/CD](#cicd)
+6. [Tests](#tests)
+7. [Database](#tests)
+8. [Logs](#tests)
+9. [CI/CD](#cicd)
+10. [Documentation](#documentation)
 
 ## Stack
 
@@ -113,18 +112,6 @@ $ docker-compose -f docker/docker-compose.yml --env-file env/.env.test up -d
 
 [//]: # (* the settings are here: ./src/config/config.ts)
 
-## API
-
-[//]: # (* swagger &#40;add to api&#41;)
-
-## Documentation
-
-To see the project structure run the script: 
-``` bash
-$ npm run compodoc
-```
-The documentation will be available at: http://127.0.0.1:8080/
-
 ## Tests
 
 [//]: # (* To perform the tests you need to be loaded in [Test mode]&#40;#Launch&#41;. It's important because the tests use a database &#40;!&#41;)
@@ -158,6 +145,18 @@ The documentation will be available at: http://127.0.0.1:8080/
 
 ## CI/CD
 
-[//]: # (GitHub actions + semantic-release)
+Husky + GitHub actions + semantic-release
 
-[//]: # (the workflow files are here: .github/workflows)
+the workflow files are here: .github/workflows
+
+## Documentation
+### API
+When the server is running, the API map is available at: http://localhost:3000/api
+### Compodoc
+To see the project structure run the script:
+``` bash
+$ npm run compodoc
+```
+It is possible to face an access error while the script starts ("Error: EACCES: permission denied ...).
+In this case we need to configure access permissions to the database folder: [ sudo chmod -R u=rwX,go=rX db/dev/data ]
+The documentation will be available at: http://localhost:8080/
