@@ -8,9 +8,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TranslatorModule } from './modules/translator/translator.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { SettingsModule } from './modules/settings/settings.module';
-import { UsersModule } from './modules/users/users.module';
-import { CardsModule } from './modules/cards/cards.module';
-import { DictionariesModule } from './modules/dictionaries/dictionaries.module';
+import { UserModule } from './modules/user/user.module';
+import { CardModule } from './modules/card/card.module';
+import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
 
 @Module({
@@ -21,13 +21,13 @@ import { TrainingListModule } from './modules/training-list/training-list.module
     }),
     AuthModule,
     TranslatorModule,
-    CardsModule,
-    DictionariesModule,
+    CardModule,
+    DictionaryModule,
     TrainingListModule,
     TranslatorModule,
     StatisticsModule,
     SettingsModule,
-    UsersModule
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService]

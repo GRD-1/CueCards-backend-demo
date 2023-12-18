@@ -1,5 +1,5 @@
 # CueCards
-<p style="display: block; width: 100%; text-align:left;">An application for learning foreign languages</p>
+<p style="display: block; width: 100%; text-align:left;">An application for learning proverbs in a foreign language</p>
 
 <p style="display: block; width: 100%; text-align:left;">
   <a href="https://nodejs.org/en/about" target="_blank"><img src="https://img.shields.io/badge/Node.js-v18.16.0-blue?logo=nodedotjs" alt="Node.js Version" /></a>

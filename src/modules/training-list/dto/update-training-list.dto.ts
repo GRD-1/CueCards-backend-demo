@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DictionaryEntity } from '../../dictionaries/entities/dictionaries.entity';
+import { DictionaryEntity } from '../../dictionary/entities/dictionary.entity';
 
 export class UpdateTrainingListDto {
-  @ApiProperty({ description: 'list of available dictionaries', nullable: false })
+  @ApiProperty({ description: 'list of available dictionary', nullable: false })
     lists: DictionaryEntity[];
 }

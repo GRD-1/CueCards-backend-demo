@@ -1,10 +1,13 @@
 import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CardEntity } from '../cards/entities/cards.entity';
+import { CardEntity } from '../card/entities/card.entity';
+import { TranslatorService } from './translator.service';
 
 @ApiTags('translator')
 @Controller('translator')
 export class TranslatorController {
+  constructor(private readonly translatorService: TranslatorService) {}
+
   @Get()
   @ApiOperation({ summary: 'Get the phrase translation' })
   @ApiQuery({ name: 'lang', required: true, description: 'value language' })
@@ -12,7 +15,7 @@ export class TranslatorController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async find(@Query('lang') lang: string, @Query('value') value: string): Promise<string> {
-    return 'word/phrase translation';
+  async findOne(@Query('lang') lang: string, @Query('value') value: string): Promise<string> {
+    return this.translatorService.findOne(lang, value);
   }
 }
