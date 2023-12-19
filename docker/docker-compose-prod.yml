@@ -5,25 +5,45 @@ services:
     container_name: "cuecards-node-${NODE_ENV}"
     restart: on-failure
     env_file:
-      - "../env/.env.project_root"
+      - "../env/.env.local_project_root"
+    environment:
+      - DOCKER_MODE=true
     build:
       context: ..
-      dockerfile: "devops/Dockerfile-${NODE_ENV}"
+      dockerfile: "docker/Dockerfile-${NODE_ENV}"
     ports:
       - '3000:3000'
       - "30000:9229"
     volumes:
       - ../env:/projectFiles/env
     depends_on:
-      - mongodb
+      - postgres
 
-  mongodb:
-    image: mongo
-    container_name: "cuecards-mongodb-${NODE_ENV}"
-    restart: on-failure
+  postgres:
+    image: postgres:14
+    container_name: "cuecards-postgres-${NODE_ENV}"
+    restart: unless-stopped
     env_file:
-      - "../env/.env.mongodb-${NODE_ENV}"
+      - "../env/.env.postgres-prod"
     ports:
-      - '27017:27017'
+      - '30001:5432'
     volumes:
-      - "../db/${NODE_ENV}/data:/data/db"
+      - "../db/${NODE_ENV}/data:/var/lib/postgresql/data"
+
+  backup:
+    build: .
+    image: ghcr.io/mentos1386/postgres-cron-backup
+    container_name: "cuecards-postgres-backup-${NODE_ENV}"
+    restart: unless-stopped
+    env_file:
+      - "../env/.env.postgres-prod"
+    volumes:
+      - "../db/${NODE_ENV}/backup:/backup"
+    environment:
+      - POSTGRES_HOST=cuecards-postgres-${NODE_ENV}
+      - MAX_BACKUPS=10
+      - INIT_BACKUP=1
+      - CRON_TIME=0 0 * * *
+
+    depends_on:
+      - postgres

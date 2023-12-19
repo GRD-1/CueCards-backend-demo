@@ -16,7 +16,7 @@ import { TrainingListModule } from './modules/training-list/training-list.module
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['env/.env', 'env/.env.project_root'],
+      envFilePath: ['env/.env', 'env/.env.local_project_root'],
       isGlobal: true
     }),
     AuthModule,

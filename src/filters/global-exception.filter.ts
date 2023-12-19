@@ -5,9 +5,14 @@ import * as process from 'process';
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost): void {
+    let targetRegExp = /\/home/gi;
+    let localProjectRoot = process.env.LOCAL_PROJECT_ROOT ? process.env.LOCAL_PROJECT_ROOT : '/home';
+    if (process.env.DOCKER_MODE) {
+      targetRegExp = /\/projectFiles/gi;
+      localProjectRoot = process.env.LOCAL_PROJECT_ROOT_DOKER ? process.env.LOCAL_PROJECT_ROOT_DOKER : '/projectRoot';
+    }
+
     const logger = new Logger('CustomException');
-    const targetRegExp = /\/projectFiles/gi;
-    const localProjectRoot = process.env.LOCAL_PROJECT_ROOT ? process.env.LOCAL_PROJECT_ROOT : '/projectRoot';
     const localStack = exception?.stack?.replace(targetRegExp, localProjectRoot);
     logger.error(localStack);
 

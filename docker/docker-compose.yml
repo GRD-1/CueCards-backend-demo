@@ -6,7 +6,9 @@ services:
     container_name: "cuecards-node-${NODE_ENV}"
     restart: on-failure
     env_file:
-      - "../env/.env.project_root"
+      - "../env/.env.local_project_root"
+    environment:
+      - DOCKER_MODE=true
     build:
       context: ..
       dockerfile: "docker/Dockerfile-${NODE_ENV}"
@@ -25,7 +27,7 @@ services:
     container_name: "cuecards-postgres-${NODE_ENV}"
     restart: unless-stopped
     env_file:
-      - "../env/.env.postgres-${NODE_ENV}"
+      - "../env/.env.postgres-dev"
     ports:
       - '30001:5432'
     volumes:
@@ -37,7 +39,7 @@ services:
     container_name: "cuecards-postgres-backup-${NODE_ENV}"
     restart: unless-stopped
     env_file:
-      - "../env/.env.postgres-${NODE_ENV}"
+      - "../env/.env.postgres-dev"
     volumes:
       - "../db/${NODE_ENV}/backup:/backup"
     environment:
