@@ -58,7 +58,7 @@ and then run the corresponding command in the terminal.
 
 $ docker stop $(docker ps -aq)
 
-$ docker-compose -f docker/docker-compose.yml --env-file env/.env.dev up -d
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.dev --env-file env/.env.node --env-file env/.env.postgres-dev up -d
 
 $ docker logs cuecards-node-dev -f --tail 30
 
@@ -70,7 +70,7 @@ $ docker logs cuecards-node-dev -f --tail 30
 
 $ docker stop $(docker ps -aq)
 
-$ docker-compose -f docker/docker-compose.yml --env-file env/.env.debug up -d
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.debug --env-file env/.env.node --env-file env/.env.postgres-dev up -d
 
 $ docker logs cuecards-node-debug -f --tail 30
 
@@ -82,7 +82,7 @@ $ docker logs cuecards-node-debug -f --tail 30
 
 $ docker stop $(docker ps -aq)
 
-$ docker-compose -f docker/docker-compose-prod.yml --env-file env/.env.prod up -d
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.prod --env-file env/.env.node --env-file env/.env.postgres-prod up -d
 
 ```
 
@@ -92,7 +92,7 @@ $ docker-compose -f docker/docker-compose-prod.yml --env-file env/.env.prod up -
 
 $ docker stop $(docker ps -aq)
 
-$ docker-compose -f docker/docker-compose.yml --env-file env/.env.test up -d
+$ docker-compose -f docker/docker-compose-test.yml --env-file env/.env.test --env-file env/.env.node --env-file env/.env.postgres-dev up -d
 
 ```
 

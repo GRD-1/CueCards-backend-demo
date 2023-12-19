@@ -28,6 +28,10 @@ services:
       - '${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}'
     volumes:
       - '../db/${NODE_ENV}/data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_DB=cuecards_test_db
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
 
   backup:
     build: .
