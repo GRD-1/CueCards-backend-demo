@@ -8,12 +8,12 @@ const config: ConnectionOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  // entities: [`${__dirname}/**/*.entity.ts`, `${__dirname}/**/*.entity.js`],
+  entities: [`${__dirname}/**/*.entity{.ts,.js}`],
   migrationsRun: false,
   logging: true,
   migrationsTableName: 'migration',
   migrations: [`${__dirname}/migration/**/*.ts`, `${__dirname}/migration/**/*.js`],
-  synchronize: false
+  synchronize: true
   // cli: {
   //   migrationsDir: 'src/migration'
   // }

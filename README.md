@@ -92,7 +92,7 @@ $ docker-compose -f docker/docker-compose.yml --env-file env/.env.prod --env-fil
 
 $ docker stop $(docker ps -aq)
 
-$ docker-compose -f docker/docker-compose-test.yml --env-file env/.env.test --env-file env/.env.node --env-file env/.env.postgres-dev up -d
+$ docker-compose -f docker/docker-compose.yml --env-file env/.env.test --env-file env/.env.node --env-file env/.env.postgres-dev up -d
 
 ```
 

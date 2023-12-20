@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'cards' })
 export class CardEntity {
   constructor(
     fsLanguage: number,
@@ -58,11 +58,11 @@ export class CardEntity {
     fs_value: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     fs_meaning_variants?: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     fs_wrong_meanings?: string[];
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
@@ -70,7 +70,7 @@ export class CardEntity {
     fs_transcription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     fs_synonyms?: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
@@ -86,11 +86,11 @@ export class CardEntity {
     bs_value: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     bs_meaning_variants?: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     bs_wrong_meanings?: string[];
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
@@ -98,7 +98,7 @@ export class CardEntity {
     bs_transcription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     bs_synonyms?: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
@@ -106,6 +106,6 @@ export class CardEntity {
     bs_audio?: string;
 
   @ApiProperty({ description: 'tags', nullable: true })
-  @Column()
+  @Column('text', { array: true })
     tags?: string[];
 }
