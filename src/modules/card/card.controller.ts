@@ -29,12 +29,14 @@ export class CardController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all available card' })
+  @ApiOperation({ summary: 'Get all available cards' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findAll(): Promise<string> {
-    return this.cardService.findAll();
+  // async findAll(): Promise<CardEntity[]> {
+  async findAll(): Promise<{ value: string, translate: string }[]> {
+    const cardArr = await this.cardService.findAll();
+    return cardArr.map((card: CardEntity) => ({ value: card.fs_value, translate: card.bs_value }));
   }
 
   @Get(':cardId')
@@ -43,7 +45,7 @@ export class CardController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findOne(@Param('cardId', new ParseIntPipe()) cardId: number): Promise<string> {
+  async findOne(@Param('cardId', new ParseIntPipe()) cardId: number): Promise<CardEntity | null> {
     return this.cardService.findOne(cardId);
   }
 

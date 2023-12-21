@@ -6,10 +6,12 @@ export class CardEntity {
   constructor(
     fsLanguage: number,
     fsValue: string,
+    fsDescription: string,
     fsMeaningVariants: string[],
     fsTranscription: string,
     bsLanguage: number,
     bsValue: string,
+    bsDescription: string,
     bsTranscription: string,
     fsWrongMeanings?: string[],
     fsSynonyms?: string[],
@@ -26,6 +28,7 @@ export class CardEntity {
     this.userId = userId;
     this.fs_language = fsLanguage;
     this.fs_value = fsValue;
+    this.fs_description = fsDescription;
     this.fs_meaning_variants = fsMeaningVariants;
     this.fs_wrong_meanings = fsWrongMeanings;
     this.fs_transcription = fsTranscription;
@@ -33,6 +36,7 @@ export class CardEntity {
     this.fs_audio = fsAudio;
     this.bs_language = bsLanguage;
     this.bs_value = bsValue;
+    this.bs_description = bsDescription;
     this.bs_meaning_variants = bsMeaningVariants;
     this.bs_wrong_meanings = bsWrongMeanings;
     this.bs_transcription = bsTranscription;
@@ -56,6 +60,10 @@ export class CardEntity {
   @ApiProperty({ description: 'front side value', nullable: false })
   @Column()
     fs_value: string;
+
+  @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', nullable: false })
+  @Column()
+    fs_description: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
   @Column('text', { array: true })
@@ -84,6 +92,10 @@ export class CardEntity {
   @ApiProperty({ description: 'back side value', nullable: false })
   @Column()
     bs_value: string;
+
+  @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
+  @Column()
+    bs_description: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
   @Column('text', { array: true })
