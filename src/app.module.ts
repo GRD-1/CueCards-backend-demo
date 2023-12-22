@@ -13,7 +13,7 @@ import { UserModule } from './modules/user/user.module';
 import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
-import ormconfig from './ormconfig';
+import { PostgresConnectionOptions } from './typeorm/data-source';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import ormconfig from './ormconfig';
       envFilePath: ['env/.env', 'env/.env.local_project_root'],
       isGlobal: true
     }),
-    TypeOrmModule.forRoot(ormconfig),
+    TypeOrmModule.forRoot(PostgresConnectionOptions),
     AuthModule,
     TranslatorModule,
     CardModule,

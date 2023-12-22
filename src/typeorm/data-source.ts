@@ -1,22 +1,20 @@
-import { ConnectionOptions } from 'typeorm';
+import 'reflect-metadata';
 import * as process from 'process';
+import { ConnectionOptions, DataSource } from 'typeorm';
 
-const config: ConnectionOptions = {
+export const PostgresConnectionOptions: ConnectionOptions = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
   port: process.env.POSTGRES_PORT_INTERNAL as number | undefined,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [`${__dirname}/**/*.entity{.ts,.js}`],
+  entities: [`${__dirname}/../**/*.entity{.ts,.js}`],
   migrationsRun: false,
   logging: true,
   migrationsTableName: 'migration',
-  migrations: [`${__dirname}/migration/**/*.ts`, `${__dirname}/migration/**/*.js`],
+  migrations: [`${__dirname}/migration/**/*{.ts,.js}`],
   synchronize: true
-  // cli: {
-  //   migrationsDir: 'src/migration'
-  // }
 };
 
-export default config;
+export default new DataSource(PostgresConnectionOptions);

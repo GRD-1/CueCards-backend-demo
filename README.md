@@ -36,6 +36,8 @@
             <div style="width: 40%; height: fit-content;"><a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-v4.7.4-blue?style=for-the-badge&logo=typescript" alt="TypeScript Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/prettier-v2.3.2-blue?style=for-the-badge&logo=prettier" alt="Prettier Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Nest.js-v9.4.2-blue?style=for-the-badge&logo=nestjs" alt="Nest.js Version" /></a></div>
+            <div style="width: 40%; height: fit-content;"><a href="https://www.postgresql.org/" target="_blank"><img src="https://img.shields.io/badge/postgresql-v14.0.0-blue?style=for-the-badge&logo=postgresql" alt="Postgres Version" /></a></div>
+            <div style="width: 40%; height: fit-content;"><a href="https://typeorm.io/" target="_blank"><img src="https://img.shields.io/badge/typeorm-v0.3.17-blue?style=for-the-badge" alt="TypeOrm Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://www.npmjs.com/" target="_blank"><img src="https://img.shields.io/badge/npm-v9.5.1-blue?style=for-the-badge&logo=npm" alt="npm Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/commitizen/cz-cli" target="_blank"><img src="https://img.shields.io/badge/commitizen-cz_cli-blue?style=for-the-badge" alt="Commitizen" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/typicode/husky" target="_blank"><img src="https://img.shields.io/badge/husky-v.8.0.3-blue?style=for-the-badge" alt="Husky Version" /></a></div>
@@ -142,6 +144,30 @@ $ docker-compose -f docker/docker-compose.yml --env-file env/.env.test --env-fil
 [//]: # ($ docker exec cuecards-node-test npm run test:cov)
 
 [//]: # (```)
+
+## Logs
+
+## Database
+
+* As a dbms uses postgres v14.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
+This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
+* As an orm model uses TypeOrm v0.3.17
+* migrations are here: [src/typeorm/migration](src/typeorm/migration)
+* To work with migrations in local mode use the scripts like "db:*" from [package.json](package.json)
+* For docker mode, use short commands:
+
+``` bash
+$  docker exec cuecards-node-dev npm run db:create
+```
+``` bash
+$  docker exec cuecards-node-dev npm run db:generate
+```
+``` bash
+$  docker exec cuecards-node-dev npm run db:migrate
+```
+``` bash
+$  docker exec cuecards-node-dev npm run db:drop
+```
 
 ## CI/CD
 

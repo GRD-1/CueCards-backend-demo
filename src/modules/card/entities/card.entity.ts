@@ -120,4 +120,8 @@ export class CardEntity {
   @ApiProperty({ description: 'tags', nullable: true })
   @Column('text', { array: true })
     tags?: string[];
+
+  @ApiProperty({ description: 'mark for deletion', type: 'boolean', default: false, nullable: true })
+  @Column()
+    delete_mark?: boolean;
 }

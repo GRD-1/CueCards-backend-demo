@@ -20,6 +20,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "typeorm-ts-node-esm -d src/typeorm/data-source.ts",
+    "db:create": "typeorm-ts-node-esm migration:create src/typeorm/migration/migration",
+    "db:generate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:generate src/typeorm/migration/migration",
+    "db:migrate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:run --",
+    "db:drop": "typeorm-ts-node-esm -d src/typeorm/data-source.ts schema:drop",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "prepare": "husky install"
   },
