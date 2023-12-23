@@ -9,8 +9,8 @@
   "scripts": {
     "run-typescript": "ts-node-transpile-only",
     "build": "nest build -p tsconfig.build.json",
-    "format": "prettier --config ./config/prettier/.prettierrc.json --ignore-path ./config/prettier/.prettierignore",
-    "lint": "eslint --config ./config/eslint/.eslintrc.json --ignore-path ./config/eslint/.eslintignore",
+    "format": "prettier",
+    "lint": "eslint",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nodemon",
@@ -21,7 +21,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-esm -d src/typeorm/data-source.ts",
-    "db:create": "typeorm-ts-node-esm migration:create src/typeorm/migration/migration",
     "db:generate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:generate src/typeorm/migration/migration",
     "db:migrate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:run --",
     "db:drop": "typeorm-ts-node-esm -d src/typeorm/data-source.ts schema:drop",
@@ -83,14 +82,6 @@
     "tsconfig-paths": "4.2.0",
     "typescript": "^5.3.2"
   },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": "config/git/commitizen.js"
-    }
-  },
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -107,9 +98,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "prettier": "./config/prettier/.prettierrc.json",
-  "eslintConfig": {
-    "extends": "./config/eslint/.eslintrc.json"
   }
 }

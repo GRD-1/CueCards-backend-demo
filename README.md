@@ -157,9 +157,6 @@ This version was chosen deliberately, because of the postgres-cron-backup packag
 * For docker mode, use short commands:
 
 ``` bash
-$  docker exec cuecards-node-dev npm run db:create
-```
-``` bash
 $  docker exec cuecards-node-dev npm run db:generate
 ```
 ``` bash
