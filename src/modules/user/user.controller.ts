@@ -24,7 +24,7 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async create(@Body() dto: CreateUserDto): Promise<string> {
+  async create(@Body() dto: CreateUserDto): Promise<CreateUserDto> {
     return this.userService.create(dto);
   }
 

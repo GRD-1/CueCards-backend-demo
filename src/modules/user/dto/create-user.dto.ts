@@ -4,17 +4,17 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserDto {
   @ApiProperty({ description: 'login', nullable: true })
   @IsString()
-    login: string;
+  readonly login: string;
 
   @ApiProperty({ description: 'email', nullable: true })
   @IsString()
-    email: string;
+  readonly email: string;
 
   @ApiProperty({ description: 'path to avatar image', nullable: true })
   @IsString()
-    avatar?: string;
+  readonly avatar?: string;
 
   @ApiProperty({ description: 'password', nullable: true })
   @IsString()
-    password?: string;
+  readonly password?: string;
 }

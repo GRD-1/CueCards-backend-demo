@@ -1,41 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { hash } from 'bcryptjs';
 
+@Entity({ name: 'users' })
 export class UserEntity {
-  constructor(
-    userId: number,
-    login: string,
-    email: string,
-    avatar?: string,
-    passwordHash?: string,
-    refreshToken?: string,
-    salt?: string
-  ) {
-    this.user_id = userId;
-    this.login = login;
-    this.email = email;
-    this.avatar = avatar;
-    this.passwordHash = passwordHash;
-    this.refreshToken = refreshToken;
-    this.salt = salt;
-  }
-  @ApiProperty({ description: 'user id', nullable: true })
-    user_id?: number;
+  @ApiProperty({ description: 'user id', nullable: false })
+  @PrimaryGeneratedColumn()
+    id: number;
 
-  @ApiProperty({ description: 'login', nullable: true })
+  @ApiProperty({ description: 'login', nullable: false })
+  @Column()
     login: string;
 
-  @ApiProperty({ description: 'email', nullable: true })
+  @ApiProperty({ description: 'email', nullable: false })
+  @Column()
     email: string;
 
   @ApiProperty({ description: 'avatar', nullable: true })
-    avatar?: string;
+  @Column({ default: '' })
+    avatar: string;
 
   @ApiProperty({ description: 'password hash', nullable: true })
-    passwordHash?: string;
+  @Column()
+    password: string;
 
-  @ApiProperty({ description: 'refresh token', nullable: true })
-    refreshToken?: string;
+  @ApiProperty({ type: 'text', description: 'refresh token' })
+  @Column()
+    refreshToken: string;
 
-  @ApiProperty({ description: 'salt', nullable: true })
-    salt?: string;
+  @ApiProperty({ type: 'text', description: 'salt' })
+  @Column()
+    salt: string;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    this.password = await hash(this.password, 10);
+  }
 }

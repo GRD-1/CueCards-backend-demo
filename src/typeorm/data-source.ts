@@ -14,7 +14,7 @@ export const PostgresConnectionOptions: ConnectionOptions = {
   logging: true,
   migrationsTableName: 'migration',
   migrations: [`${__dirname}/migration/**/*{.ts,.js}`],
-  synchronize: true
+  synchronize: false
 };
 
 export default new DataSource(PostgresConnectionOptions);
