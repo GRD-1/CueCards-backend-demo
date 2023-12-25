@@ -1,8 +1,7 @@
 import {
-  BadRequestException,
   Body,
   Controller, Delete,
-  Get, HttpException,
+  Get,
   HttpStatus,
   Param,
   ParseIntPipe,
@@ -10,12 +9,12 @@ import {
   Post
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EMAIL_ALREADY_IN_USE, LOGIN_ALREADY_IN_USE } from './user.constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { UserResponseInterface } from './types/user-response.type';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -28,40 +27,44 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
   async create(@Body() dto: CreateUserDto): Promise<UserResponseInterface> {
-    const oldUser = await this.userService.findOne(dto as UserEntity);
-    if (oldUser?.login === dto.login) throw new HttpException(LOGIN_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
-    if (oldUser?.email === dto.email) throw new HttpException(EMAIL_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
-    const newUser = await this.userService.create(dto);
-    return this.userService.buildUserResponse(newUser);
+    return this.userService.create(dto);
   }
 
-  @Get(':userId')
+  @Get(':id')
   @ApiOperation({ summary: 'Get the specific user' })
-  @ApiParam({ name: 'userId', required: true, description: 'user identifier' })
+  @ApiParam({ name: 'id', required: true, description: 'user identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findOne(@Param('userId', new ParseIntPipe()) userId: number): Promise<UserEntity | null> {
-    return this.userService.findOne({ id: userId } as UserEntity);
+  async findOne(@Param('id', new ParseIntPipe()) id: number): Promise<UserEntity | null> {
+    return this.userService.findOne({ id } as UserEntity);
   }
 
-  @Patch(':userId')
+  @Patch(':id')
   @ApiOperation({ summary: 'Update the specific user' })
-  @ApiParam({ name: 'userId', required: true, description: 'user identifier' })
+  @ApiParam({ name: 'id', required: true, description: 'user identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async update(@Param('userId') userId: number, @Body() dto: UpdateUserDto): Promise<string> {
-    return this.userService.update(userId, dto);
+  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<string> {
+    return this.userService.update(id, dto);
   }
 
-  @Delete(':userId')
+  @Delete(':id')
   @ApiOperation({ summary: 'Delete the specific user' })
-  @ApiParam({ name: 'userId', required: true, description: 'user identifier' })
+  @ApiParam({ name: 'id', required: true, description: 'user identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async remove(@Param('userId') userId: number): Promise<string> {
-    return this.userService.remove(userId);
+  async remove(@Param('id') id: number): Promise<string> {
+    return this.userService.remove(id);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'login user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  async login(@Body() dto: LoginUserDto): Promise<UserResponseInterface | null> {
+    return this.userService.login(dto);
   }
 }

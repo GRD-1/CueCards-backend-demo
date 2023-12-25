@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { hash } from 'bcryptjs';
+import { hash, genSaltSync } from 'bcryptjs';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -21,16 +21,12 @@ export class UserEntity {
     avatar: string;
 
   @ApiProperty({ description: 'password hash', nullable: false })
-  @Column()
+  @Column({ select: false })
     password: string;
 
   @ApiProperty({ type: 'text', description: 'refresh token', nullable: true })
   @Column({ nullable: true })
     refreshToken: string;
-
-  @ApiProperty({ type: 'text', description: 'salt', nullable: true })
-  @Column({ nullable: true })
-    salt: string;
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
