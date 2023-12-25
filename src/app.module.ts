@@ -18,7 +18,7 @@ import { PostgresConnectionOptions } from './typeorm/data-source';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['env/.env', 'env/.env.local_project_root'],
+      envFilePath: ['env/.env.node', 'env/.env.local_project_root'],
       isGlobal: true
     }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),

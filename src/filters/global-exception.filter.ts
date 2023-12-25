@@ -20,7 +20,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const exceptionIsHandled = exception instanceof HttpException;
     const status = exceptionIsHandled ? exception.getStatus() : 500;
-    const message = exceptionIsHandled ? exception.message : 'internal server error';
+    const message = exceptionIsHandled ? exception.getResponse() : 'internal server error';
     response
       .status(status)
       .json({

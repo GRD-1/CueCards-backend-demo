@@ -17,19 +17,19 @@ export class UserEntity {
     email: string;
 
   @ApiProperty({ description: 'avatar', nullable: true })
-  @Column({ default: '' })
+  @Column({ nullable: true })
     avatar: string;
 
-  @ApiProperty({ description: 'password hash', nullable: true })
+  @ApiProperty({ description: 'password hash', nullable: false })
   @Column()
     password: string;
 
-  @ApiProperty({ type: 'text', description: 'refresh token' })
-  @Column()
+  @ApiProperty({ type: 'text', description: 'refresh token', nullable: true })
+  @Column({ nullable: true })
     refreshToken: string;
 
-  @ApiProperty({ type: 'text', description: 'salt' })
-  @Column()
+  @ApiProperty({ type: 'text', description: 'salt', nullable: true })
+  @Column({ nullable: true })
     salt: string;
 
   @BeforeInsert()
