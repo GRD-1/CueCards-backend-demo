@@ -38,6 +38,10 @@ export class UserService {
     return user[0];
   }
 
+  async findById(id: number): Promise<UserEntity | null> {
+    return this.userRepository.findOneBy({ id });
+  }
+
   async login(dto: LoginUserDto): Promise<UserResponseInterface> {
     const user = (await this.userRepository.find({
       select: {

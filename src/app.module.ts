@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -14,6 +14,7 @@ import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
 import { PostgresConnectionOptions } from './typeorm/data-source';
+import { AuthMiddleware } from './modules/user/middlware/auth.middleware';
 
 @Module({
   imports: [
@@ -38,5 +39,6 @@ import { PostgresConnectionOptions } from './typeorm/data-source';
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(RequestLoggingMiddleware, ResponseLoggingMiddleware).forRoutes('*');
+    consumer.apply(AuthMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
