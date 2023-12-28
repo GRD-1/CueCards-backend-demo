@@ -15,6 +15,7 @@ import { UserService } from './user.service';
 import { UserResponseInterface } from './types/user-response.type';
 import { LoginUserDto } from './dto/login-user.dto';
 import { ExpressRequestInterface } from '../../types/express-request.type';
+import { User } from './decorators/user.decorator';
 
 @ApiTags('user')
 @Controller('user')
@@ -35,8 +36,8 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async getCurrentUser(@Req() req: ExpressRequestInterface): Promise<UserResponseInterface> {
-    return this.userService.buildUserResponse(req.user as UserEntity);
+  async getCurrentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
+    return this.userService.buildUserResponse(user);
   }
 
   @Patch(':id')
