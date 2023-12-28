@@ -2,8 +2,8 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
 import { JwtPayload, verify } from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { ExpressRequestInterface } from '../../../types/express-request.type';
-import { UserService } from '../user.service';
+import { ExpressRequestInterface } from '../types/express-request.type';
+import { UserService } from '../modules/user/user.service';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
@@ -12,6 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
   async use(req: ExpressRequestInterface, res: Response, next: NextFunction): Promise<void> {
     if (!req.headers.authorization) {
       req.user = null;
+      next();
       return;
     }
     const token = req.headers.authorization.split(' ')[1];

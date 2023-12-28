@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post, Req
+  Post, Req, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,8 +14,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { UserResponseInterface } from './types/user-response.type';
 import { LoginUserDto } from './dto/login-user.dto';
-import { ExpressRequestInterface } from '../../types/express-request.type';
 import { User } from './decorators/user.decorator';
+import { AuthGuard } from './guards/auth.guard';
 
 @ApiTags('user')
 @Controller('user')
@@ -32,6 +32,7 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get the current user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })

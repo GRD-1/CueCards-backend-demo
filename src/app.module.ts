@@ -14,7 +14,7 @@ import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
 import { PostgresConnectionOptions } from './typeorm/data-source';
-import { AuthMiddleware } from './modules/user/middlware/auth.middleware';
+import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
