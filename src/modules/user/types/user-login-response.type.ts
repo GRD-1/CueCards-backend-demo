@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LoginUserResponse } from './user-login-response.type';
+import { UserType } from './user.type';
 
-export class UserResponse implements Omit<LoginUserResponse, 'token' | 'refreshToken'> {
+export class LoginUserResponse implements UserType {
   @ApiProperty({ description: 'user id', nullable: false })
     id: number;
 
@@ -13,4 +13,7 @@ export class UserResponse implements Omit<LoginUserResponse, 'token' | 'refreshT
 
   @ApiProperty({ description: 'avatar', nullable: true })
     avatar: string;
+
+  @ApiProperty({ type: 'text', description: 'bearer token', nullable: true })
+    token: string;
 }

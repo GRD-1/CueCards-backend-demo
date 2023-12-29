@@ -3,19 +3,18 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
-  Patch,
-  Post, UseGuards
+  Post, Put, UseGuards
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { UserResponseInterface } from './types/user-response.type';
+import { UserResponse } from './types/user-response.type';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './decorators/user.decorator';
 import { AuthGuard } from './guards/auth.guard';
+import { LoginUserResponse } from './types/user-login-response.type';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -25,39 +24,38 @@ export class UserController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UserEntity })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UserResponse })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async create(@Body() dto: CreateUserDto): Promise<UserResponseInterface> {
+  async create(@Body() dto: CreateUserDto): Promise<LoginUserResponse> {
     return this.userService.create(dto);
   }
 
   @Get()
   @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get the current user' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async getCurrentUser(@User() user: UserEntity): Promise<UserResponseInterface> {
-    return this.userService.buildUserResponse(user);
+  async getCurrentUser(@User() user: UserEntity): Promise<UserResponse | null> {
+    return this.userService.findById(user.id);
   }
 
-  @Patch(':id')
+  @Put()
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Update the specific user' })
-  @ApiParam({ name: 'id', required: true, description: 'user identifier' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
+  @ApiOperation({ summary: 'Update the current user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<UserResponseInterface> {
+  async update(@User('id') id: number, @Body() dto: UpdateUserDto): Promise<UserResponse> {
     return this.userService.update(id, dto);
   }
 
   @Post('login')
   @ApiOperation({ summary: 'login user' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  async login(@Body() dto: LoginUserDto): Promise<UserResponseInterface | null> {
+  async login(@Body() dto: LoginUserDto): Promise<LoginUserResponse | null> {
     return this.userService.login(dto);
   }
 }

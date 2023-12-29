@@ -7,9 +7,10 @@ import { compareSync } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { UserResponseInterface } from './types/user-response.type';
+import { UserResponse } from './types/user-response.type';
 import { EMAIL_ALREADY_IN_USE, INVALID_CREDENTIALS, LOGIN_ALREADY_IN_USE } from './user.constants';
 import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserResponse } from './types/user-login-response.type';
 
 @Injectable()
 export class UserService {
@@ -17,14 +18,14 @@ export class UserService {
               private readonly configService: ConfigService
   ) {}
 
-  async create(dto: CreateUserDto): Promise<UserResponseInterface> {
+  async create(dto: CreateUserDto): Promise<LoginUserResponse> {
     const oldUser = await this.findOne(dto as UserEntity);
     if (oldUser?.login === dto.login) throw new HttpException(LOGIN_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
     if (oldUser?.email === dto.email) throw new HttpException(EMAIL_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
     const newUser = new UserEntity();
     Object.assign(newUser, dto);
     const user = await this.userRepository.save(newUser);
-    return this.buildUserResponse(user);
+    return this.buildUserResponseWithToken(user);
   }
 
   async findOne(userData: UserEntity): Promise<UserEntity | null> {
@@ -38,11 +39,11 @@ export class UserService {
     return user[0];
   }
 
-  async findById(id: number): Promise<UserEntity | null> {
+  async findById(id: number): Promise<UserResponse | null> {
     return this.userRepository.findOneBy({ id });
   }
 
-  async login(dto: LoginUserDto): Promise<UserResponseInterface> {
+  async login(dto: LoginUserDto): Promise<LoginUserResponse> {
     const user = (await this.userRepository.find({
       select: {
         id: true,
@@ -56,18 +57,21 @@ export class UserService {
     if (!user) throw new HttpException(INVALID_CREDENTIALS, HttpStatus.UNPROCESSABLE_ENTITY);
     const passwordIsValid = compareSync(dto.password, user.password);
     if (!passwordIsValid) throw new HttpException(INVALID_CREDENTIALS, HttpStatus.UNPROCESSABLE_ENTITY);
-    return this.buildUserResponse(user);
+    return this.buildUserResponseWithToken(user);
   }
 
-  async update(userId: number, dto: UpdateUserDto): Promise<string> {
-    return `the user with id = ${userId} has been updated!`;
+  async update(id: number, dto: UpdateUserDto): Promise<UserResponse> {
+    const user = new UserEntity();
+    Object.assign(user, dto);
+    const updateResult = await this.userRepository.createQueryBuilder().update(user)
+      .set(user)
+      .where('id = :id', { id })
+      .returning('id, login, email, avatar')
+      .execute();
+    return updateResult.raw[0];
   }
 
-  async remove(userId: number): Promise<string> {
-    return `the user with id = ${userId} has been deleted!`;
-  }
-
-  async buildUserResponse(user: UserEntity): Promise<UserResponseInterface> {
+  async buildUserResponseWithToken(user: UserEntity): Promise<LoginUserResponse> {
     const token = await this.generateJwt(user);
     const { password, ...userWithoutPassword } = user;
     return { ...userWithoutPassword, token };
