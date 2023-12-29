@@ -17,6 +17,7 @@ async function bootstrap(): Promise<void> {
     .setTitle('CueCards API')
     .setDescription('The CueCards API description')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

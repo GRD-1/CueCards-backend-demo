@@ -5,9 +5,9 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post, Req, UseGuards
+  Post, UseGuards
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -18,6 +18,7 @@ import { User } from './decorators/user.decorator';
 import { AuthGuard } from './guards/auth.guard';
 
 @ApiTags('user')
+@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -42,12 +43,13 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Update the specific user' })
   @ApiParam({ name: 'id', required: true, description: 'user identifier' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<string> {
+  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<UserResponseInterface> {
     return this.userService.update(id, dto);
   }
 
