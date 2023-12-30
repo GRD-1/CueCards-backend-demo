@@ -1,0 +1,15 @@
+.idea/
+node_modules/
+git
+package.json
+package-lock.json
+app/
+.husky/
+config/
+.github/
+public/
+*.json
+README.md
+.huskyrc
+.giignore
+src/typeorm/migration

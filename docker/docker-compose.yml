@@ -1,31 +1,60 @@
-version: '3'
+version: '3.7'
+
 services:
   node:
-    image: "cuecards-nodeimg-${NODE_ENV}"
-    container_name: "cuecards-node-${NODE_ENV}"
+    image: 'cuecards-nodeimg-${NODE_ENV}'
+    container_name: 'cuecards-node-${NODE_ENV}'
     restart: on-failure
-    env_file:
-      - "../env/.env.project_root"
+    environment:
+      - DOCKER_MODE=true
+      - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
     build:
       context: ..
-      dockerfile: "docker/Dockerfile-${NODE_ENV}"
+      dockerfile: 'docker/Dockerfile-${NODE_ENV}'
     ports:
-      - '3000:3000'
-      - "30000:9229"
+      - '${NODE_PORT_EXTERNAL}:${NODE_PORT_INTERNAL}'
+      - '${NODE_DEBUG_PORT_EXTERNAL}:${NODE_DEBUG_PORT_INTERNAL}'
     volumes:
       - ../src:/projectFiles/src
       - ../test:/projectFiles/test
       - ../env:/projectFiles/env
-#    depends_on:
-#      - mongodb
+    depends_on:
+      - postgres
 
-#  mongodb:
-#    image: mongo
-#    container_name: "cuecards-mongodb-${NODE_ENV}"
-#    restart: on-failure
-#    env_file:
-#      - "../env/.env.mongodb-${NODE_ENV}"
-#    ports:
-#      - '27017:27017'
-#    volumes:
-#      - "../db/${NODE_ENV}/data:/data/db"
+  postgres:
+    image: postgres:14
+    container_name: 'cuecards-postgres-${NODE_ENV}'
+    restart: unless-stopped
+    environment:
+      - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+    ports:
+      - '${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}'
+    volumes:
+      - '../db/${NODE_ENV}/data:/var/lib/postgresql/data'
+
+  backup:
+    build: .
+    image: ghcr.io/mentos1386/postgres-cron-backup
+    container_name: 'cuecards-postgres-backup-${NODE_ENV}'
+    restart: unless-stopped
+    environment:
+      - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
+      - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - MAX_BACKUPS=10
+      - INIT_BACKUP=1
+      - CRON_TIME=0 0 * * *
+    volumes:
+      - '../db/${NODE_ENV}/backup:/backup'
+    depends_on:
+      - postgres

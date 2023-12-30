@@ -1,0 +1,13 @@
+.idea/
+node_modules/
+git
+.github
+.husky
+package-lock.json
+app/
+.prettierrc.json
+.prettierignore
+.eslintrc.json
+.eslintignore
+*.dto.ts
+src/typeorm/migration
