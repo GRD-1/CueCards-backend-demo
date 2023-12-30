@@ -104,11 +104,11 @@ $ docker-compose -f docker/docker-compose.yml --env-file env/.env.test --env-fil
 
 ## Environment
 
-[//]: # (Environment variables are here: ./env. )
+Environment variables should be here: ./env. (get them from your system administrator) 
 
-[//]: # (Key environment variables are connected to the project using docker-compose files at the [env_file] section.)
+Key environment variables are connected to the project using docker-compose files at the [env_file] section.
 
-[//]: # (Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".)
+Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".
 
 ## Settings
 
@@ -181,5 +181,5 @@ To see the project structure run the script:
 $ npm run compodoc
 ```
 It is possible to face an access error while the script starts ("Error: EACCES: permission denied ...).
-In this case we need to configure access permissions to the database folder: [ sudo chmod -R u=rwX,go=rX db/dev/data ]
+In this case we need to configure access permissions to the database folder: [ sudo chmod -R u=rwX,go=rX db ]
 The documentation will be available at: http://localhost:8080/
