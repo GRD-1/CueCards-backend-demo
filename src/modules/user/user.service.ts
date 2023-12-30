@@ -61,6 +61,14 @@ export class UserService {
   }
 
   async update(id: number, dto: UpdateUserDto): Promise<UserResponse> {
+    const oldUser = await this.findOne(dto as UserEntity);
+    if (oldUser?.login === dto.login && oldUser?.id !== id) {
+      throw new HttpException(LOGIN_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    if (oldUser?.email === dto.email && oldUser?.id !== id) {
+      throw new HttpException(EMAIL_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     const user = new UserEntity();
     Object.assign(user, dto);
     const updateResult = await this.userRepository.createQueryBuilder().update(user)
