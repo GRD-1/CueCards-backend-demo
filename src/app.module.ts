@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
-import { AuthModule } from './modules/auth/auth.module';
 import { TranslatorModule } from './modules/translator/translator.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { SettingsModule } from './modules/settings/settings.module';
@@ -23,7 +22,6 @@ import { AuthMiddleware } from './middleware/auth.middleware';
       isGlobal: true
     }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),
-    AuthModule,
     TranslatorModule,
     CardModule,
     DictionaryModule,
