@@ -18,7 +18,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['env/.env.node', 'env/.env.local_project_root'],
+      envFilePath: ['env/node.env', 'env/local_project_root.env'],
       isGlobal: true
     }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),
