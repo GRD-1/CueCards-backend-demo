@@ -1,127 +1,100 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+// eslint-disable-next-line import/no-cycle
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity({ name: 'cards' })
 export class CardEntity {
-  constructor(
-    fsLanguage: number,
-    fsValue: string,
-    fsDescription: string,
-    fsMeaningVariants: string[],
-    fsTranscription: string,
-    bsLanguage: number,
-    bsValue: string,
-    bsDescription: string,
-    bsTranscription: string,
-    fsWrongMeanings?: string[],
-    fsSynonyms?: string[],
-    fsAudio?: string,
-    bsMeaningVariants?: string[],
-    bsWrongMeanings?: string[],
-    bsSynonyms?: string[],
-    bsAudio?: string,
-    tags?: string[],
-    id?: number,
-    userId?: number
-  ) {
-    this.id = id;
-    this.userId = userId;
-    this.fs_language = fsLanguage;
-    this.fs_value = fsValue;
-    this.fs_description = fsDescription;
-    this.fs_meaning_variants = fsMeaningVariants;
-    this.fs_wrong_meanings = fsWrongMeanings;
-    this.fs_transcription = fsTranscription;
-    this.fs_synonyms = fsSynonyms;
-    this.fs_audio = fsAudio;
-    this.bs_language = bsLanguage;
-    this.bs_value = bsValue;
-    this.bs_description = bsDescription;
-    this.bs_meaning_variants = bsMeaningVariants;
-    this.bs_wrong_meanings = bsWrongMeanings;
-    this.bs_transcription = bsTranscription;
-    this.bs_synonyms = bsSynonyms;
-    this.bs_audio = bsAudio;
-    this.tags = tags;
-  }
-
   @ApiProperty({ description: 'card identifier', nullable: true })
   @PrimaryGeneratedColumn()
-    id?: number;
-
-  @ApiProperty({ description: 'user identifier', nullable: true })
-  @Column()
-    userId?: number;
+    id: number;
 
   @ApiProperty({ description: 'front side language', nullable: false })
   @Column()
-    fs_language: number;
+    fsLanguage: number;
 
   @ApiProperty({ description: 'front side value', nullable: false })
   @Column()
-    fs_value: string;
+    fsValue: string;
 
-  @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', nullable: false })
-  @Column()
-    fs_description: string;
+  @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', default: '' })
+  @Column({ default: '' })
+    fsDescription: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
-  @Column('text', { array: true })
-    fs_meaning_variants?: string[];
+  @Column('simple-array')
+    fsMeaningVariants: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
-  @Column('text', { array: true })
-    fs_wrong_meanings?: string[];
+  @Column('simple-array')
+    fsWrongMeanings: string[];
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
   @Column()
-    fs_transcription: string;
+    fsTranscription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
-  @Column('text', { array: true })
-    fs_synonyms?: string[];
+  @Column('simple-array')
+    fsSynonyms: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
   @Column()
-    fs_audio?: string;
+    fsAudio: string;
 
   @ApiProperty({ description: 'back side language', nullable: false })
   @Column()
-    bs_language: number;
+    bsLanguage: number;
 
   @ApiProperty({ description: 'back side value', nullable: false })
   @Column()
-    bs_value: string;
+    bsValue: string;
 
   @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
-  @Column()
-    bs_description: string;
+  @Column({ default: '' })
+    bsDescription: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
-  @Column('text', { array: true })
-    bs_meaning_variants?: string[];
+  @Column('simple-array')
+    bsMeaningVariants: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
-  @Column('text', { array: true })
-    bs_wrong_meanings?: string[];
+  @Column('simple-array')
+    bsWrongMeanings: string[];
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
   @Column()
-    bs_transcription: string;
+    bsTranscription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
-  @Column('text', { array: true })
-    bs_synonyms?: string[];
+  @Column('simple-array')
+    bsSynonyms: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
   @Column()
-    bs_audio?: string;
+    bsAudio: string;
 
-  @ApiProperty({ description: 'tags', nullable: true })
-  @Column('text', { array: true })
-    tags?: string[];
+  @ApiProperty({ description: 'tag list', nullable: true })
+  @Column('simple-array')
+    tags: string[];
 
-  @ApiProperty({ description: 'mark for deletion', type: 'boolean', default: false, nullable: true })
-  @Column()
-    delete_mark?: boolean;
+  @ApiProperty({ description: 'author identifier', nullable: false })
+  @ManyToOne(() => UserEntity, (user) => user.cards)
+    author: UserEntity;
+
+  @ApiProperty({ description: 'creation date', nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+  @ApiProperty({ description: 'update date', nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    updateAt: Date;
+
+  @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
+  @Column({ default: false })
+    deleteMark: boolean;
+
+  @BeforeUpdate()
+  updateTimestamp(): void {
+    this.updateAt = new Date();
+  }
 }
