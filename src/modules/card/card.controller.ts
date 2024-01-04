@@ -6,15 +6,17 @@ import {
   HttpStatus,
   Param, ParseIntPipe,
   Patch,
-  Post
+  Post, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dto/create-card.dto';
 import { CardEntity } from './entities/card.entity';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardService } from './card.service';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @ApiTags('library/card')
+@UseGuards(AuthGuard)
 @Controller('library/card')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
@@ -33,10 +35,9 @@ export class CardController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  // async findAll(): Promise<CardEntity[]> {
   async findAll(): Promise<{ value: string, translate: string }[]> {
     const cardArr = await this.cardService.findAll();
-    return cardArr.map((card: CardEntity) => ({ value: card.fs_value, translate: card.bs_value }));
+    return cardArr.map((card: CardEntity) => ({ value: card.fsValue, translate: card.bsValue }));
   }
 
   @Get(':cardId')
