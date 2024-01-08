@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeUpdate, Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { CardEntity } from './card.entity';
 
 @Entity({ name: 'languages' })
@@ -17,7 +17,7 @@ export class LanguageEntity {
     acronym: string;
 
   @OneToMany(() => CardEntity, (card) => card.author)
-    cards: CardEntity[];
+    cards: Relation<CardEntity>[];
 
   @ApiProperty({ description: 'creation date', nullable: false })
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

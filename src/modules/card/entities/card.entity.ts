@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-// eslint-disable-next-line import/no-cycle
+import { BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
-// eslint-disable-next-line import/no-cycle
-import { LanguageEntity } from './languge.entity';
+import { LanguageEntity } from './language.entity';
 
 @Entity({ name: 'cards' })
 export class CardEntity {
@@ -13,6 +11,7 @@ export class CardEntity {
 
   @ApiProperty({ description: 'front side language', nullable: false })
   @ManyToOne(() => LanguageEntity, (language) => language.cards)
+  @JoinColumn({ name: 'id' })
     fsLanguage: number;
 
   @ApiProperty({ description: 'front side value', nullable: false })

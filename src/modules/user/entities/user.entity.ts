@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcryptjs';
-// eslint-disable-next-line import/no-cycle
 import { CardEntity } from '../../card/entities/card.entity';
 
 @Entity({ name: 'users' })
