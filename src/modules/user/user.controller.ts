@@ -13,7 +13,7 @@ import { UserService } from './user.service';
 import { UserResponse } from './types/user-response.type';
 import { LoginUserDto } from './dto/login-user.dto';
 import { User } from './decorators/user.decorator';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '../../guards/auth.guard';
 import { LoginUserResponse } from './types/user-login-response.type';
 
 @ApiTags('user')

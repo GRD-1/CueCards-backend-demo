@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 // eslint-disable-next-line import/no-cycle
 import { UserEntity } from '../../user/entities/user.entity';
+// eslint-disable-next-line import/no-cycle
+import { LanguageEntity } from './languge.entity';
 
 @Entity({ name: 'cards' })
 export class CardEntity {
@@ -10,7 +12,7 @@ export class CardEntity {
     id: number;
 
   @ApiProperty({ description: 'front side language', nullable: false })
-  @Column()
+  @ManyToOne(() => LanguageEntity, (language) => language.cards)
     fsLanguage: number;
 
   @ApiProperty({ description: 'front side value', nullable: false })
@@ -41,8 +43,12 @@ export class CardEntity {
   @Column()
     fsAudio: string;
 
-  @ApiProperty({ description: 'back side language', nullable: false })
+  @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
   @Column()
+    fsHint: string;
+
+  @ApiProperty({ description: 'back side language', nullable: false })
+  @ManyToOne(() => LanguageEntity, (language) => language.cards)
     bsLanguage: number;
 
   @ApiProperty({ description: 'back side value', nullable: false })
@@ -72,6 +78,10 @@ export class CardEntity {
   @ApiProperty({ description: 'back side audio', nullable: true })
   @Column()
     bsAudio: string;
+
+  @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
+  @Column()
+    bsHint: string;
 
   @ApiProperty({ description: 'tag list', nullable: true })
   @Column('simple-array')
