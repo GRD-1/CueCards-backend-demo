@@ -15,7 +15,6 @@ import { TrainingListModule } from './modules/training-list/training-list.module
 import { PostgresConnectionOptions } from './typeorm/data-source';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { validate } from './config/env.validation';
-
 const mode = process.env.NODE_ENV;
 
 @Module({

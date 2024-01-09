@@ -5,7 +5,7 @@ enum Environment {
   Development = "dev",
   Production = "prod",
   Test = "test",
-  Debug = "debug",
+  Debug = "debug"
 }
 
 @Injectable()
