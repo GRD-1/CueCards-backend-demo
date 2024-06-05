@@ -49,55 +49,24 @@
 
 ## Launch
 
-The project is prepared to launch via the docker.You need to install <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
-
-and then run the corresponding command in the terminal.
-
-
-* for development mode use:
-
+1. Install <a href="https://nodejs.org/en" target="_blank">Node</a> Node >=20.14.0
+2. Install <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
+3. Install dependencies:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/dev.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
-$ docker logs cuecards-node-dev -f --tail 30
-
+$ npm i
 ```
-
-* for debug mode use:
-
+4. Copy environment variables:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/debug.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
-$ docker logs cuecards-node-debug -f --tail 30
-
+$ cp .env.sample .env
 ```
-
-* for product mode use:
-
+5. Run docker:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/prod.env --env-file env/node.env --env-file env/postgres-prod.env up -d
-
+$ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ```
-
-* for test mode use:
-
+6. Run the application using package.json scripts, e.g:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/test.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
+$ npm run start:dev
 ```
-
 ## Usage
 
 [//]: # (* After the service is launched it is available at http://localhost:3000/api/)
@@ -116,40 +85,20 @@ Inside the application, environment variables are mounted using the built-in Nes
 
 ## Tests
 
-[//]: # (* To perform the tests you need to be loaded in [Test mode]&#40;#Launch&#41;. It's important because the tests use a database &#40;!&#41;)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# unit tests)
-
-[//]: # ($ docker exec cuecards-node-test npm run test)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# e2e tests)
-
-[//]: # ($ docker exec cuecards-node-test npm run test:e2e)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# test coverage)
-
-[//]: # ($ docker exec cuecards-node-test npm run test:cov)
-
-[//]: # (```)
+1. Prepare environment:
+``` bash
+$ docker compose -f ./docker/docker-compose.yml --env-file .env.test up -d
+```
+2. Run the specific test set using package.json scripts, e.g:
+``` bash
+$ npm run test
+```
 
 ## Logs
 
 ## Database
 
-* As a dbms uses postgres v14.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
+* As a dbms uses postgres v16.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
 This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
 * As an orm model uses TypeOrm v0.3.17
 * migrations are here: [src/typeorm/migration](src/typeorm/migration)
