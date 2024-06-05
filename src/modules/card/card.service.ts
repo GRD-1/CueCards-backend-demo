@@ -4,13 +4,18 @@ import { Repository } from 'typeorm';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardEntity } from './entities/card.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class CardService {
   constructor(@InjectRepository(CardEntity) private readonly cardRepository: Repository<CardEntity>) {}
 
-  async create(dto: CreateCardDto): Promise<string> {
-    return 'A new card has been created!';
+  async create(dto: CreateCardDto, user: UserEntity): Promise<CardEntity> {
+    const card = new CardEntity();
+    Object.assign(card, dto);
+    if (!dto.tags) card.tags = [];
+    card.author = user;
+    return this.cardRepository.save(card);
   }
 
   async findAll(): Promise<CardEntity[]> {

@@ -9,7 +9,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let localProjectRoot = process.env.LOCAL_PROJECT_ROOT ? process.env.LOCAL_PROJECT_ROOT : '/home';
     if (process.env.DOCKER_MODE) {
       targetRegExp = /\/projectFiles/gi;
-      localProjectRoot = process.env.LOCAL_PROJECT_ROOT_DOKER ? process.env.LOCAL_PROJECT_ROOT_DOKER : '/projectRoot';
+      localProjectRoot = process.env.LOCAL_PROJECT_ROOT_DOCKER ? process.env.LOCAL_PROJECT_ROOT_DOCKER : '/projectRoot';
     }
 
     const logger = new Logger('CustomException');

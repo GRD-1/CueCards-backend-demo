@@ -68,6 +68,7 @@
     "import/newline-after-import": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
+    "import/no-cycle": "off", // disabled due to typeorm relations
 
     // Nest specific
     "comma-dangle": ["error", "never"],

@@ -1,9 +1,17 @@
 FROM node:18.16.0 as cuecards-nodeimg-prod
 
 WORKDIR /projectFiles
+
+ENV NODE_ENV=prod
+
 COPY ../package.json ../tsconfig.json ../tsconfig.build.json ../nest-cli.json ./
+
 RUN npm install
+
 ADD ../src src
+
 RUN npm run build
+
 RUN npm prune --production
+
 CMD ["node", "./dist/main.js"]

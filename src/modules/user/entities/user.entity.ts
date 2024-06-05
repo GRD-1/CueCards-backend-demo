@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { hash } from 'bcryptjs';
+import { CardEntity } from '../../card/entities/card.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -24,9 +25,29 @@ export class UserEntity {
   @Column({ select: false })
     password: string;
 
+  @ApiProperty({ description: 'creation date', nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+  @ApiProperty({ description: 'update date', nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    updateAt: Date;
+
+  @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
+  @Column({ default: false })
+    deleteMark: boolean;
+
+  @OneToMany(() => CardEntity, (card) => card.author)
+    cards: CardEntity[];
+
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
     this.password = await hash(this.password, 10);
+  }
+
+  @BeforeUpdate()
+  updateTimestamp(): void {
+    this.updateAt = new Date();
   }
 }

@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { ExpressRequestInterface } from '../../../types/express-request.type';
-import { UNAUTHORISED } from '../user.constants';
+import { ExpressRequestInterface } from '../types/express-request.type';
+import { UNAUTHORISED } from '../modules/user/user.constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
