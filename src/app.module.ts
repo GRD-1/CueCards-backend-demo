@@ -14,21 +14,12 @@ import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
 import { PostgresConnectionOptions } from './typeorm/data-source';
 import { AuthMiddleware } from './middleware/auth.middleware';
-import { validate } from './config/env.validation';
-const mode = process.env.NODE_ENV;
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: [
-        `env/postgres-${mode}.env`,
-        `env/${mode}.env`,
-        'env/node.env',
-        'env/jwt.env',
-        'env/local_project_root.env'
-      ],
-      isGlobal: true,
-      validate
+      envFilePath: ['.env'],
+      isGlobal: true
     }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),
     TranslatorModule,

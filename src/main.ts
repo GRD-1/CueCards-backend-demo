@@ -2,13 +2,17 @@ import 'tsconfig-paths/register';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+import { validateEnvVariables } from '@/config/config.validation';
 import { AppModule } from './app.module';
-import { LOGGER_CONFIG } from './config/logger.config';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
+
+dotenv.config();
+const validatedConfig = validateEnvVariables(process.env);
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
-    logger: [...LOGGER_CONFIG]
+    logger: [validatedConfig.LOG_LEVEL]
   });
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe());
@@ -24,6 +28,6 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(validatedConfig.APP_PORT);
 }
 bootstrap();

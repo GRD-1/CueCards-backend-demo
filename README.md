@@ -87,9 +87,9 @@ Inside the application, environment variables are mounted using the built-in Nes
 
 1. Prepare environment:
 ``` bash
-$ docker compose -f ./docker/docker-compose.yml --env-file .env.test up -d
+$ docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
 ```
-2. Run the specific test set using package.json scripts, e.g:
+2. Run the specific test set using package.json scripts, or all the tests at once, e.g:
 ``` bash
 $ npm run test
 ```
