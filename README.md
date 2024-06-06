@@ -122,13 +122,19 @@ Husky + GitHub actions + semantic-release
 the workflow files are here: .github/workflows
 
 ## Documentation
-### API
-When the server is running, the API map is available at: http://localhost:3000/api
+### Swagger API map
+* current API map is here: [./public/api-json.json](./public/api-json.json)
+* When the server is running, the API map is available at: http://localhost:3000/api
+* To get the API json go to http://localhost:3000/api-json
+
 ### Compodoc
 To see the project structure run the script:
 ``` bash
 $ npm run compodoc
 ```
 It is possible to face an access error while the script starts ("Error: EACCES: permission denied ...).
-In this case we need to configure access permissions to the database folder: [ sudo chmod -R u=rwX,go=rX db ]
+In this case we need to configure access permissions to the database folder: 
+``` bash
+$ sudo chmod -R u=rwX,go=rX db
+```
 The documentation will be available at: http://localhost:8080/

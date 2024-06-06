@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
 
   const config = new DocumentBuilder()
     .setTitle('CueCards API')
-    .setDescription('The CueCards API description')
+    .setDescription('An application for learning proverbs in a foreign language')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
