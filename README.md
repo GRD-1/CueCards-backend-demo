@@ -13,14 +13,10 @@
 
 1. [Stack](#Stack)
 2. [Launch](#launch)
-3. [Usage](#usage)
-4. [Environment](#environment)
-5. [Settings](#settings)
-6. [Tests](#tests)
-7. [Database](#tests)
-8. [Logs](#tests)
-9. [CI/CD](#cicd)
-10. [Documentation](#documentation)
+3. [Tests](#tests)
+4. [Database](#tests)
+5. [CI/CD](#cicd)
+6. [Documentation](#documentation)
 
 ## Stack
 
@@ -67,22 +63,6 @@ $ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ``` bash
 $ npm run start:dev
 ```
-## Usage
-
-[//]: # (* After the service is launched it is available at http://localhost:3000/api/)
-
-## Environment
-
-Environment variables should be here: ./env. (get them from your system administrator) 
-
-Key environment variables are connected to the project using docker-compose files at the [env_file] section.
-
-Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".
-
-## Settings
-
-[//]: # (* the settings are here: ./src/config/config.ts)
-
 ## Tests
 
 1. Prepare environment:
@@ -93,8 +73,6 @@ $ docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
 ``` bash
 $ npm run test
 ```
-
-## Logs
 
 ## Database
 
