@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
 import { compareSync } from 'bcryptjs';
+import { ConfigService } from '@/config/config.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -14,8 +14,9 @@ import { LoginUserResponse } from './types/user-login-response.type';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
-              private readonly configService: ConfigService
+  constructor(
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
+    private readonly config: ConfigService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<LoginUserResponse> {
@@ -33,8 +34,8 @@ export class UserService {
       where: [
         { id: userData.id },
         { login: userData.login },
-        { email: userData.email }
-      ]
+        { email: userData.email },
+      ],
     });
     return user[0];
   }
@@ -50,9 +51,9 @@ export class UserService {
         login: true,
         email: true,
         password: true,
-        avatar: true
+        avatar: true,
       },
-      where: [{ login: dto.login }]
+      where: [{ login: dto.login }],
     }))[0];
     if (!user) throw new HttpException(INVALID_CREDENTIALS, HttpStatus.UNPROCESSABLE_ENTITY);
     const passwordIsValid = compareSync(dto.password, user.password);
@@ -86,11 +87,11 @@ export class UserService {
   }
 
   async generateJwt(user: UserEntity): Promise<string> {
-    const secret = this.configService.get('JWT_SECRET');
+    const secret = this.config.env.JWT_SECRET;
     return sign({
       id: user.id,
       login: user.login,
-      email: user.email
+      email: user.email,
     }, secret);
   }
 }

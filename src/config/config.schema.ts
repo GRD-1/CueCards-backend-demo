@@ -42,7 +42,10 @@ export class EnvSchema {
 
   @IsString()
     POSTGRES_PASSWORD: string;
-  
+
+  @IsString()
+    POSTGRES_URL: string;
+
   @IsString()
     LOG_LEVEL: LogLevel = LogLevel.Debug;
 }
