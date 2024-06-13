@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Param, ParseIntPipe,
   Patch,
-  Post, UseGuards
+  Post, UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -18,13 +18,13 @@ import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
 
 @ApiTags('library/card')
-@ApiBearerAuth()
-@UseGuards(AuthGuard)
+// @ApiBearerAuth()
+// @UseGuards(AuthGuard)
 @Controller('library/card')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
-  @Post('create')
+  @Post()
   @ApiOperation({ summary: 'Create a new card' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })

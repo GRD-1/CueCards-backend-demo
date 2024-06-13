@@ -17,10 +17,10 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env'],
-      isGlobal: true
-    }),
+    // ConfigModule.forRoot({
+    //   envFilePath: ['.env'],
+    //   isGlobal: true,
+    // }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),
     TranslatorModule,
     CardModule,
@@ -29,10 +29,10 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     TranslatorModule,
     StatisticsModule,
     SettingsModule,
-    UserModule
+    UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {

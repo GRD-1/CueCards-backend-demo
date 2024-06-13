@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
 import { compareSync } from 'bcryptjs';
-import { ConfigService } from '@/config/config.service';
+import config from '@/config/config.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -16,7 +16,6 @@ import { LoginUserResponse } from './types/user-login-response.type';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
-    private readonly config: ConfigService,
   ) {}
 
   async create(dto: CreateUserDto): Promise<LoginUserResponse> {
@@ -87,7 +86,7 @@ export class UserService {
   }
 
   async generateJwt(user: UserEntity): Promise<string> {
-    const secret = this.config.env.JWT_SECRET;
+    const secret = config.JWT_SECRET;
     return sign({
       id: user.id,
       login: user.login,

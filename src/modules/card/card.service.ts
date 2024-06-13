@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConfigService } from '@/config/config.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardEntity } from './entities/card.entity';
@@ -12,7 +11,6 @@ export class CardService {
   constructor(
     @InjectRepository(CardEntity)
     private readonly cardRepository: Repository<CardEntity>,
-    private readonly config: ConfigService,
   ) {}
 
   async create(dto: CreateCardDto, user: UserEntity): Promise<CardEntity> {

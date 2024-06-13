@@ -1,16 +1,22 @@
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import * as dotenv from 'dotenv';
-import { Injectable } from '@nestjs/common';
 import { EnvSchema } from './config.schema';
 
-@Injectable()
-export class ConfigService {
+class ConfigService {
+  private static _instance: ConfigService;
   readonly env: EnvSchema;
 
-  constructor() {
+  private constructor() {
     dotenv.config();
     this.env = this.validateEnvVariables(process.env);
+  }
+
+  static getInstance(): ConfigService {
+    if (!ConfigService._instance) {
+      ConfigService._instance = new ConfigService();
+    }
+    return ConfigService._instance;
   }
 
   private validateEnvVariables(config: Record<string, unknown>): EnvSchema {
@@ -22,5 +28,4 @@ export class ConfigService {
   }
 }
 
-const config = new ConfigService();
-export default config.env;
+export default ConfigService.getInstance().env;
