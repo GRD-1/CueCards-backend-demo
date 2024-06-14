@@ -1,8 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RepositoriesModule } from '@/repos/repositories.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { PrismaModule } from '@/modules/prisma/prisma.module';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
 import { TranslatorModule } from './modules/translator/translator.module';
@@ -18,7 +16,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 @Module({
   imports: [
     TypeOrmModule.forRoot(PostgresConnectionOptions),
-    RepositoriesModule,
+    PrismaModule,
     TranslatorModule,
     CardModule,
     DictionaryModule,
@@ -28,8 +26,6 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     SettingsModule,
     UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
