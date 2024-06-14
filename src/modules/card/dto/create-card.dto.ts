@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCardDto {
@@ -15,11 +15,13 @@ export class CreateCardDto {
     fsDescription: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     fsMeaningVariants?: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     fsWrongMeanings?: string[];
@@ -29,15 +31,18 @@ export class CreateCardDto {
     fsTranscription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     fsSynonyms?: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
+  @IsOptional()
   @IsString()
     fsAudio?: string;
 
   @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
+  @IsOptional()
   @IsString()
     fsHint?: string;
 
@@ -54,11 +59,13 @@ export class CreateCardDto {
     bsDescription: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     bsMeaningVariants?: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     bsWrongMeanings?: string[];
@@ -68,19 +75,23 @@ export class CreateCardDto {
     bsTranscription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     bsSynonyms?: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
+  @IsOptional()
   @IsString()
     bsAudio?: string;
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
+  @IsOptional()
   @IsString()
     bsHint?: string;
 
   @ApiProperty({ description: 'tags', nullable: true })
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
     tags?: string[];

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Card {
+  id                                      Int       @id(map: "PK_5f3269634705fdff4a9935860fc") @default(autoincrement())
+  fsValue                                 String    @db.VarChar
+  fsDescription                           String    @default("") @db.VarChar
+  fsMeaningVariants                       String
+  fsWrongMeanings                         String
+  fsTranscription                         String    @db.VarChar
+  fsSynonyms                              String
+  fsAudio                                 String    @db.VarChar
+  fsHint                                  String    @db.VarChar
+  bsValue                                 String    @db.VarChar
+  bsDescription                           String    @default("") @db.VarChar
+  bsMeaningVariants                       String
+  bsWrongMeanings                         String
+  bsTranscription                         String    @db.VarChar
+  bsSynonyms                              String
+  bsAudio                                 String    @db.VarChar
+  bsHint                                  String    @db.VarChar
+  tags                                    String
+  createdAt                               DateTime  @default(now()) @db.Timestamp(6)
+  updateAt                                DateTime  @default(now()) @db.Timestamp(6)
+  deleteMark                              Boolean   @default(false)
+  bsLanguageId                            Int?
+  authorId                                Int?
+  users                                   User?     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_01577f9223f8ab2d0576e205e1c")
+  languages_cards_idTolanguages           Language  @relation("cards_idTolanguages", fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5f3269634705fdff4a9935860fc")
+  languages_cards_bsLanguageIdTolanguages Language? @relation("cards_bsLanguageIdTolanguages", fields: [bsLanguageId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_eabc5b0038d3eb23d4c076695e0")
+
+  @@map("cards")
+}
+
+model Language {
+  id                                  Int      @id(map: "PK_b517f827ca496b29f4d549c631d") @default(autoincrement())
+  name                                String   @db.VarChar
+  acronym                             String   @db.VarChar
+  createdAt                           DateTime @default(now()) @db.Timestamp(6)
+  updateAt                            DateTime @default(now()) @db.Timestamp(6)
+  deleteMark                          Boolean  @default(false)
+  cards_cards_idTolanguages           Card?    @relation("cards_idTolanguages")
+  cards_cards_bsLanguageIdTolanguages Card[]   @relation("cards_bsLanguageIdTolanguages")
+
+  @@map("languages")
+}
+
+model User {
+  id         Int      @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
+  login      String   @unique(map: "UQ_2d443082eccd5198f95f2a36e2c") @db.VarChar
+  email      String   @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.VarChar
+  avatar     String?  @db.VarChar
+  password   String   @db.VarChar
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updateAt   DateTime @default(now()) @db.Timestamp(6)
+  deleteMark Boolean  @default(false)
+  cards      Card[]
+
+  @@map("users")
+}

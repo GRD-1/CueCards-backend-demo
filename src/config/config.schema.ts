@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { IsNumber, IsString } from 'class-validator';
-import { Environment, LogLevel } from '@/config/config.interfaces';
+import { IsArray, IsNumber, IsString } from 'class-validator';
+import { Environment, LogLevel, PrismaLogLevel } from '@/config/config.interfaces';
+import { Transform } from 'class-transformer';
 
 @Injectable()
 export class EnvSchema {
@@ -48,4 +49,8 @@ export class EnvSchema {
 
   @IsString()
     LOG_LEVEL: LogLevel = LogLevel.Debug;
+
+  @IsArray()
+  @Transform(({ value }) => value.split(',').map((item: string) => item.trim()))
+    PRISMA_LOGLEVEL: PrismaLogLevel[] = [PrismaLogLevel.Error];
 }

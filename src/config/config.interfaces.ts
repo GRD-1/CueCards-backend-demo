@@ -12,3 +12,10 @@ export enum LogLevel {
   Verbose = 'verbose',
   Debug = 'debug'
 }
+
+export enum PrismaLogLevel {
+  Query = 'query',
+  Info = 'info',
+  Warn = 'warn',
+  Error = 'error',
+}

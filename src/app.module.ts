@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RepositoriesModule } from '@/repos/repositories.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
@@ -17,11 +17,8 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
-    // ConfigModule.forRoot({
-    //   envFilePath: ['.env'],
-    //   isGlobal: true,
-    // }),
     TypeOrmModule.forRoot(PostgresConnectionOptions),
+    RepositoriesModule,
     TranslatorModule,
     CardModule,
     DictionaryModule,
