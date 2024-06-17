@@ -13,14 +13,10 @@
 
 1. [Stack](#Stack)
 2. [Launch](#launch)
-3. [Usage](#usage)
-4. [Environment](#environment)
-5. [Settings](#settings)
-6. [Tests](#tests)
-7. [Database](#tests)
-8. [Logs](#tests)
-9. [CI/CD](#cicd)
-10. [Documentation](#documentation)
+3. [Tests](#tests)
+4. [Database](#tests)
+5. [CI/CD](#cicd)
+6. [Documentation](#documentation)
 
 ## Stack
 
@@ -49,110 +45,41 @@
 
 ## Launch
 
-The project is prepared to launch via the docker.You need to install <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
-
-and then run the corresponding command in the terminal.
-
-
-* for development mode use:
-
+1. Install <a href="https://nodejs.org/en" target="_blank">Node</a> Node >=20.14.0
+2. Install <a href="https://www.docker.com/products/docker-desktop/" target="_blank">Docker</a>
+3. Install dependencies:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/dev.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
-$ docker logs cuecards-node-dev -f --tail 30
-
+$ npm i
 ```
-
-* for debug mode use:
-
+4. Copy environment variables:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/debug.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
-$ docker logs cuecards-node-debug -f --tail 30
-
+$ cp .env.sample .env
 ```
-
-* for product mode use:
-
+5. Run docker:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/prod.env --env-file env/node.env --env-file env/postgres-prod.env up -d
-
+$ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ```
-
-* for test mode use:
-
+6. Run the application using package.json scripts, e.g:
 ``` bash
-
-$ docker stop $(docker ps -aq)
-
-$ docker-compose -f docker/docker-compose.yml --env-file env/test.env --env-file env/node.env --env-file env/postgres-dev.env up -d
-
+$ npm run start:dev
 ```
-
-## Usage
-
-[//]: # (* After the service is launched it is available at http://localhost:3000/api/)
-
-## Environment
-
-Environment variables should be here: ./env. (get them from your system administrator) 
-
-Key environment variables are connected to the project using docker-compose files at the [env_file] section.
-
-Inside the application, environment variables are mounted using the built-in Nest.js module "ConfigModule".
-
-## Settings
-
-[//]: # (* the settings are here: ./src/config/config.ts)
-
 ## Tests
 
-[//]: # (* To perform the tests you need to be loaded in [Test mode]&#40;#Launch&#41;. It's important because the tests use a database &#40;!&#41;)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# unit tests)
-
-[//]: # ($ docker exec cuecards-node-test npm run test)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# e2e tests)
-
-[//]: # ($ docker exec cuecards-node-test npm run test:e2e)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (```bash)
-
-[//]: # (# test coverage)
-
-[//]: # ($ docker exec cuecards-node-test npm run test:cov)
-
-[//]: # (```)
-
-## Logs
+1. Prepare environment:
+``` bash
+$ docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
+```
+2. Run the specific test set using package.json scripts, or all the tests at once, e.g:
+``` bash
+$ npm run test
+```
 
 ## Database
 
-* As a dbms uses postgres v14.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
+* As a dbms uses postgres v16.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
 This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
-* As an orm model uses TypeOrm v0.3.17
-* migrations are here: [src/typeorm/migration](src/typeorm/migration)
+* As an orm model uses Prisma v5.15.0
+* migrations are here: [prisma/migrations](prisma/migrations)
 * To work with migrations in local mode use the scripts like "db:*" from [package.json](package.json)
 * For docker mode, use short commands:
 
@@ -173,13 +100,19 @@ Husky + GitHub actions + semantic-release
 the workflow files are here: .github/workflows
 
 ## Documentation
-### API
-When the server is running, the API map is available at: http://localhost:3000/api
+### Swagger API map
+* current API map is here: [./public/api-json.json](./public/api-json.json)
+* When the server is running, the API map is available at: http://localhost:3000/api
+* To get the API json go to http://localhost:3000/api-json
+
 ### Compodoc
 To see the project structure run the script:
 ``` bash
 $ npm run compodoc
 ```
 It is possible to face an access error while the script starts ("Error: EACCES: permission denied ...).
-In this case we need to configure access permissions to the database folder: [ sudo chmod -R u=rwX,go=rX db ]
+In this case we need to configure access permissions to the database folder: 
+``` bash
+$ sudo chmod -R u=rwX,go=rX db
+```
 The documentation will be available at: http://localhost:8080/

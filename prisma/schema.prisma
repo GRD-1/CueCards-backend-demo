@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Card {
+  id                Int       @id @default(autoincrement())
+  fsLanguageId      Int?
+  bsLanguageId      Int?
+  fsValue           String    @db.VarChar
+  fsDescription     String    @default("") @db.VarChar
+  fsMeaningVariants String
+  fsWrongMeanings   String
+  fsTranscription   String    @db.VarChar
+  fsSynonyms        String
+  fsAudio           String    @db.VarChar
+  fsHint            String    @db.VarChar
+  bsValue           String    @db.VarChar
+  bsDescription     String    @default("") @db.VarChar
+  bsMeaningVariants String
+  bsWrongMeanings   String
+  bsTranscription   String    @db.VarChar
+  bsSynonyms        String
+  bsAudio           String    @db.VarChar
+  bsHint            String    @db.VarChar
+  tags              String
+  createdAt         DateTime  @default(now()) @db.Timestamp(6)
+  updateAt          DateTime  @default(now()) @db.Timestamp(6)
+  deleteMark        Boolean   @default(false)
+  authorId          Int?
+  users             User?     @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fsLanguage        Language? @relation("FsLanguageRelation", fields: [fsLanguageId], references: [id])
+  bsLanguage        Language? @relation("BsLanguageRelation", fields: [bsLanguageId], references: [id])
+
+  @@map("cards")
+}
+
+model Language {
+  id         Int      @id(map: "PK_b517f827ca496b29f4d549c631d") @default(autoincrement())
+  name       String   @db.VarChar
+  acronym    String   @db.VarChar
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updateAt   DateTime @default(now()) @db.Timestamp(6)
+  deleteMark Boolean  @default(false)
+  fsCards    Card[]   @relation("FsLanguageRelation")
+  bsCards    Card[]   @relation("BsLanguageRelation")
+
+  @@map("languages")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique(map: "login") @db.VarChar(100)
+  nickname   String?  @db.VarChar
+  avatar     String?  @db.VarChar
+  password   String   @db.VarChar
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updateAt   DateTime @default(now()) @db.Timestamp(6)
+  deleteMark Boolean  @default(false)
+  cards      Card[]   @relation("AuthorRelation")
+
+  @@map("users")
+}

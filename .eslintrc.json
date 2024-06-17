@@ -49,7 +49,7 @@
     "prefer-destructuring": "off",
     "no-await-in-loop": "off",
     "max-classes-per-file": "off",
-//    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
+    "no-use-before-define": "off",
 
     // typescript specific
     "no-underscore-dangle": "off",
@@ -71,7 +71,7 @@
     "import/no-cycle": "off", // disabled due to typeorm relations
 
     // Nest specific
-    "comma-dangle": ["error", "never"],
+    "comma-dangle": ["error", "always-multiline"],
     "arrow-body-style": "off",
     "new-cap": ["error", { "newIsCap": false, "capIsNew": false }]
   }

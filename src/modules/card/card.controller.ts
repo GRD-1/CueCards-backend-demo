@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Param, ParseIntPipe,
   Patch,
-  Post, UseGuards
+  Post, UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -18,30 +18,30 @@ import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
 
 @ApiTags('library/card')
-@ApiBearerAuth()
-@UseGuards(AuthGuard)
+// @ApiBearerAuth()
+// @UseGuards(AuthGuard)
 @Controller('library/card')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
-  @Post('create')
-  @ApiOperation({ summary: 'Create a new card' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardEntity })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async create(@Body() dto: CreateCardDto, @User() user: UserEntity): Promise<CardEntity> {
-    return this.cardService.create(dto, user);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Get all available cards' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findAll(): Promise<{ value: string, translate: string }[]> {
-    const cardArr = await this.cardService.findAll();
-    return cardArr.map((card: CardEntity) => ({ value: card.fsValue, translate: card.bsValue }));
-  }
+  // @Post()
+  // @ApiOperation({ summary: 'Create a new card' })
+  // @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: CardEntity })
+  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  // async create(@Body() dto: CreateCardDto, @User() user: UserEntity): Promise<CardEntity> {
+  //   return this.cardService.create(dto, user);
+  // }
+  //
+  // @Get()
+  // @ApiOperation({ summary: 'Get all available cards' })
+  // @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
+  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  // async findAll(): Promise<{ value: string, translate: string }[]> {
+  //   const cardArr = await this.cardService.findAll();
+  //   return cardArr.map((card: CardEntity) => ({ value: card.fsValue, translate: card.bsValue }));
+  // }
 
   @Get(':cardId')
   @ApiOperation({ summary: 'Get a card with a specific id' })
@@ -49,8 +49,8 @@ export class CardController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: CardEntity })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async findOne(@Param('cardId', new ParseIntPipe()) cardId: number): Promise<CardEntity | null> {
-    return this.cardService.findOne(cardId);
+  async findOneById(@Param('cardId', new ParseIntPipe()) cardId: number): Promise<CardEntity | null> {
+    return this.cardService.findOneById(cardId);
   }
 
   @Patch(':cardId')

@@ -18,8 +18,5 @@ npm-debug.log*
 
 #
 package-lock.json
-env
+.env
 documentation
-
-# temp dev files
-TODO.txt
