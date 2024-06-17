@@ -78,8 +78,8 @@ $ npm run test
 
 * As a dbms uses postgres v16.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
 This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
-* As an orm model uses TypeOrm v0.3.17
-* migrations are here: [src/typeorm/migration](src/typeorm/migration)
+* As an orm model uses Prisma v5.15.0
+* migrations are here: [prisma/migrations](prisma/migrations)
 * To work with migrations in local mode use the scripts like "db:*" from [package.json](package.json)
 * For docker mode, use short commands:
 

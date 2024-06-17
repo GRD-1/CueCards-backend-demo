@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { UserResponse } from '../modules/user/types/user-response.type';
+import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
 
 type RequestWithoutUser = Omit<Request, 'user'>
 
 export interface ExpressRequestInterface extends RequestWithoutUser {
-  user: UserResponse | null
+  user: UserResponseDto | null
 }

@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { PrismaModule } from '@/modules/prisma/prisma.module';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
@@ -10,12 +9,10 @@ import { UserModule } from './modules/user/user.module';
 import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
-import { PostgresConnectionOptions } from './typeorm/data-source';
 import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(PostgresConnectionOptions),
     PrismaModule,
     TranslatorModule,
     CardModule,

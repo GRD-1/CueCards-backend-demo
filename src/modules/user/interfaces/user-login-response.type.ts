@@ -6,7 +6,7 @@ export class LoginUserResponse implements UserType {
     id: number;
 
   @ApiProperty({ description: 'login', nullable: false })
-    login: string;
+    nickname: string;
 
   @ApiProperty({ description: 'email', nullable: false })
     email: string;

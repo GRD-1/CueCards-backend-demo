@@ -30,10 +30,6 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-esm -d src/typeorm/data-source.ts",
-    "db:generate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:generate src/typeorm/migration/migration",
-    "db:migrate": "typeorm-ts-node-esm -d src/typeorm/data-source.ts migration:run --",
-    "db:drop": "typeorm-ts-node-esm -d src/typeorm/data-source.ts schema:drop",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "prepare": "husky install"
   },
@@ -44,7 +40,6 @@
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^7.1.16",
-    "@nestjs/typeorm": "^10.0.1",
     "@prisma/client": "^5.15.0",
     "@prisma/extension-read-replicas": "^0.3.0",
     "@types/bcrypt": "^5.0.2",
@@ -62,7 +57,6 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^5.0.0",
-    "typeorm": "^0.3.17",
     "uuid": "^9.0.1"
   },
   "devDependencies": {

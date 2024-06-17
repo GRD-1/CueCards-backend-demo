@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CardRepo } from '@/modules/prisma/repositories/card.repo';
-import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardDto } from './dto/update-card.dto';
-import { CardEntity } from './entities/card.entity';
-import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class CardService {

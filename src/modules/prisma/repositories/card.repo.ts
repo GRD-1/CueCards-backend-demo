@@ -7,9 +7,7 @@ export class CardRepo {
   constructor(private readonly db: PrismaService) {}
 
   async findMany(): Promise<Card[]> {
-    const cards: Card[] = await this.db.card.findMany();
-
-    return cards;
+    return this.db.card.findMany();
   }
 
   async findOneById(id: number): Promise<Card | null> {
