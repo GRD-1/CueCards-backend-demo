@@ -25,7 +25,7 @@ const config: Config = {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
   collectCoverageFrom: ['./src'],
-  reporters: ['default', 'jest-junit'],
+  reporters: ['default'],
 };
 
 export default config;
