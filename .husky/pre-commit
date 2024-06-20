@@ -1,7 +1,3 @@
-echo "CommitLint..."
-(npm run format 1> /dev/null) || (echo "Formatting failed!"; exit 1)
-echo "Formatting successful!"
-
 echo "Formatting..."
 (npm run format 1> /dev/null) || (echo "Formatting failed!"; exit 1)
 echo "Formatting successful!"
@@ -14,6 +10,6 @@ echo "Building..."
 (npm run build 1> /dev/null) || (echo "Build failed!"; exit 1)
 echo "Build successful!"
 
-echo "Unit testing..."
-(npm run test:unit 1> /dev/null) || (echo "Unit testing failed"; exit 1)
-echo "Unit testing successful!"
+echo "e2e testing..."
+(npm run test:e2e 1> /dev/null) || (echo "e2e testing failed"; exit 1)
+echo "e2e testing successful!"

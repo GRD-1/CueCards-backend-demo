@@ -25,13 +25,17 @@
     "migration:create": "prisma migrate dev --create-only --name ",
     "migration:up": "prisma migrate deploy",
     "migration:reset": "prisma migrate reset",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test": "NODE_OPTIONS='--es-module-specifier-resolution=node --experimental-vm-modules --max-old-space-size=11000' jest --detectOpenHandles --runInBand --colors --coverage --config jest.config.ts",
+    "test:watch": "npm run test -- --watch",
+    "test:cov": "npm run test -- --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:unit": "jest --config test/unit/jest-e2e.json",
-    "test:integration": "jest --config test/integration/jest-e2e.json",
-    "test:e2e": "jest --config test/e2e/jest-e2e.json",
+    "test:e2e": "npm run test -- --testPathPattern=test/e2e --logHeapUsage",
+    "test:e2e:integrations": "npm run test -- --testPathPattern=test/e2e/integrations --logHeapUsage",
+    "test:e2e:dev": "DOTENV_CONFIG_PATH=.env.test npm run test:e2e",
+    "test:integration": "npm run test -- --testPathPattern=test/integration",
+    "test:integration:dev": "DOTENV_CONFIG_PATH=.env.test npm run test:integration",
+    "test:unit": "npm run test -- --testPathPattern=test/unit",
+    "test:unit:dev": "DOTENV_CONFIG_PATH=.env.test npm run test:unit",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "prepare": "husky install"
   },
@@ -93,22 +97,5 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }
