@@ -1,1 +1,3 @@
-npx --no -- commitlint --edit $1
+echo "CommitLint..."
+(npx --no-install commitlint --edit "$1") || (echo "CommitLint failed!"; exit 1)
+echo "CommitLint successful!"
