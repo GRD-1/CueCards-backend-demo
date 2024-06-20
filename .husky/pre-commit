@@ -1,4 +1,15 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "Formatting..."
+(npm run format 1> /dev/null) || (echo "Formatting failed!"; exit 1)
+echo "Formatting successful!"
 
-npx lint-staged --config "./.lintstagedrc.json"
+echo "Linting..."
+(npm run lint:only-errors) || (echo "Linting failed!"; exit 1)
+echo "Linting successful!"
+
+echo "Building..."
+(npm run build 1> /dev/null) || (echo "Build failed!"; exit 1)
+echo "Build successful!"
+
+echo "Unit testing..."
+(npm run test:unit 1> /dev/null) || (echo "Unit testing failed"; exit 1)
+echo "Unit testing successful!"
