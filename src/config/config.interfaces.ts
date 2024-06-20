@@ -17,5 +17,5 @@ export enum PrismaLogLevel {
   Query = 'query',
   Info = 'info',
   Warn = 'warn',
-  Error = 'error',
+  Error = 'error'
 }

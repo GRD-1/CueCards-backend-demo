@@ -10,13 +10,7 @@ export class CardReference {
 }
 
 export class DictionaryEntity {
-  constructor(
-    title: string,
-    tags: string[],
-    cardReferences: CardReference[],
-    id?: number,
-    userId?: number
-  ) {
+  constructor(title: string, tags: string[], cardReferences: CardReference[], id?: number, userId?: number) {
     this.id = id;
     this.userId = userId;
     this.title = title;

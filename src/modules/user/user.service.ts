@@ -14,9 +14,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly userRepo: UserRepo,
-  ) {}
+  constructor(private readonly userRepo: UserRepo) {}
 
   async create(userData: UserInterface): Promise<number> {
     const { email } = userData;
@@ -88,10 +86,13 @@ export class UserService {
 
   async generateJwt(user: UserEntity): Promise<string> {
     const secret = config.JWT_SECRET;
-    return sign({
-      id: user.id,
-      login: user.nickname,
-      email: user.email,
-    }, secret);
+    return sign(
+      {
+        id: user.id,
+        login: user.nickname,
+        email: user.email,
+      },
+      secret,
+    );
   }
 }
