@@ -97,8 +97,6 @@ $  docker exec cuecards-node-dev npm run db:drop
 
 Husky + GitHub actions + semantic-release
 
-the workflow files are here: .github/workflows
-
 ## Documentation
 ### Swagger API map
 * current API map is here: [./public/api-json.json](./public/api-json.json)
@@ -116,3 +114,6 @@ In this case we need to configure access permissions to the database folder:
 $ sudo chmod -R u=rwX,go=rX db
 ```
 The documentation will be available at: http://localhost:8080/
+
+### releases
+For releases, we use "Major.Minor.Patch" notation. The history of changes is here: ./CHANGELOG.md
