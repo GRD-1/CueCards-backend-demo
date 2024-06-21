@@ -59,7 +59,11 @@ $ cp .env.sample .env
 ``` bash
 $ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ```
-6. Run the application using package.json scripts, e.g:
+6. Update database:
+``` bash
+$ npm run migration:up
+```
+7. Run the application using package.json scripts, e.g:
 ``` bash
 $ npm run start:dev
 ```
@@ -77,25 +81,19 @@ $ npm run test
 ## Database
 
 * As a dbms uses postgres v16.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
-This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
 * As an orm model uses Prisma v5.15.0
-* migrations are here: [prisma/migrations](prisma/migrations)
-* To work with migrations in local mode use the scripts like "db:*" from [package.json](package.json)
-* For docker mode, use short commands:
-
-``` bash
-$  docker exec cuecards-node-dev npm run db:generate
-```
-``` bash
-$  docker exec cuecards-node-dev npm run db:migrate
-```
-``` bash
-$  docker exec cuecards-node-dev npm run db:drop
-```
+* migrations are here: [~/prisma/migrations](prisma/migrations)
+* prisma repositories are here: [~/src/modules/prisma/repositories](src/modules/prisma/repositories)
+* To work with prisma use the scripts like ""prisma:*" from [package.json](package.json)
+* To work with migrations use the scripts like "migration:*" from [package.json](package.json)
 
 ## CI/CD
 
-Husky + GitHub actions + semantic-release
+The following plugins are used for CI part:
+* Husky
+* @commitlint/cli
+* GitHub actions
+* semantic-release
 
 ## Documentation
 ### Swagger API map
@@ -115,5 +113,5 @@ $ sudo chmod -R u=rwX,go=rX db
 ```
 The documentation will be available at: http://localhost:8080/
 
-### releases
-For releases, we use "Major.Minor.Patch" notation. The history of changes is here: ./CHANGELOG.md
+### Release history
+For releases, I use "Major.Minor.Patch" notation. The history of changes is here: ./CHANGELOG.md
