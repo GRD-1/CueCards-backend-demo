@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Formatting..."
 (npm run format 1> /dev/null) || (echo "Formatting failed!"; exit 1)
