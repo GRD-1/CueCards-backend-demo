@@ -1,5 +1,10 @@
 #!/bin/sh
 
-echo "e2e testing..."
-(npm run test:e2e 1> /dev/null) || (echo "e2e testing failed!"; exit 1)
-echo "e2e testing successful!"
+echo "Testing..."
+{
+  npm run test 1> /dev/null
+} || {
+  echo "Testing failed!"
+  exit 1
+}
+echo "Testing successful!"
