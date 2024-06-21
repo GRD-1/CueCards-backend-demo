@@ -22,7 +22,7 @@ jobs:
 
       - name: run tests
         run: |
-          docker exec cuecards-node-test npm run test
+          docker exec cuecards-backend-test npm run test
 
       - name: stop docker containers and quit
         run: |
