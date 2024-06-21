@@ -18,7 +18,7 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
-          docker-compose -f docker/docker-compose.yml --env-file .env.test up -d
+          docker-compose -f docker/docker-compose.test.yml --env-file .env.test up -d
 
       - name: run tests
         run: |
