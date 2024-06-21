@@ -26,16 +26,13 @@
             <div style="width: 40%; height: fit-content;"><a href="https://ubuntu.com/" target="_blank"><img src="https://img.shields.io/badge/Linux_Ubuntu-v22.04-blue?style=for-the-badge&logo=ubuntu" alt="Linux Ubuntu Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://jestjs.io/" target="_blank"><img src="https://img.shields.io/badge/Jest-v29.0.5-blue?style=for-the-badge&logo=jest" alt="Jest Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://www.docker.com/products/docker-desktop/" target="_blank"><img src="https://img.shields.io/badge/docker-v24.0.2-blue?style=for-the-badge&logo=docker" alt="Docker Version" /></a></div>
-            <div style="width: 40%; height: fit-content;"><a href="https://www.npmjs.com/package/supertest" target="_blank"><img src="https://img.shields.io/badge/supertest-v6.1.3-blue?style=for-the-badge" alt="Supertest Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://nodejs.org/en/about" target="_blank"><img src="https://img.shields.io/badge/Node.js-v18.16.0-blue?style=for-the-badge&logo=nodedotjs" alt="Node.js Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://eslint.org/" target="_blank"><img src="https://img.shields.io/badge/eslint-v8.51.0-blue?style=for-the-badge&logo=eslint" alt="Eslint Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-v4.7.4-blue?style=for-the-badge&logo=typescript" alt="TypeScript Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://prettier.io/" target="_blank"><img src="https://img.shields.io/badge/prettier-v2.3.2-blue?style=for-the-badge&logo=prettier" alt="Prettier Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Nest.js-v9.4.2-blue?style=for-the-badge&logo=nestjs" alt="Nest.js Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://www.postgresql.org/" target="_blank"><img src="https://img.shields.io/badge/postgresql-v14.0.0-blue?style=for-the-badge&logo=postgresql" alt="Postgres Version" /></a></div>
-            <div style="width: 40%; height: fit-content;"><a href="https://typeorm.io/" target="_blank"><img src="https://img.shields.io/badge/typeorm-v0.3.17-blue?style=for-the-badge" alt="TypeOrm Version" /></a></div>
-            <div style="width: 40%; height: fit-content;"><a href="https://www.npmjs.com/" target="_blank"><img src="https://img.shields.io/badge/npm-v9.5.1-blue?style=for-the-badge&logo=npm" alt="npm Version" /></a></div>
-            <div style="width: 40%; height: fit-content;"><a href="https://github.com/commitizen/cz-cli" target="_blank"><img src="https://img.shields.io/badge/commitizen-cz_cli-blue?style=for-the-badge" alt="Commitizen" /></a></div>
+            <div style="width: 40%; height: fit-content;"><a href="https://www.prisma.io/docs" target="_blank"><img src="https://img.shields.io/badge/Prisma_ORM-v5.15.0-blue?style=for-the-badge&logo=prisma" alt="Prisma Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/typicode/husky" target="_blank"><img src="https://img.shields.io/badge/husky-v.8.0.3-blue?style=for-the-badge" alt="Husky Version" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions" target="_blank"><img src="https://img.shields.io/badge/CICD-Github_actions-blue?style=for-the-badge&logo=githubactions" alt="Github Actions" /></a></div>
             <div style="width: 40%; height: fit-content;"><a href="https://github.com/semantic-release/semantic-release" target="_blank"><img src="https://img.shields.io/badge/semantic_release-v.22.0.8-blue?style=for-the-badge&logo=semanticrelease" alt="Semantic-release" /></a></div>
@@ -59,7 +56,11 @@ $ cp .env.sample .env
 ``` bash
 $ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ```
-6. Run the application using package.json scripts, e.g:
+6. Update database:
+``` bash
+$ npm run migration:up
+```
+7. Run the application using package.json scripts, e.g:
 ``` bash
 $ npm run start:dev
 ```
@@ -77,27 +78,19 @@ $ npm run test
 ## Database
 
 * As a dbms uses postgres v16.0.0. It is defined in the [docker-compose](docker/docker-compose.yml). 
-This version was chosen deliberately, because of the postgres-cron-backup package, which does not work with later versions of postgresql.
 * As an orm model uses Prisma v5.15.0
-* migrations are here: [prisma/migrations](prisma/migrations)
-* To work with migrations in local mode use the scripts like "db:*" from [package.json](package.json)
-* For docker mode, use short commands:
-
-``` bash
-$  docker exec cuecards-node-dev npm run db:generate
-```
-``` bash
-$  docker exec cuecards-node-dev npm run db:migrate
-```
-``` bash
-$  docker exec cuecards-node-dev npm run db:drop
-```
+* migrations are here: [~/prisma/migrations](prisma/migrations)
+* prisma repositories are here: [~/src/modules/prisma/repositories](src/modules/prisma/repositories)
+* To work with prisma use the scripts like ""prisma:*" from [package.json](package.json)
+* To work with migrations use the scripts like "migration:*" from [package.json](package.json)
 
 ## CI/CD
 
-Husky + GitHub actions + semantic-release
-
-the workflow files are here: .github/workflows
+The following plugins are used for CI part:
+* Husky
+* @commitlint/cli
+* GitHub actions
+* semantic-release
 
 ## Documentation
 ### Swagger API map
@@ -116,3 +109,6 @@ In this case we need to configure access permissions to the database folder:
 $ sudo chmod -R u=rwX,go=rX db
 ```
 The documentation will be available at: http://localhost:8080/
+
+### Release history
+For releases, I use "Major.Minor.Patch" notation. The history of changes is here: ./CHANGELOG.md

@@ -3,7 +3,7 @@ import { Response, NextFunction, Request } from 'express';
 
 @Injectable()
 export class ResponseLoggingMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction):void {
+  use(req: Request, res: Response, next: NextFunction): void {
     const originalSend = res.send;
     res.send = (body): any => {
       const logger = new Logger('HttpResponse');
