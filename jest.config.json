@@ -18,6 +18,7 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": "(.*)(\\.spec\\.ts)$",
+  "testPathIgnorePatterns": ["./test/coverage/*"],
   "coverageDirectory": "./test/coverage",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
