@@ -43,11 +43,24 @@ jobs:
           echo Removed files: ${{ steps.file_changes .outputs.files_removed }}
         if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
 
-      - name: Prettier Checking
-        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
-        run: npm run format ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
+      - name: Format Checking
+        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        run: |
+          echo "Format checking..."
+          if npm run format -- . 'src/**/*.ts' 'test/**/*.ts'; then
+            echo "Format check successful!"
+          else
+            echo "Format check failed."
+            exit 1
+          fi
 
       - name: ESLint Checking
-        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
-        run: npm run lint ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
-
+        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        run: |
+          echo "ESLint checking..."
+          if npm run lint -- . 'src/**/*.ts' 'test/**/*.ts'; then
+            echo "ESLint successful!"
+          else
+            echo "ESLint check failed."
+            exit 1
+          fi

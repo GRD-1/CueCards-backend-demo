@@ -23,7 +23,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const message = exceptionIsHandled ? exception.getResponse() : 'internal server error';
     response.status(status).json({
       statusCode: status,
-      message,
+      message
     });
   }
 }

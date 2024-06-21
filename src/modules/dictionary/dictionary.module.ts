@@ -4,6 +4,6 @@ import { DictionaryService } from './dictionary.service';
 
 @Module({
   controllers: [DictionaryController],
-  providers: [DictionaryService],
+  providers: [DictionaryService]
 })
 export class DictionaryModule {}

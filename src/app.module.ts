@@ -21,8 +21,8 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     TranslatorModule,
     StatisticsModule,
     SettingsModule,
-    UserModule,
-  ],
+    UserModule
+  ]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {

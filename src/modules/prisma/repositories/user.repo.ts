@@ -12,15 +12,15 @@ export class UserRepo {
 
   async findOne(email?: string): Promise<User | null> {
     return this.db.user.findFirst({
-      where: { email },
+      where: { email }
     });
   }
 
   async findOneById(id: number): Promise<User | null> {
     return this.db.user.findFirst({
       where: {
-        id,
-      },
+        id
+      }
     });
   }
 }

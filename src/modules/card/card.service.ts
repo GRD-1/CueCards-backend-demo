@@ -6,7 +6,7 @@ import { UpdateCardDto } from './dto/update-card.dto';
 export class CardService {
   constructor(
     // @InjectRepository(CardEntity)
-    private readonly cardRepo: CardRepo,
+    private readonly cardRepo: CardRepo
   ) {}
 
   // async create(dto: CreateCardDto, user: UserEntity): Promise<CardEntity> {

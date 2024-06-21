@@ -10,20 +10,20 @@ export class SettingsEntity {
   }
 
   @ApiProperty({ description: 'user identifier', nullable: true })
-    user_id?: number;
+  user_id?: number;
 
   @ApiProperty({ description: 'interface language', nullable: true })
-    app_language: string;
+  app_language: string;
 
   @ApiProperty({ description: 'training language', nullable: true })
-    training_language: string;
+  training_language: string;
 
   @ApiProperty({ description: 'turn on pop-up notifications', nullable: true })
-    notifications: boolean;
+  notifications: boolean;
 
   @ApiProperty({ description: 'voicing the translation', nullable: true })
-    voicing: boolean;
+  voicing: boolean;
 
   @ApiProperty({ description: 'switch to dark mode', nullable: true })
-    dark_mode: boolean;
+  dark_mode: boolean;
 }

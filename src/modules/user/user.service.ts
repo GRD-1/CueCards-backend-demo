@@ -90,9 +90,9 @@ export class UserService {
       {
         id: user.id,
         login: user.nickname,
-        email: user.email,
+        email: user.email
       },
-      secret,
+      secret
     );
   }
 }

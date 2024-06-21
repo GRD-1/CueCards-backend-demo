@@ -2,20 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LanguageEntity {
   @ApiProperty({ description: 'card identifier', nullable: true })
-    id: number;
+  id: number;
 
   @ApiProperty({ description: 'language', nullable: false })
-    name: string;
+  name: string;
 
   @ApiProperty({ description: 'language acronym', nullable: false })
-    acronym: string;
+  acronym: string;
 
   @ApiProperty({ description: 'creation date', nullable: false })
-    createdAt: Date;
+  createdAt: Date;
 
   @ApiProperty({ description: 'update date', nullable: false })
-    updateAt: Date;
+  updateAt: Date;
 
   @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
-    deleteMark: boolean;
+  deleteMark: boolean;
 }
