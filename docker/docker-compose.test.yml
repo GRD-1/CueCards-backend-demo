@@ -16,7 +16,6 @@ services:
       dockerfile: 'docker/Dockerfile-${NODE_ENV}'
     ports:
       - '${NODE_PORT_EXTERNAL}:${NODE_PORT_INTERNAL}'
-      - '${NODE_DEBUG_PORT_EXTERNAL}:${NODE_DEBUG_PORT_INTERNAL}'
     volumes:
       - ../src:/projectFiles/src
       - ../test:/projectFiles/test
