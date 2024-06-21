@@ -3,14 +3,14 @@ import { LoginUserResponse } from './user-login-response.type';
 
 export class UserResponseDto {
   @ApiProperty({ description: 'user id', nullable: false })
-  id: number;
+    id: number;
 
   @ApiProperty({ description: 'login', nullable: true })
-  nickname: string | null;
+    nickname: string | null;
 
   @ApiProperty({ description: 'email', nullable: false })
-  email: string;
+    email: string;
 
   @ApiProperty({ description: 'avatar', nullable: true })
-  avatar: string | null;
+    avatar: string | null;
 }

@@ -13,8 +13,8 @@ export class CardRepo {
   async findOneById(id: number): Promise<Card | null> {
     return this.db.card.findFirst({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }

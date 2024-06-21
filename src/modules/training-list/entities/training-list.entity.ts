@@ -7,5 +7,5 @@ export class TrainingListEntity {
   }
 
   @ApiProperty({ description: 'list of available dictionary', nullable: false })
-  lists: DictionaryEntity[];
+    lists: DictionaryEntity[];
 }

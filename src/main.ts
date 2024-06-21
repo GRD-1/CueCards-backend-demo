@@ -7,7 +7,7 @@ import { GlobalExceptionFilter } from './filters/global-exception.filter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, {
-    logger: [config.LOG_LEVEL]
+    logger: [config.LOG_LEVEL],
   });
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe());

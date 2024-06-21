@@ -3,7 +3,7 @@ import { PrismaService } from './prisma.service';
 
 @Module({
   providers: [PrismaService],
-  exports: [PrismaService]
+  exports: [PrismaService],
 })
 export class PrismaModule {
   constructor(private readonly prismaService: PrismaService) {}

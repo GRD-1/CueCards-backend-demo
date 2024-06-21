@@ -3,17 +3,17 @@ import { UserType } from './user.type';
 
 export class LoginUserResponse implements UserType {
   @ApiProperty({ description: 'user id', nullable: false })
-  id: number;
+    id: number;
 
   @ApiProperty({ description: 'login', nullable: false })
-  nickname: string;
+    nickname: string;
 
   @ApiProperty({ description: 'email', nullable: false })
-  email: string;
+    email: string;
 
   @ApiProperty({ description: 'avatar', nullable: true })
-  avatar: string;
+    avatar: string;
 
   @ApiProperty({ type: 'text', description: 'bearer token', nullable: true })
-  token: string;
+    token: string;
 }

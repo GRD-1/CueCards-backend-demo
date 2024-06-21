@@ -14,8 +14,8 @@ export class PrismaService extends PrismaClient {
   async onInit(): Promise<void> {
     this.replicas = this.$extends(
       readReplicas({
-        url: config.POSTGRES_URL
-      })
+        url: config.POSTGRES_URL,
+      }),
     );
 
     await this.$connect();

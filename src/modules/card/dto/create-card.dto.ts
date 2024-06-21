@@ -4,95 +4,95 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateCardDto {
   @ApiProperty({ description: 'front side language', nullable: false })
   @IsNumber()
-  fsLanguage: number;
+    fsLanguage: number;
 
   @ApiProperty({ description: 'front side value', nullable: false })
   @IsString()
-  fsValue: string;
+    fsValue: string;
 
   @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', default: '' })
   @IsString()
-  fsDescription: string;
+    fsDescription: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  fsMeaningVariants?: string[];
+    fsMeaningVariants?: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  fsWrongMeanings?: string[];
+    fsWrongMeanings?: string[];
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
   @IsString()
-  fsTranscription: string;
+    fsTranscription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  fsSynonyms?: string[];
+    fsSynonyms?: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
   @IsOptional()
   @IsString()
-  fsAudio?: string;
+    fsAudio?: string;
 
   @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
   @IsOptional()
   @IsString()
-  fsHint?: string;
+    fsHint?: string;
 
   @ApiProperty({ description: 'back side language', nullable: false })
   @IsNumber()
-  bsLanguage: number;
+    bsLanguage: number;
 
   @ApiProperty({ description: 'back side value', nullable: false })
   @IsString()
-  bsValue: string;
+    bsValue: string;
 
   @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
   @IsString()
-  bsDescription: string;
+    bsDescription: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  bsMeaningVariants?: string[];
+    bsMeaningVariants?: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  bsWrongMeanings?: string[];
+    bsWrongMeanings?: string[];
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
   @IsString()
-  bsTranscription: string;
+    bsTranscription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  bsSynonyms?: string[];
+    bsSynonyms?: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
   @IsOptional()
   @IsString()
-  bsAudio?: string;
+    bsAudio?: string;
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
   @IsOptional()
   @IsString()
-  bsHint?: string;
+    bsHint?: string;
 
   @ApiProperty({ description: 'tags', nullable: true })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  tags?: string[];
+    tags?: string[];
 }

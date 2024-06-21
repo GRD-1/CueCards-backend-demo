@@ -7,8 +7,8 @@ export class TranslatorEntity {
   }
 
   @ApiProperty({ description: 'value language', nullable: false })
-  lang: string;
+    lang: string;
 
   @ApiProperty({ description: 'the phrase or the word', nullable: false })
-  value: string;
+    value: string;
 }

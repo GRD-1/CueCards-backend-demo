@@ -3,74 +3,74 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 export class CardEntity {
   @ApiProperty({ description: 'card identifier', nullable: true })
-  id: number;
+    id: number;
 
   @ApiProperty({ description: 'front side language', nullable: false })
-  fsLanguage: number;
+    fsLanguage: number;
 
   @ApiProperty({ description: 'front side value', nullable: false })
-  fsValue: string;
+    fsValue: string;
 
   @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', default: '' })
-  fsDescription: string;
+    fsDescription: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
-  fsMeaningVariants: string[];
+    fsMeaningVariants: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
-  fsWrongMeanings: string[];
+    fsWrongMeanings: string[];
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
-  fsTranscription: string;
+    fsTranscription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
-  fsSynonyms: string[];
+    fsSynonyms: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
-  fsAudio: string;
+    fsAudio: string;
 
   @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
-  fsHint: string;
+    fsHint: string;
 
   @ApiProperty({ description: 'back side language', nullable: false })
-  bsLanguage: number;
+    bsLanguage: number;
 
   @ApiProperty({ description: 'back side value', nullable: false })
-  bsValue: string;
+    bsValue: string;
 
   @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
-  bsDescription: string;
+    bsDescription: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
-  bsMeaningVariants: string[];
+    bsMeaningVariants: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
-  bsWrongMeanings: string[];
+    bsWrongMeanings: string[];
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
-  bsTranscription: string;
+    bsTranscription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
-  bsSynonyms: string[];
+    bsSynonyms: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
-  bsAudio: string;
+    bsAudio: string;
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
-  bsHint: string;
+    bsHint: string;
 
   @ApiProperty({ description: 'tag list', nullable: true })
-  tags: string[];
+    tags: string[];
 
   @ApiProperty({ description: 'author identifier', nullable: false })
-  author: UserEntity;
+    author: UserEntity;
 
   @ApiProperty({ description: 'creation date', nullable: false })
-  createdAt: Date;
+    createdAt: Date;
 
   @ApiProperty({ description: 'update date', nullable: false })
-  updateAt: Date;
+    updateAt: Date;
 
   @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
-  deleteMark: boolean;
+    deleteMark: boolean;
 }

@@ -19,17 +19,17 @@ export class ExerciseEntity {
   }
 
   @ApiProperty({ description: 'dictionary identifier', nullable: true })
-  id?: number;
+    id?: number;
 
   @ApiProperty({ description: 'user identifier', nullable: true })
-  userId?: number;
+    userId?: number;
 
   @ApiProperty({ description: 'dictionary title', nullable: false })
-  title: string;
+    title: string;
 
   @ApiProperty({ description: 'dictionary tags', nullable: false })
-  tags?: string[];
+    tags?: string[];
 
   @ApiProperty({ description: 'The card belongs to the dictionary', nullable: false })
-  cardReferences?: CardReference[];
+    cardReferences?: CardReference[];
 }
