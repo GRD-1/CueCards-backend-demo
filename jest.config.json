@@ -1,0 +1,27 @@
+{
+  "preset": "ts-jest/presets/default-esm",
+  "testTimeout": 60000,
+  "maxConcurrency": 1,
+  "verbose": true,
+  "silent": false,
+  "globals": {
+    "ts-jest": {
+      "useESM": true,
+      "isolatedModules": false,
+      "tsconfig": "./tsconfig.jest.json"
+    }
+  },
+  "setupFiles": ["ts-node/register", "dotenv/config"],
+  "clearMocks": true,
+  "forceExit": true,
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": "(.*)(\\.spec\\.ts)$",
+  "coverageDirectory": "./_src/test/coverage",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": ["./src"],
+  "reporters": ["default"]
+}

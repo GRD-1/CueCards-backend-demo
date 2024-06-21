@@ -14,7 +14,7 @@
     "rootDir": "./src",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*", "test/*"]
     },
     "resolveJsonModule": true,
     "experimentalDecorators": true,
