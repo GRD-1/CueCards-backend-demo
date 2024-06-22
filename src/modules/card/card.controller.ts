@@ -35,7 +35,6 @@ export class CardController {
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
   @ApiOkResponse({ type: GetCardRespDto })
   async findAll(@Query() query: GetCardDto): Promise<GetCardRespDto> {
-    console.log('\nquery', query);
     const { page, pageSize } = query;
     const cards = await this.cardService.findMany(page, pageSize);
 
