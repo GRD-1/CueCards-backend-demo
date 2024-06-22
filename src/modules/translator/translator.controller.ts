@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CardEntity } from '../card/entities/card.entity';
+import { CardEntity } from '../card/card.entity';
 import { TranslatorService } from './translator.service';
 
 @ApiTags('translator')

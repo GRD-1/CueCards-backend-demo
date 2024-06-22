@@ -9,40 +9,40 @@ datasource db {
 
 model Card {
   id                Int       @id @default(autoincrement())
-  fsLanguageId      Int?
-  bsLanguageId      Int?
+  fsLanguage        String
   fsValue           String    @db.VarChar
   fsDescription     String    @default("") @db.VarChar
-  fsMeaningVariants String
-  fsWrongMeanings   String
+  fsMeaningVariants String[]
+  fsWrongMeanings   String[]
   fsTranscription   String    @db.VarChar
-  fsSynonyms        String
+  fsSynonyms        String[]
   fsAudio           String    @db.VarChar
   fsHint            String    @db.VarChar
+  bsLanguage        String
   bsValue           String    @db.VarChar
   bsDescription     String    @default("") @db.VarChar
-  bsMeaningVariants String
-  bsWrongMeanings   String
+  bsMeaningVariants String[]
+  bsWrongMeanings   String[]
   bsTranscription   String    @db.VarChar
-  bsSynonyms        String
+  bsSynonyms        String[]
   bsAudio           String    @db.VarChar
   bsHint            String    @db.VarChar
-  tags              String
+  tags              String[]
   createdAt         DateTime  @default(now()) @db.Timestamp(6)
   updateAt          DateTime  @default(now()) @db.Timestamp(6)
   deleteMark        Boolean   @default(false)
   authorId          Int?
   users             User?     @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  fsLanguage        Language? @relation("FsLanguageRelation", fields: [fsLanguageId], references: [id])
-  bsLanguage        Language? @relation("BsLanguageRelation", fields: [bsLanguageId], references: [id])
+  fsLang            Language? @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
+  bsLang            Language? @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
 
   @@map("cards")
 }
 
 model Language {
   id         Int      @id(map: "PK_b517f827ca496b29f4d549c631d") @default(autoincrement())
-  name       String   @db.VarChar
-  acronym    String   @db.VarChar
+  name       String   @unique @db.VarChar
+  acronym    String   @unique @db.VarChar
   createdAt  DateTime @default(now()) @db.Timestamp(6)
   updateAt   DateTime @default(now()) @db.Timestamp(6)
   deleteMark Boolean  @default(false)
@@ -54,7 +54,7 @@ model Language {
 
 model User {
   id         Int      @id @default(autoincrement())
-  email      String   @unique(map: "login") @db.VarChar(100)
+  email      String   @unique @db.VarChar(100)
   nickname   String?  @db.VarChar
   avatar     String?  @db.VarChar
   password   String   @db.VarChar

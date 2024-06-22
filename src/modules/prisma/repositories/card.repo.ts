@@ -6,8 +6,11 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 export class CardRepo {
   constructor(private readonly db: PrismaService) {}
 
-  async findMany(): Promise<Card[]> {
-    return this.db.card.findMany();
+  async findMany(page: number, pageSize: number): Promise<Card[]> {
+    return this.db.card.findMany({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
   }
 
   async findOneById(id: number): Promise<Card | null> {

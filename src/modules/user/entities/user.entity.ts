@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { hash } from 'bcryptjs';
-import { CardEntity } from '../../card/entities/card.entity';
+import { CardEntity } from '../../card/card.entity';
 
 export class UserEntity {
   @ApiProperty({ description: 'user id', nullable: false })

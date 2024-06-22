@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CardRepo } from '@/modules/prisma/repositories/card.repo';
-import { UpdateCardDto } from './dto/update-card.dto';
+import { CardEntity } from '@/modules/card/card.entity';
 
 @Injectable()
 export class CardService {
@@ -16,16 +16,16 @@ export class CardService {
   //   card.author = user;
   //   return this.cardRepo.save(card);
   // }
-  //
-  // async findAll(): Promise<CardEntity[]> {
-  //   return this.cardRepo.find();
-  // }
+
+  async findMany(page: number, pageSize: number): Promise<CardEntity[]> {
+    return this.cardRepo.findMany(page, pageSize);
+  }
 
   async findOneById(cardId: number): Promise<any | null> {
     return this.cardRepo.findOneById(cardId);
   }
 
-  async update(cardId: number, dto: UpdateCardDto): Promise<string> {
+  async update(cardId: number, dto: unknown): Promise<string> {
     return `the card with id = ${cardId} has been updated!`;
   }
 
