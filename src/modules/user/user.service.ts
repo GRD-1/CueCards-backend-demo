@@ -23,6 +23,7 @@ export class UserService {
     const newUser = new UserEntity();
     Object.assign(newUser, userData);
     const user = await this.userRepo.create(newUser);
+
     // return this.buildUserResponseWithToken(user);
     return user.id;
   }
@@ -81,11 +82,13 @@ export class UserService {
   async buildUserResponseWithToken(user: UserEntity): Promise<LoginUserResponse> {
     const token = await this.generateJwt(user);
     const { password, ...userWithoutPassword } = user;
+
     return { ...userWithoutPassword, token };
   }
 
   async generateJwt(user: UserEntity): Promise<string> {
     const secret = config.JWT_SECRET;
+
     return sign(
       {
         id: user.id,

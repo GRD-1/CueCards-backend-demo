@@ -22,7 +22,7 @@ export class UserEntity {
     createdAt: Date;
 
   @ApiProperty({ description: 'update date', nullable: false })
-    updateAt: Date;
+    updatedAt: Date;
 
   @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
     deleteMark: boolean;

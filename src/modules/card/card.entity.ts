@@ -1,10 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNumber, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CardEntity {
   @ApiProperty({ description: 'card identifier', nullable: true })
-  @IsNumber()
-    id: number;
+    id?: number;
 
   @ApiProperty({ description: 'front side language', nullable: false })
   @IsString()
@@ -94,7 +93,7 @@ export class CardEntity {
     createdAt: Date;
 
   @ApiProperty({ description: 'update date', nullable: false })
-    updateAt: Date;
+    updatedAt: Date;
 
   @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
     deleteMark: boolean;

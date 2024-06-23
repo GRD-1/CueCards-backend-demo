@@ -16,6 +16,7 @@ class ConfigService {
     if (!ConfigService._instance) {
       ConfigService._instance = new ConfigService();
     }
+
     return ConfigService._instance;
   }
 
@@ -24,6 +25,7 @@ class ConfigService {
     const errors = validateSync(validatedConfig, { skipMissingProperties: false });
 
     if (errors.length > 0) throw new Error(errors.toString());
+
     return validatedConfig;
   }
 }

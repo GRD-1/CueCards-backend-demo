@@ -29,7 +29,7 @@ model Card {
   bsHint            String    @db.VarChar
   tags              String[]
   createdAt         DateTime  @default(now()) @db.Timestamp(6)
-  updateAt          DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime  @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark        Boolean   @default(false)
   authorId          Int?
   users             User?     @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -44,7 +44,7 @@ model Language {
   name       String   @unique @db.VarChar
   acronym    String   @unique @db.VarChar
   createdAt  DateTime @default(now()) @db.Timestamp(6)
-  updateAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark Boolean  @default(false)
   fsCards    Card[]   @relation("FsLanguageRelation")
   bsCards    Card[]   @relation("BsLanguageRelation")
@@ -59,7 +59,7 @@ model User {
   avatar     String?  @db.VarChar
   password   String   @db.VarChar
   createdAt  DateTime @default(now()) @db.Timestamp(6)
-  updateAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark Boolean  @default(false)
   cards      Card[]   @relation("AuthorRelation")
 

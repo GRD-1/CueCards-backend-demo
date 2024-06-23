@@ -1,9 +1,12 @@
 import { IsArray, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CardEntity } from '@/modules/card/card.entity';
 import { Type } from 'class-transformer';
+import { CardEntity } from '@/modules/card/card.entity';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class GetCardDto {
+export class CreateCardDto extends CardEntity {}
+
+export class GetManyCardsDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsNumber()
@@ -15,7 +18,7 @@ export class GetCardDto {
     pageSize = 20;
 }
 
-export class GetCardRespDto {
+export class GetManyCardsRespDto {
   @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardEntity] })
   @IsArray()
   @ValidateNested({ each: true })
@@ -34,3 +37,7 @@ export class GetCardRespDto {
   @IsNumber()
     numberOfRecords: number;
 }
+
+export class GetCardRespDto extends CardEntity {}
+
+export class UpdateCardDto extends PartialType(CardEntity) {}
