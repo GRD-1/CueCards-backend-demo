@@ -27,7 +27,7 @@ jobs:
 
       - name: Install Packages
         if: steps.cache.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Get Commit Info
         id: commit_info
@@ -37,11 +37,17 @@ jobs:
           echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
           echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
 
+      - name: Get Previous Commit
+        id: prev_commit
+        run: echo "::set-output name=sha::$(git rev-parse HEAD~1)"
+
       - name: Get File Changes
         id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
           githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
+          base: ${{ steps.prev_commit.outputs.sha }}
+          head: ${{ github.sha }}
 
       - name: Echo File Changes
         run: |
