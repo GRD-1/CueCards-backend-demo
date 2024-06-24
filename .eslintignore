@@ -11,3 +11,4 @@ public/
 README.md
 .huskyrc
 .giignore
+prisma/*

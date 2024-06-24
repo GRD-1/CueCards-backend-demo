@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -27,13 +16,11 @@ import {
   GetManyCardsRespDto,
   UpdateCardDto,
 } from '@/modules/card/card.dto';
-import { CardEntity } from '@/modules/card/card.entity';
 import { CardService } from './card.service';
-import { AuthGuard } from '../../guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
 
-@ApiTags('library/cards')
+@ApiTags('cards')
 // @ApiBearerAuth()
 // @UseGuards(AuthGuard)
 @Controller('cards')
@@ -64,7 +51,7 @@ export class CardController {
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ type: GetCardRespDto })
-  @ApiResponse({ status: 404, description: 'Card not found' })
+  @ApiResponse({ status: 404, description: 'Record not found' })
   async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<GetCardRespDto> {
     return this.cardService.findOneById(cardId);
   }
