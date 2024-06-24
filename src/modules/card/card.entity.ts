@@ -2,8 +2,11 @@ import { IsArray, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CardEntity {
-  @ApiProperty({ description: 'card identifier', nullable: true })
+  @ApiProperty({ description: 'card id', nullable: true })
     id?: number;
+
+  @ApiProperty({ description: 'user id', nullable: true })
+    authorId: number | null;
 
   @ApiProperty({ description: 'front side language', nullable: false })
   @IsString()
@@ -81,13 +84,10 @@ export class CardEntity {
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
     bsHint: string;
 
-  @ApiProperty({ description: 'tag list', nullable: true })
+  @ApiProperty({ description: 'Card tags', nullable: true })
   @IsArray()
   @IsString({ each: true })
     tags: string[];
-
-  @ApiProperty({ description: 'author identifier', nullable: false })
-    authorId: number | null;
 
   @ApiProperty({ description: 'creation date', nullable: false })
     createdAt: Date;

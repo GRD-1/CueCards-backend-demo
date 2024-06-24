@@ -7,11 +7,11 @@ import { CardInterface } from '@/modules/card/card.interface';
 export class CardRepo {
   constructor(private readonly db: PrismaService) {}
 
-  async create(payload: CardInterface, userId: number): Promise<number> {
+  async create(payload: CardInterface, authorId: number): Promise<number> {
     const newCard = await this.db.card.create({
       data: {
         ...payload,
-        authorId: userId,
+        authorId,
       },
     });
 

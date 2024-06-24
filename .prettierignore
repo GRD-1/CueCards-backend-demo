@@ -10,3 +10,4 @@ app/
 .eslintrc.json
 .eslintignore
 *.dto.ts
+prisma/*

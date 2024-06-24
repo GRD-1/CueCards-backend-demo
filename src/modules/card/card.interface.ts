@@ -1,5 +1,6 @@
 export interface CardInterface {
   id?: number;
+  authorId: number | null;
   fsLanguage: string;
   fsValue: string;
   fsDescription: string;
@@ -19,7 +20,6 @@ export interface CardInterface {
   bsAudio: string;
   bsHint: string;
   tags: string[];
-  authorId: number | null;
   createdAt: Date;
   updatedAt: Date;
   deleteMark: boolean;

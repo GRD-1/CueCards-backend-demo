@@ -20,3 +20,4 @@ test/coverage
 package-lock.json
 .env
 documentation
+tsconfig.build.tsbuildinfo

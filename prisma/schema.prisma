@@ -7,8 +7,37 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+model User {
+  id           Int          @id @default(autoincrement())
+  email        String       @unique @db.VarChar(100)
+  nickname     String?      @db.VarChar
+  avatar       String?      @db.VarChar
+  password     String       @db.VarChar
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime     @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark   Boolean      @default(false)
+  cards        Card[]       @relation("AuthorRelation")
+  dictionaries Dictionary[] @relation("AuthorRelation")
+
+  @@map("users")
+}
+
+model Language {
+  id         Int      @id() @default(autoincrement())
+  name       String   @unique @db.VarChar
+  acronym    String   @unique @db.VarChar
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark Boolean  @default(false)
+  fsCards    Card[]   @relation("FsLanguageRelation")
+  bsCards    Card[]   @relation("BsLanguageRelation")
+
+  @@map("languages")
+}
+
 model Card {
   id                Int       @id @default(autoincrement())
+  authorId          Int?
   fsLanguage        String
   fsValue           String    @db.VarChar
   fsDescription     String    @default("") @db.VarChar
@@ -31,7 +60,6 @@ model Card {
   createdAt         DateTime  @default(now()) @db.Timestamp(6)
   updatedAt         DateTime  @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark        Boolean   @default(false)
-  authorId          Int?
   users             User?     @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   fsLang            Language? @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
   bsLang            Language? @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
@@ -39,29 +67,15 @@ model Card {
   @@map("cards")
 }
 
-model Language {
-  id         Int      @id(map: "PK_b517f827ca496b29f4d549c631d") @default(autoincrement())
-  name       String   @unique @db.VarChar
-  acronym    String   @unique @db.VarChar
+model Dictionary {
+  id         Int      @id() @default(autoincrement())
+  authorId   Int?
+  title      String   @unique @db.VarChar
+  tags       String[]
   createdAt  DateTime @default(now()) @db.Timestamp(6)
   updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark Boolean  @default(false)
-  fsCards    Card[]   @relation("FsLanguageRelation")
-  bsCards    Card[]   @relation("BsLanguageRelation")
+  users      User?    @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@map("languages")
-}
-
-model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique @db.VarChar(100)
-  nickname   String?  @db.VarChar
-  avatar     String?  @db.VarChar
-  password   String   @db.VarChar
-  createdAt  DateTime @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
-  deleteMark Boolean  @default(false)
-  cards      Card[]   @relation("AuthorRelation")
-
-  @@map("users")
+  @@map("dictionaries")
 }
