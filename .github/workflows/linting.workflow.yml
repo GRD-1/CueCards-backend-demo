@@ -3,6 +3,7 @@ run-name: linting-workflow-runner
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -29,11 +30,19 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Get file changes
+      - name: Get Commit Info
+        id: commit_info
+        run: |
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
+          echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
+
+      - name: Get File Changes
         id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
-          output: ' '
+          githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
 
       - name: Echo file changes
         id: hello
