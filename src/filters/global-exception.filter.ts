@@ -1,29 +1,37 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PRISMA_ERR_TO_HTTP_ERR } from '@/filters/internal-errors/prisma-error-codes';
 import { Response } from 'express';
-import * as process from 'process';
+
+type ExceptionType = Error | HttpException | Prisma.PrismaClientKnownRequestError;
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  catch(exception: Error, host: ArgumentsHost): void {
-    let targetRegExp = /\/home/gi;
-    let localProjectRoot = process.env.LOCAL_PROJECT_ROOT ? process.env.LOCAL_PROJECT_ROOT : '/home';
-    if (process.env.DOCKER_MODE) {
-      targetRegExp = /\/projectFiles/gi;
-      localProjectRoot = process.env.LOCAL_PROJECT_ROOT_DOCKER ? process.env.LOCAL_PROJECT_ROOT_DOCKER : '/projectRoot';
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
+
+  async catch(exception: ExceptionType, host: ArgumentsHost): Promise<void> {
+    const ctx = host.switchToHttp();
+    const response: Response = ctx.getResponse();
+    let httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    let httpMessage: string | undefined;
+
+    if (exception instanceof HttpException) {
+      httpStatusCode = exception.getStatus();
+      httpMessage = exception.message;
+
+      if (httpStatusCode === HttpStatus.FORBIDDEN) {
+        httpStatusCode = HttpStatus.UNAUTHORIZED;
+      }
+    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
+      const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code] || HttpStatus.NOT_ACCEPTABLE;
+      httpStatusCode = httpError.code;
+      httpMessage = httpError.msg;
+
+      this.logger.warn({ ...exception }, 'Prisma query failed');
+    } else {
+      this.logger.error(exception, 'Unknown exception');
     }
 
-    const logger = new Logger('CustomException');
-    const localStack = exception?.stack?.replace(targetRegExp, localProjectRoot);
-    logger.error(localStack);
-
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const exceptionIsHandled = exception instanceof HttpException;
-    const status = exceptionIsHandled ? exception.getStatus() : 500;
-    const message = exceptionIsHandled ? exception.getResponse() : 'internal server error';
-    response.status(status).json({
-      statusCode: status,
-      message,
-    });
+    response.status(httpStatusCode).send({ error: true, code: httpStatusCode, message: httpMessage });
   }
 }

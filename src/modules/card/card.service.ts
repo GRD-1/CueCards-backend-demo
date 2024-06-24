@@ -15,7 +15,7 @@ export class CardService {
     return this.cardRepo.findMany(page, pageSize);
   }
 
-  async findOneById(cardId: number): Promise<CardEntity | null> {
+  async findOneById(cardId: number): Promise<CardEntity> {
     return this.cardRepo.findOneById(cardId);
   }
 

@@ -25,12 +25,10 @@ export class CardRepo {
     });
   }
 
-  async findOneById(id: number): Promise<Card | null> {
-    const card = await this.db.card.findFirst({
+  async findOneById(id: number): Promise<Card> {
+    return this.db.card.findUniqueOrThrow({
       where: { id },
     });
-
-    return card || null;
   }
 
   async updateOneById(cardId: number, payload: Partial<CardInterface>): Promise<number> {

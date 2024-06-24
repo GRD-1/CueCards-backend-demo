@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -67,12 +66,7 @@ export class CardController {
   @ApiOkResponse({ type: GetCardRespDto })
   @ApiResponse({ status: 404, description: 'Card not found' })
   async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<GetCardRespDto> {
-    const card = await this.cardService.findOneById(cardId);
-    if (!card) {
-      throw new NotFoundException(`Card with id ${cardId} not found`);
-    }
-
-    return card;
+    return this.cardService.findOneById(cardId);
   }
 
   @Patch(':cardId')
@@ -82,12 +76,7 @@ export class CardController {
   @ApiOkResponse({ description: 'updated card id', type: Number })
   @ApiResponse({ status: 404, description: 'Card not found' })
   async update(@Param('cardId') cardId: number, @Body() payload: UpdateCardDto): Promise<number> {
-    const id = await this.cardService.updateOneById(cardId, payload);
-    if (!id) {
-      throw new NotFoundException(`Card with id ${cardId} not found`);
-    }
-
-    return id;
+    return this.cardService.updateOneById(cardId, payload);
   }
 
   @Delete(':cardId')
@@ -96,11 +85,6 @@ export class CardController {
   @ApiOkResponse({ description: 'deleted card id', type: Number })
   @ApiResponse({ status: 404, description: 'Card not found' })
   async remove(@Param('cardId') cardId: number): Promise<number> {
-    const id = await this.cardService.delete(cardId);
-    if (!id) {
-      throw new NotFoundException(`Card with id ${cardId} not found`);
-    }
-
-    return id;
+    return this.cardService.delete(cardId);
   }
 }
