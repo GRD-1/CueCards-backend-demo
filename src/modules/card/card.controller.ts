@@ -36,7 +36,7 @@ import { UserEntity } from '../user/entities/user.entity';
 @ApiTags('library/cards')
 // @ApiBearerAuth()
 // @UseGuards(AuthGuard)
-@Controller('library/cards')
+@Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
