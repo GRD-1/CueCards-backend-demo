@@ -8,26 +8,25 @@ on:
 
 jobs:
   linting:
-    runs-on:
-      ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Staring Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '14'
 
-      - name: Restoring cache
+      - name: Restore Cache
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/npm.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Installing packages
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+      - name: Install Packages
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
 
       - name: Get Commit Info
@@ -44,16 +43,14 @@ jobs:
         with:
           githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
 
-      - name: Echo file changes
-        id: hello
+      - name: Echo File Changes
         run: |
-          echo Added files: ${{ steps.file_changes .outputs.files_added }}
-          echo Changed files: ${{ steps.file_changes .outputs.files_modified }}
-          echo Removed files: ${{ steps.file_changes .outputs.files_removed }}
-        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+          echo "Added files: ${{ steps.file_changes.outputs.files_added }}"
+          echo "Modified files: ${{ steps.file_changes.outputs.files_modified }}"
+          echo "Removed files: ${{ steps.file_changes.outputs.files_removed }}"
 
       - name: Format Checking
-        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
         run: |
           echo "Format checking..."
           if npm run format -- . 'src/**/*.ts' 'test/**/*.ts'; then
@@ -64,7 +61,7 @@ jobs:
           fi
 
       - name: ESLint Checking
-        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
         run: |
           echo "ESLint checking..."
           if npm run lint -- . 'src/**/*.ts' 'test/**/*.ts'; then
