@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
     logger: [config.LOG_LEVEL],
   });
   app.setGlobalPrefix('/api');
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   const params = new DocumentBuilder()

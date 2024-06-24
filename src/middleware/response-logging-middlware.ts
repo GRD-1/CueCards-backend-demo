@@ -11,6 +11,7 @@ export class ResponseLoggingMiddleware implements NestMiddleware {
       logger.debug(msg);
       logger.debug(`statusCode: ${res.statusCode}`);
       logger.debug(body);
+
       return originalSend.apply(res, [body]);
     };
     next();

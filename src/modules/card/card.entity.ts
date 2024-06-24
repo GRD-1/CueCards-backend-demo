@@ -1,80 +1,100 @@
 import { IsArray, IsNumber, IsString } from 'class-validator';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateCardDto } from './create-card.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateCardDto extends PartialType(CreateCardDto) {
+export class CardEntity {
   @ApiProperty({ description: 'card identifier', nullable: true })
-  @IsNumber()
-    id: number;
-
-  @ApiProperty({ description: 'user identifier', nullable: true })
-  @IsNumber()
-    userId?: number;
+    id?: number;
 
   @ApiProperty({ description: 'front side language', nullable: false })
-  @IsNumber()
-    fs_language: number;
+  @IsString()
+    fsLanguage: string;
 
   @ApiProperty({ description: 'front side value', nullable: false })
   @IsString()
-    fs_value: string;
+    fsValue: string;
+
+  @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', default: '' })
+  @IsString()
+    fsDescription: string;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    fs_meaning_variants?: string[];
+    fsMeaningVariants: string[];
 
   @ApiProperty({ description: 'front side wrong value meanings', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    fs_wrong_meanings?: string[];
+    fsWrongMeanings: string[];
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
   @IsString()
-    fs_transcription: string;
+    fsTranscription: string;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    fs_synonims?: string[];
+    fsSynonyms: string[];
 
   @ApiProperty({ description: 'front side audio', nullable: true })
   @IsString()
-    fs_audio?: string;
+    fsAudio: string;
+
+  @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
+  @IsString()
+    fsHint: string;
 
   @ApiProperty({ description: 'back side language', nullable: false })
-  @IsNumber()
-    bs_language: number;
+  @IsString()
+    bsLanguage: string;
 
   @ApiProperty({ description: 'back side value', nullable: false })
   @IsString()
-    bs_value: string;
+    bsValue: string;
+
+  @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
+  @IsString()
+    bsDescription: string;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    bs_meaning_variants?: string[];
+    bsMeaningVariants: string[];
 
   @ApiProperty({ description: 'back side wrong value meanings', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    bs_wrong_meanings?: string[];
+    bsWrongMeanings: string[];
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
   @IsString()
-    bs_transcription: string;
+    bsTranscription: string;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    bs_synonims?: string[];
+    bsSynonyms: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
-  @IsString()
-    bs_audio?: string;
+    bsAudio: string;
 
-  @ApiProperty({ description: 'tags', nullable: true })
+  @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
+    bsHint: string;
+
+  @ApiProperty({ description: 'tag list', nullable: true })
   @IsArray()
   @IsString({ each: true })
-    tags?: string[];
+    tags: string[];
+
+  @ApiProperty({ description: 'author identifier', nullable: false })
+    authorId: number | null;
+
+  @ApiProperty({ description: 'creation date', nullable: false })
+    createdAt: Date;
+
+  @ApiProperty({ description: 'update date', nullable: false })
+    updatedAt: Date;
+
+  @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
+    deleteMark: boolean;
 }

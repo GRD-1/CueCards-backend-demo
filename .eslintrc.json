@@ -50,6 +50,11 @@
     "no-await-in-loop": "off",
     "max-classes-per-file": "off",
     "no-use-before-define": "off",
+    "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "*", "next": "return" }
+    ],
 
     // typescript specific
     "no-underscore-dangle": "off",
