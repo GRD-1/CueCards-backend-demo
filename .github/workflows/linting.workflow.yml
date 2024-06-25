@@ -26,7 +26,6 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install Packages
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npm install --legacy-peer-deps
 
       - name: Get Commit Info
@@ -46,8 +45,6 @@ jobs:
         uses: trilom/file-changes-action@v1.2.4
         with:
           githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
-          base: ${{ steps.prev_commit.outputs.sha }}
-          head: ${{ github.sha }}
 
       - name: Echo File Changes
         run: |
