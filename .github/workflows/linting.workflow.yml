@@ -3,48 +3,57 @@ run-name: linting-workflow-runner
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
   linting:
-    runs-on:
-      ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Staring Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
 
-      - name: Restoring cache
+      - name: Restore Cache
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/npm.lock') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Installing packages
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm install
+      - name: Install Packages
+        run: npm install --legacy-peer-deps
 
-      - name: Get file changes
+      - name: Get Commit Info
+        id: commit_info
+        run: |
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
+          echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
+
+      - name: Get Previous Commit
+        id: prev_commit
+        run: echo "::set-output name=sha::$(git rev-parse HEAD~1)"
+
+      - name: Get File Changes
         id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
-          output: ' '
+          githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
 
-      - name: Echo file changes
-        id: hello
+      - name: Echo File Changes
         run: |
-          echo Added files: ${{ steps.file_changes .outputs.files_added }}
-          echo Changed files: ${{ steps.file_changes .outputs.files_modified }}
-          echo Removed files: ${{ steps.file_changes .outputs.files_removed }}
-        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+          echo "Added files: ${{ steps.file_changes.outputs.files_added }}"
+          echo "Modified files: ${{ steps.file_changes.outputs.files_modified }}"
+          echo "Removed files: ${{ steps.file_changes.outputs.files_removed }}"
 
       - name: Format Checking
-        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
         run: |
           echo "Format checking..."
           if npm run format -- . 'src/**/*.ts' 'test/**/*.ts'; then
@@ -55,7 +64,7 @@ jobs:
           fi
 
       - name: ESLint Checking
-        if: ${{ always() && (steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified) }}
+        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
         run: |
           echo "ESLint checking..."
           if npm run lint -- . 'src/**/*.ts' 'test/**/*.ts'; then
