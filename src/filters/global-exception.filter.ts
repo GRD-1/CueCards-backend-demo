@@ -13,7 +13,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
     let httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    let httpMessage: string | undefined;
+    let httpMessage = 'Internal server error';
 
     if (exception instanceof HttpException) {
       httpStatusCode = exception.getStatus();
@@ -22,6 +22,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       if (httpStatusCode === HttpStatus.FORBIDDEN) {
         httpStatusCode = HttpStatus.UNAUTHORIZED;
       }
+      this.logger.error(exception);
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code] || HttpStatus.NOT_ACCEPTABLE;
       httpStatusCode = httpError.code;
