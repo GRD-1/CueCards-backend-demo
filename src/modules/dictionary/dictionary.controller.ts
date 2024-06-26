@@ -60,7 +60,7 @@ export class DictionaryController {
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiBody({ type: UpdateDictionaryDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
   @ApiOkResponse({ description: 'updated dictionary id', type: Number })
-  @ApiResponse({ status: 404, description: 'Record not found' })
+  @ApiBadRequestResponse({ description: 'Record not found' })
   async update(@Param('dictionaryId') dictionaryId: number, @Body() payload: UpdateDictionaryDto): Promise<number> {
     return this.dictionaryService.updateOneById(dictionaryId, payload);
   }
@@ -69,7 +69,7 @@ export class DictionaryController {
   @ApiOperation({ summary: 'Delete a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiOkResponse({ description: 'deleted dictionary id', type: Number })
-  @ApiResponse({ status: 404, description: 'Record not found' })
+  @ApiBadRequestResponse({ description: 'Record not found' })
   async delete(@Param('dictionaryId') dictionaryId: number): Promise<number> {
     return this.dictionaryService.delete(dictionaryId);
   }

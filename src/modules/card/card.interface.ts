@@ -3,24 +3,41 @@ export interface CardInterface {
   authorId: number | null;
   fsLanguage: string;
   fsValue: string;
-  fsDescription: string;
+  fsDescription: string | null;
   fsMeaningVariants: string[];
   fsWrongMeanings: string[];
-  fsTranscription: string;
+  fsTranscription: string | null;
   fsSynonyms: string[];
-  fsAudio: string;
-  fsHint: string;
+  fsAudio: string | null;
+  fsHint: string | null;
   bsLanguage: string;
   bsValue: string;
-  bsDescription: string;
+  bsDescription: string | null;
   bsMeaningVariants: string[];
   bsWrongMeanings: string[];
-  bsTranscription: string;
+  bsTranscription: string | null;
   bsSynonyms: string[];
-  bsAudio: string;
-  bsHint: string;
+  bsAudio: string | null;
+  bsHint: string | null;
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
   deleteMark: boolean;
+}
+
+export interface FindManyCardsInterface {
+  page?: number;
+  pageSize?: number;
+  authorId?: number;
+  value?: string;
+}
+
+export interface FindManyCardsRespInterface {
+  page: number;
+  pageSize: number;
+  cards: CardInterface[];
+}
+
+export interface FindManyCardsFullRespInterface extends FindManyCardsRespInterface {
+  totalRecords: number;
 }

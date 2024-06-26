@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CardRepo } from '@/modules/prisma/repositories/card.repo';
-import { CardInterface } from '@/modules/card/card.interface';
+import { CardInterface, FindManyCardsFullRespInterface, FindManyCardsInterface } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
 
 @Injectable()
@@ -8,14 +8,24 @@ export class CardService {
   constructor(private readonly cardRepo: CardRepo) {}
 
   async create(payload: CardInterface, userId: number): Promise<number> {
+    const dictionary = await this.cardRepo.findOneByValue(payload.fsValue, payload.bsValue);
+    if (dictionary) {
+      throw new HttpException('A card with that value already exists', HttpStatus.BAD_REQUEST);
+    }
+
     return this.cardRepo.create(payload, userId);
   }
 
-  async findMany(page: number, pageSize: number): Promise<CardEntity[]> {
-    return this.cardRepo.findMany(page, pageSize);
+  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+      this.cardRepo.findMany(args),
+      this.cardRepo.getCount(args.authorId),
+    ]);
+
+    return { page, pageSize, totalRecords, cards };
   }
 
-  async findOneById(cardId: number): Promise<CardEntity> {
+  async findOneById(cardId: number): Promise<CardEntity | null> {
     return this.cardRepo.findOneById(cardId);
   }
 

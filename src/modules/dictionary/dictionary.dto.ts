@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -9,17 +9,18 @@ export class CreateDictionaryDto extends DictionaryEntity {}
 export class GetManyDictionariesDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
-  @Type(() => Number)
+  @IsInt()
+  @Min(1)
     page?: number;
 
-  @ApiProperty({ description: 'number of entries per page' })
+  @ApiProperty({ description: 'number of records per page' })
   @IsOptional()
-  @Type(() => Number)
+  @IsInt()
+  @Min(1)
     pageSize?: number;
 
   @ApiProperty({ description: 'search records by user' })
   @IsOptional()
-  @Type(() => Boolean)
     byUser?: boolean;
 
   @ApiProperty({ description: 'dictionary title' })

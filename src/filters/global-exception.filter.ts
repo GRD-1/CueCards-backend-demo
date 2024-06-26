@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PRISMA_ERR_TO_HTTP_ERR } from '@/filters/internal-errors/prisma-error-codes';
+import { PRISMA_ERR_TO_HTTP_ERR } from '@/filters/errors/prisma-error-codes';
 import { Response } from 'express';
 
 type ExceptionType = Error | HttpException | Prisma.PrismaClientKnownRequestError;
@@ -27,6 +27,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code] || HttpStatus.NOT_ACCEPTABLE;
       httpStatusCode = httpError.code;
       httpMessage = httpError.msg;
+
+      this.logger.warn({ ...exception }, 'Prisma query failed');
+    } else if (exception instanceof Prisma.PrismaClientValidationError) {
+      httpStatusCode = HttpStatus.UNPROCESSABLE_ENTITY;
+      const arr = exception.message.split('\n');
+      httpMessage = arr[arr.length - 1];
 
       this.logger.warn({ ...exception }, 'Prisma query failed');
     } else {

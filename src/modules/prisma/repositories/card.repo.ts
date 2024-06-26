@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { CardInterface } from '@/modules/card/card.interface';
+import { CardInterface, FindManyCardsInterface, FindManyCardsRespInterface } from '@/modules/card/card.interface';
 
 @Injectable()
 export class CardRepo {
@@ -18,16 +18,38 @@ export class CardRepo {
     return newCard.id;
   }
 
-  async findMany(page: number, pageSize: number): Promise<Card[]> {
-    return this.db.card.findMany({
+  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
+    const { page = 1, pageSize = 20, authorId, value } = args;
+
+    const cards = await this.db.card.findMany({
+      where: {
+        AND: {
+          authorId,
+          OR: [{ fsValue: value }, { bsValue: value }],
+        },
+      },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
+
+    return { page, pageSize, cards };
   }
 
-  async findOneById(id: number): Promise<Card> {
-    return this.db.card.findUniqueOrThrow({
+  async getCount(authorId?: number): Promise<number> {
+    return this.db.card.count({ where: { authorId } });
+  }
+
+  async findOneById(id: number): Promise<Card | null> {
+    return this.db.card.findUnique({
       where: { id },
+    });
+  }
+
+  async findOneByValue(fsValue: string, bsValue: string): Promise<Card | null> {
+    return this.db.card.findFirst({
+      where: {
+        OR: [{ fsValue }, { bsValue }],
+      },
     });
   }
 
