@@ -18,7 +18,7 @@ export class CardEntity {
 
   @ApiProperty({ description: 'description for the front side value: proverb, swearing e.t.c', default: '' })
   @IsString()
-    fsDescription: string;
+    fsDescription: string | null;
 
   @ApiProperty({ description: 'front side value translation variants', nullable: true })
   @IsArray()
@@ -32,7 +32,7 @@ export class CardEntity {
 
   @ApiProperty({ description: 'front side value transcription', nullable: false })
   @IsString()
-    fsTranscription: string;
+    fsTranscription: string | null;
 
   @ApiProperty({ description: 'front side value synonyms', nullable: true })
   @IsArray()
@@ -41,11 +41,11 @@ export class CardEntity {
 
   @ApiProperty({ description: 'front side audio', nullable: true })
   @IsString()
-    fsAudio: string;
+    fsAudio: string | null;
 
   @ApiProperty({ description: 'front side hint which helps to remember the translation', nullable: true })
   @IsString()
-    fsHint: string;
+    fsHint: string | null;
 
   @ApiProperty({ description: 'back side language', nullable: false })
   @IsString()
@@ -57,7 +57,7 @@ export class CardEntity {
 
   @ApiProperty({ description: 'description for the back side value: proverb, swearing e.t.c', nullable: false })
   @IsString()
-    bsDescription: string;
+    bsDescription: string | null;
 
   @ApiProperty({ description: 'back side value translation variants', nullable: true })
   @IsArray()
@@ -71,7 +71,7 @@ export class CardEntity {
 
   @ApiProperty({ description: 'back side value transcription', nullable: false })
   @IsString()
-    bsTranscription: string;
+    bsTranscription: string | null;
 
   @ApiProperty({ description: 'back side value synonyms', nullable: true })
   @IsArray()
@@ -79,10 +79,10 @@ export class CardEntity {
     bsSynonyms: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true })
-    bsAudio: string;
+    bsAudio: string | null;
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
-    bsHint: string;
+    bsHint: string | null;
 
   @ApiProperty({ description: 'Card tags', nullable: true })
   @IsArray()

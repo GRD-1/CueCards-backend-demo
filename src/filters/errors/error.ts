@@ -1,4 +1,4 @@
-import { CueCardsErrObj } from '@/filters/http-errors/error-codes';
+import { CueCardsErrObj } from '@/filters/errors/error-codes';
 
 interface CueCardsHttpResponse {
   errorCode: string;

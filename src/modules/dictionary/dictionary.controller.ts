@@ -15,10 +15,9 @@ import {
   CreateDictionaryDto,
   GetDictionaryRespDto,
   GetManyDictionariesDto,
-  GetManyDictionariesRespDto,
+  GetManyDictRespDto,
   UpdateDictionaryDto,
 } from '@/modules/dictionary/dictionary.dto';
-import { GetManyCardsRespDto } from '@/modules/card/card.dto';
 import { DictionaryService } from './dictionary.service';
 
 @ApiTags('dictionaries')
@@ -35,33 +34,33 @@ export class DictionaryController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all available dictionary' })
+  @ApiOperation({ summary: 'Get dictionaries according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
-  @ApiOkResponse({ type: GetManyCardsRespDto })
-  async findAll(@Query() query: GetManyDictionariesDto): Promise<GetManyDictionariesRespDto> {
-    const { page, pageSize } = query;
-    const cards = await this.dictionaryService.findMany(page, pageSize);
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
+  @ApiQuery({ name: 'title', required: false, type: String, description: 'dictionary title' })
+  @ApiOkResponse({ type: GetManyDictRespDto })
+  async findMany(@Query() query: GetManyDictionariesDto, @User() user: UserEntity): Promise<GetManyDictRespDto> {
+    const authorId = query.byUser ? user.id : undefined;
 
-    return { cards, page, pageSize, numberOfRecords: cards.length };
+    return this.dictionaryService.findMany({ ...query, authorId });
   }
 
   @Get(':dictionaryId')
   @ApiOperation({ summary: 'Get a dictionary with a specific id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
-  @ApiOkResponse({ type: GetDictionaryRespDto })
-  @ApiResponse({ status: 404, description: 'Record not found' })
-  async findOneById(@Param('dictionaryId', ParseIntPipe) dictionaryId: number): Promise<GetDictionaryRespDto> {
+  @ApiResponse({ status: 200, description: 'Dictionary found', type: GetDictionaryRespDto })
+  @ApiResponse({ status: 204, description: 'No dictionary found', type: undefined })
+  async findOneById(@Param('dictionaryId', ParseIntPipe) dictionaryId: number): Promise<GetDictionaryRespDto | null> {
     return this.dictionaryService.findOneById(dictionaryId);
   }
 
   @Patch(':dictionaryId')
   @ApiOperation({ summary: 'Update a dictionary with a specified id' })
-  @ApiParam({ name: 'dictionaryId', required: true, description: 'dictionary identifier' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiBody({ type: UpdateDictionaryDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
   @ApiOkResponse({ description: 'updated dictionary id', type: Number })
-  @ApiResponse({ status: 404, description: 'Record not found' })
+  @ApiBadRequestResponse({ description: 'Record not found' })
   async update(@Param('dictionaryId') dictionaryId: number, @Body() payload: UpdateDictionaryDto): Promise<number> {
     return this.dictionaryService.updateOneById(dictionaryId, payload);
   }
@@ -70,8 +69,8 @@ export class DictionaryController {
   @ApiOperation({ summary: 'Delete a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiOkResponse({ description: 'deleted dictionary id', type: Number })
-  @ApiResponse({ status: 404, description: 'Record not found' })
-  async remove(@Param('dictionaryId') dictionaryId: number): Promise<number> {
+  @ApiBadRequestResponse({ description: 'Record not found' })
+  async delete(@Param('dictionaryId') dictionaryId: number): Promise<number> {
     return this.dictionaryService.delete(dictionaryId);
   }
 }

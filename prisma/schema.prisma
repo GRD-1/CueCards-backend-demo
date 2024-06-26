@@ -40,22 +40,22 @@ model Card {
   authorId          Int?
   fsLanguage        String
   fsValue           String    @db.VarChar
-  fsDescription     String    @default("") @db.VarChar
+  fsDescription     String?   @default("") @db.VarChar
   fsMeaningVariants String[]
   fsWrongMeanings   String[]
-  fsTranscription   String    @db.VarChar
+  fsTranscription   String?   @db.VarChar
   fsSynonyms        String[]
-  fsAudio           String    @db.VarChar
-  fsHint            String    @db.VarChar
+  fsAudio           String?   @db.VarChar
+  fsHint            String?   @db.VarChar
   bsLanguage        String
   bsValue           String    @db.VarChar
-  bsDescription     String    @default("") @db.VarChar
+  bsDescription     String?   @default("") @db.VarChar
   bsMeaningVariants String[]
   bsWrongMeanings   String[]
-  bsTranscription   String    @db.VarChar
+  bsTranscription   String?   @db.VarChar
   bsSynonyms        String[]
-  bsAudio           String    @db.VarChar
-  bsHint            String    @db.VarChar
+  bsAudio           String?   @db.VarChar
+  bsHint            String?   @db.VarChar
   tags              String[]
   createdAt         DateTime  @default(now()) @db.Timestamp(6)
   updatedAt         DateTime  @default(now()) @updatedAt @db.Timestamp(6)

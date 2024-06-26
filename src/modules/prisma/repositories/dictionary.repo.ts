@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { DictionaryInterface } from '@/modules/dictionary/dictionary.interface';
+import {
+  DictionaryInterface,
+  FindManyArgsInterface,
+  FindManyRespInterface,
+} from '@/modules/dictionary/dictionary.interface';
 
 @Injectable()
 export class DictionaryRepo {
@@ -18,16 +22,31 @@ export class DictionaryRepo {
     return newDictionary.id;
   }
 
-  async findMany(page: number, pageSize: number): Promise<Dictionary[]> {
-    return this.db.dictionary.findMany({
+  async findMany(args: FindManyArgsInterface): Promise<FindManyRespInterface> {
+    const { page = 1, pageSize = 20, authorId, title } = args;
+
+    const dictionaries = await this.db.dictionary.findMany({
+      where: { authorId, title },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
+
+    return { page, pageSize, dictionaries };
   }
 
-  async findOneById(id: number): Promise<Dictionary> {
-    return this.db.dictionary.findUniqueOrThrow({
+  async getCount(authorId?: number): Promise<number> {
+    return this.db.dictionary.count({ where: { authorId } });
+  }
+
+  async findOneById(id: number): Promise<Dictionary | null> {
+    return this.db.dictionary.findUnique({
       where: { id },
+    });
+  }
+
+  async findOneByTitle(title: string): Promise<Dictionary | null> {
+    return this.db.dictionary.findFirst({
+      where: { title },
     });
   }
 
