@@ -38,6 +38,7 @@ export class DictionaryController {
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
+  @ApiQuery({ name: 'title', required: false, type: String, description: 'dictionary title' })
   @ApiOkResponse({ type: GetManyDictRespDto })
   async findMany(@Query() query: GetManyDictionariesDto, @User() user: UserEntity): Promise<GetManyDictRespDto> {
     const authorId = query.byUser ? user.id : undefined;

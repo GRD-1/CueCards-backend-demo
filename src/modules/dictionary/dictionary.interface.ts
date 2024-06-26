@@ -9,6 +9,7 @@ export interface FindManyArgsInterface {
   page?: number;
   pageSize?: number;
   authorId?: number;
+  title?: string;
 }
 
 export interface FindManyRespInterface {

@@ -23,10 +23,10 @@ export class DictionaryRepo {
   }
 
   async findMany(args: FindManyArgsInterface): Promise<FindManyRespInterface> {
-    const { page = 1, pageSize = 20, authorId } = args;
+    const { page = 1, pageSize = 20, authorId, title } = args;
 
     const dictionaries = await this.db.dictionary.findMany({
-      where: { authorId },
+      where: { authorId, title },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });

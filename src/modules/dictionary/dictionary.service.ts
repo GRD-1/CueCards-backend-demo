@@ -33,10 +33,6 @@ export class DictionaryService {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
-  async findOneByTitle(title: string): Promise<DictionaryEntity | null> {
-    return this.dictionaryRepo.findOneByTitle(title);
-  }
-
   async updateOneById(dictionaryId: number, payload: Partial<DictionaryInterface>): Promise<number> {
     return this.dictionaryRepo.updateOneById(dictionaryId, payload);
   }

@@ -21,6 +21,10 @@ export class GetManyDictionariesDto {
   @IsOptional()
   @Type(() => Boolean)
     byUser?: boolean;
+
+  @ApiProperty({ description: 'dictionary title' })
+  @IsOptional()
+    title?: string;
 }
 
 export class GetManyDictRespDto {
