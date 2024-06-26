@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -9,22 +9,21 @@ export class CreateDictionaryDto extends DictionaryEntity {}
 export class GetManyDictionariesDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
-  @IsNumber()
-    page = 1;
+  @Type(() => Number)
+    page?: number;
 
   @ApiProperty({ description: 'number of entries per page' })
   @IsOptional()
-  @IsNumber()
-    pageSize = 20;
+  @Type(() => Number)
+    pageSize?: number;
+
+  @ApiProperty({ description: 'search records by user' })
+  @IsOptional()
+  @Type(() => Boolean)
+    byUser?: boolean;
 }
 
-export class GetManyDictionariesRespDto {
-  @ApiProperty({ description: 'an array of dictionaries', nullable: false, type: [DictionaryEntity] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => DictionaryEntity)
-    cards: DictionaryEntity[];
-
+export class GetManyDictRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -33,9 +32,15 @@ export class GetManyDictionariesRespDto {
   @IsNumber()
     pageSize: number;
 
-  @ApiProperty({ description: 'the total number of entries', nullable: false })
+  @ApiProperty({ description: 'the total number of records', nullable: false })
   @IsNumber()
-    numberOfRecords: number;
+    totalRecords: number;
+
+  @ApiProperty({ description: 'an array of dictionaries', nullable: false, type: [DictionaryEntity] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => DictionaryEntity)
+    dictionaries: DictionaryEntity[];
 }
 
 export class GetDictionaryRespDto extends DictionaryEntity {}
