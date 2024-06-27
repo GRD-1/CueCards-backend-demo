@@ -1,6 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-
-type PrismaToHttpErr = { code: number; msg: string };
+import { PrismaToHttpErr } from '@/filters/errors/error.interfaces';
 
 export const PrismaErrorCodes = {
   NOT_NULL_VIOLATION: 'P2011',
@@ -13,7 +12,7 @@ export const PrismaErrorCodes = {
 };
 
 export const PRISMA_ERR_TO_HTTP_ERR: Record<string, PrismaToHttpErr> = {
-  [PrismaErrorCodes.NOT_FOUND]: { code: HttpStatus.BAD_REQUEST, msg: 'Record not found' },
+  [PrismaErrorCodes.NOT_FOUND]: { code: HttpStatus.BAD_REQUEST, msg: 'The record was not found' },
   [PrismaErrorCodes.RELATION_NOT_FOUND]: { code: HttpStatus.BAD_REQUEST, msg: 'Not found' },
   [PrismaErrorCodes.INPUT_ERROR]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Unprocessable Data' },
   [PrismaErrorCodes.NOT_NULL_VIOLATION]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Data conflict' },

@@ -18,6 +18,7 @@ model User {
   deleteMark   Boolean      @default(false)
   cards        Card[]       @relation("AuthorRelation")
   dictionaries Dictionary[] @relation("AuthorRelation")
+  tags         Tag[]        @relation("AuthorRelation")
 
   @@map("users")
 }
@@ -78,4 +79,16 @@ model Dictionary {
   users      User?    @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("dictionaries")
+}
+
+model Tag {
+  id         Int      @id @default(autoincrement())
+  authorId   Int?
+  name       String   @unique @db.VarChar
+  createdAt  DateTime @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark Boolean  @default(false)
+  users      User?    @relation("AuthorRelation", fields: [authorId], references: [id])
+
+  @@map("tags")
 }

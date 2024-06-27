@@ -1,17 +1,11 @@
-import { CueCardsErrObj } from '@/filters/errors/error-codes';
-
-interface CueCardsHttpResponse {
-  errorCode: string;
-  errorMessage: string;
-  timestamp: number;
-}
+import { CCErrHttpResponse, CCErrorObj } from '@/filters/errors/error.interfaces';
 
 export class CueCardsHttpError {
-  private readonly httpResponse: CueCardsHttpResponse;
+  private readonly httpResponse: CCErrHttpResponse;
   private readonly httpStatus: number;
   private readonly errorCode: string;
 
-  constructor(error: CueCardsErrObj, additionalMessage?: string) {
+  constructor(error: CCErrorObj, additionalMessage?: string) {
     this.errorCode = error.errorCode;
     this.httpStatus = error.httpStatus;
 
@@ -24,7 +18,7 @@ export class CueCardsHttpError {
     };
   }
 
-  getResponse(): CueCardsHttpResponse {
+  getResponse(): CCErrHttpResponse {
     return this.httpResponse;
   }
 
