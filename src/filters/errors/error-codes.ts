@@ -1,9 +1,3 @@
-export interface CueCardsErrObj {
-  errorCode: string;
-  httpStatus: number;
-  errorMessage: string;
-}
-
 export const CCBK_ERROR_CODES = {
   CCBK04_DEACTIVATED_TOKEN: {
     errorCode: 'CCBK01',
