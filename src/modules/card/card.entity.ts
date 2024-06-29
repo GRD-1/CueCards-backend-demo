@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CardEntity {
@@ -83,11 +83,6 @@ export class CardEntity {
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
     bsHint: string | null;
-
-  @ApiProperty({ description: 'Card tags', nullable: true })
-  @IsArray()
-  @IsString({ each: true })
-    tags: string[];
 
   @ApiProperty({ description: 'creation date', nullable: false })
     createdAt: Date;

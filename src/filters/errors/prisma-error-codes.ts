@@ -4,6 +4,7 @@ import { PrismaToHttpErr } from '@/filters/errors/error.interfaces';
 export const PrismaErrorCodes = {
   NOT_NULL_VIOLATION: 'P2011',
   NOT_FOUND: 'P2025',
+  FOREIGN_KEY_CONSTRAINT_FAILED: 'P2003',
   RELATION_NOT_FOUND: 'P2018',
   INPUT_ERROR: 'P2019',
   UNIQUE_VIOLATION: 'P2002',
@@ -14,6 +15,7 @@ export const PrismaErrorCodes = {
 export const PRISMA_ERR_TO_HTTP_ERR: Record<string, PrismaToHttpErr> = {
   [PrismaErrorCodes.NOT_FOUND]: { code: HttpStatus.BAD_REQUEST, msg: 'The record was not found' },
   [PrismaErrorCodes.RELATION_NOT_FOUND]: { code: HttpStatus.BAD_REQUEST, msg: 'Not found' },
+  [PrismaErrorCodes.FOREIGN_KEY_CONSTRAINT_FAILED]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Invalid data' },
   [PrismaErrorCodes.INPUT_ERROR]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Unprocessable Data' },
   [PrismaErrorCodes.NOT_NULL_VIOLATION]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Data conflict' },
   [PrismaErrorCodes.UNIQUE_VIOLATION]: { code: HttpStatus.UNPROCESSABLE_ENTITY, msg: 'Data conflict' },

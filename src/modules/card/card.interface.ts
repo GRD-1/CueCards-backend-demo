@@ -19,10 +19,10 @@ export interface CardInterface {
   bsSynonyms: string[];
   bsAudio: string | null;
   bsHint: string | null;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  deleteMark: boolean;
+}
+
+export interface CreateCardInterface extends CardInterface {
+  tags: number[];
 }
 
 export interface FindManyCardsInterface {
