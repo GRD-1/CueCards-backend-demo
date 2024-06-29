@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto, GetManyCardsDto, GetManyCardsRespDto } from '@/modules/card/card.dto';
 import { plainToInstance } from 'class-transformer';
-import { EnvSchema } from '@/config/config.schema';
 import { CardService } from './card.service';
 import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
@@ -30,7 +29,7 @@ export class CardController {
   @ApiQuery({ name: 'value', required: false, type: String, description: 'card value (both of them)' })
   @ApiOkResponse({ type: GetManyCardsRespDto })
   async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
-    const authorId = query.byUser ? user.id : undefined;
+    const authorId = query.byUser ? user?.id : undefined;
     const data = this.cardService.findMany({ ...query, authorId });
 
     return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });

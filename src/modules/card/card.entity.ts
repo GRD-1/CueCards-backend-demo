@@ -1,7 +1,7 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
 
 export class CardEntity {
-  id?: number;
+  id: number;
   authorId: number | null;
   fsLanguage: string;
   fsValue: string;
@@ -21,14 +21,9 @@ export class CardEntity {
   bsSynonyms: string[];
   bsAudio: string | null;
   bsHint: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  deleteMark: boolean;
   tags: CardTags[];
 }
 
 class CardTags {
-  cardId: number;
-  tagId: number;
   tag: TagEntity;
 }

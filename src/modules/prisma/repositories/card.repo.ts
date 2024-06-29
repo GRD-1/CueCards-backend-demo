@@ -24,13 +24,12 @@ const CARD_SELECT_OPTIONS = {
   bsSynonyms: true,
   bsAudio: true,
   bsHint: true,
-  createdAt: true,
-  updatedAt: true,
   tags: {
     select: {
       tag: {
         select: {
           id: true,
+          authorId: true,
           name: true,
         },
       },
@@ -82,17 +81,11 @@ export class CardRepo {
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
     const { page = 1, pageSize = 20, authorId, value } = args;
     const cards = await this.prisma.card.findMany({
+      select: CARD_SELECT_OPTIONS,
       where: {
         AND: {
           authorId,
           OR: [{ fsValue: value }, { bsValue: value }],
-        },
-      },
-      include: {
-        tags: {
-          include: {
-            tag: true,
-          },
         },
       },
       skip: (page - 1) * pageSize,

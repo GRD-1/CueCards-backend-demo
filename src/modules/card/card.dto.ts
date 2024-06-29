@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -83,15 +83,6 @@ export class CardDto {
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', nullable: true })
     bsHint: string | null;
-
-  // @ApiProperty({ description: 'creation date', nullable: false })
-  //   createdAt: Date;
-  //
-  // @ApiProperty({ description: 'update date', nullable: false })
-  //   updatedAt: Date;
-  //
-  // @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
-  //   deleteMark: boolean;
 }
 
 export class CreateCardDto extends CardDto {
@@ -102,14 +93,14 @@ export class CreateCardDto extends CardDto {
 }
 
 export class CardRespDto extends CardDto {
-  @ApiProperty({ description: 'card id', nullable: true })
-    id: number;
-
   @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
   @IsArray()
   @Type(() => TagRespDto)
   @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
     tags: TagRespDto[];
+
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
 }
 
 export class GetManyCardsDto {
@@ -127,6 +118,7 @@ export class GetManyCardsDto {
 
   @ApiProperty({ description: 'search records by user' })
   @IsOptional()
+  @IsBoolean()
     byUser?: boolean;
 
   @ApiProperty({ description: 'card value' })

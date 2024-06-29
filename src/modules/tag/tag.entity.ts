@@ -9,13 +9,4 @@ export class TagEntity {
 
   @ApiProperty({ description: 'tag name', nullable: false })
     name: string;
-
-  @ApiProperty({ description: 'creation date', nullable: false })
-    createdAt: Date;
-
-  @ApiProperty({ description: 'update date', nullable: false })
-    updatedAt: Date;
-
-  @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
-    deleteMark: boolean;
 }
