@@ -7,6 +7,6 @@ import { CardService } from './card.service';
 
 @Module({
   controllers: [CardController],
-  providers: [CardService, PrismaService, CardRepo, TagRepo],
+  providers: [CardService, PrismaService, CardRepo],
 })
 export class CardModule {}

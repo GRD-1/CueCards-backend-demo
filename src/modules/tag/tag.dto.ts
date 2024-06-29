@@ -1,7 +1,28 @@
 import { IsArray, IsInt, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { TagEntity } from '@/modules/tag/tag.entity';
+
+export class TagDto {
+  @ApiProperty({ description: 'user id', nullable: true, type: Number })
+    authorId: number | null;
+
+  @ApiProperty({ description: 'tag name', nullable: false })
+    name: string;
+
+  // @ApiProperty({ description: 'creation date', nullable: false })
+  //   createdAt: Date;
+  //
+  // @ApiProperty({ description: 'update date', nullable: false })
+  //   updatedAt: Date;
+  //
+  // @ApiProperty({ description: 'has the record been marked for deletion', nullable: false })
+  //   deleteMark: boolean;
+}
+
+export class TagRespDto extends TagDto {
+  @ApiProperty({ description: 'tag id', nullable: true })
+    id?: number;
+}
 
 export class GetManyTagsDto {
   @ApiProperty({ description: 'page number' })
@@ -26,11 +47,11 @@ export class GetManyTagsDto {
 }
 
 export class GetManyTagsRespDto {
-  @ApiProperty({ description: 'an array of tags', nullable: false, type: [TagEntity] })
+  @ApiProperty({ description: 'an array of tags', nullable: false, type: [TagRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TagEntity)
-    tags: TagEntity[];
+  @Type(() => TagRespDto)
+    tags: TagRespDto[];
 
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
@@ -45,4 +66,4 @@ export class GetManyTagsRespDto {
     totalRecords: number;
 }
 
-export class GetTagRespDto extends TagEntity {}
+export class GetTagRespDto extends TagRespDto {}

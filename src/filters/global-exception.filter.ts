@@ -25,8 +25,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.logger.error(exception);
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code];
-      httpStatusCode = httpError.code || HttpStatus.UNPROCESSABLE_ENTITY;
-      httpMessage = httpError.msg || 'Unprocessable data';
+      httpStatusCode = httpError?.code || HttpStatus.UNPROCESSABLE_ENTITY;
+      httpMessage = httpError?.msg || 'Unprocessable data';
 
       this.logger.warn({ ...exception }, 'Prisma request error!');
     } else if (exception instanceof Prisma.PrismaClientValidationError) {

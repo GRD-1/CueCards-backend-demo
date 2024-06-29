@@ -3,6 +3,41 @@ import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { CardInterface, FindManyCardsInterface, FindManyCardsRespInterface } from '@/modules/card/card.interface';
 
+const CARD_SELECT_OPTIONS = {
+  id: true,
+  authorId: true,
+  fsLanguage: true,
+  fsValue: true,
+  fsDescription: true,
+  fsMeaningVariants: true,
+  fsWrongMeanings: true,
+  fsTranscription: true,
+  fsSynonyms: true,
+  fsAudio: true,
+  fsHint: true,
+  bsLanguage: true,
+  bsValue: true,
+  bsDescription: true,
+  bsMeaningVariants: true,
+  bsWrongMeanings: true,
+  bsTranscription: true,
+  bsSynonyms: true,
+  bsAudio: true,
+  bsHint: true,
+  createdAt: true,
+  updatedAt: true,
+  tags: {
+    select: {
+      tag: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  },
+};
+
 @Injectable()
 export class CardRepo {
   constructor(private readonly prisma: PrismaService) {}
@@ -36,7 +71,7 @@ export class CardRepo {
           if (!newCard) {
             throw new BadRequestException('failed to create a card. Transaction aborted!');
           } else {
-            throw new BadRequestException('failed to link the tags. Transaction aborted!');
+            throw new BadRequestException("failed to link the tags. The card wasn't created!");
           }
         });
     }
@@ -46,12 +81,18 @@ export class CardRepo {
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
     const { page = 1, pageSize = 20, authorId, value } = args;
-
     const cards = await this.prisma.card.findMany({
       where: {
         AND: {
           authorId,
           OR: [{ fsValue: value }, { bsValue: value }],
+        },
+      },
+      include: {
+        tags: {
+          include: {
+            tag: true,
+          },
         },
       },
       skip: (page - 1) * pageSize,

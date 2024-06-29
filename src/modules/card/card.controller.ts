@@ -1,22 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import {
-  CreateCardDto,
-  GetCardRespDto,
-  GetManyCardsDto,
-  GetManyCardsRespDto,
-  UpdateCardDto,
-} from '@/modules/card/card.dto';
-import { GetDictionaryRespDto } from '@/modules/dictionary/dictionary.dto';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { CreateCardDto, GetManyCardsDto, GetManyCardsRespDto } from '@/modules/card/card.dto';
+import { plainToInstance } from 'class-transformer';
+import { EnvSchema } from '@/config/config.schema';
 import { CardService } from './card.service';
 import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
@@ -36,25 +22,26 @@ export class CardController {
     return this.cardService.create(payload, user?.id);
   }
 
-  // @Get()
-  // @ApiOperation({ summary: 'Get cards according to the conditions' })
-  // @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
-  // @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
-  // @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
-  // @ApiQuery({ name: 'value', required: false, type: String, description: 'card value (both of them)' })
-  // @ApiOkResponse({ type: GetManyCardsRespDto })
-  // async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
-  //   const authorId = query.byUser ? user.id : undefined;
-  //
-  //   return this.cardService.findMany({ ...query, authorId });
-  // }
-  //
+  @Get()
+  @ApiOperation({ summary: 'Get cards according to the conditions' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'card value (both of them)' })
+  @ApiOkResponse({ type: GetManyCardsRespDto })
+  async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
+    const authorId = query.byUser ? user.id : undefined;
+    const data = this.cardService.findMany({ ...query, authorId });
+
+    return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
+  }
+
   // @Get(':cardId')
   // @ApiOperation({ summary: 'Get a card with a specific id' })
   // @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   // @ApiResponse({ status: 200, description: 'Dictionary found', type: GetDictionaryRespDto })
   // @ApiResponse({ status: 204, description: 'No dictionary found', type: undefined })
-  // async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<GetCardRespDto | null> {
+  // async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardEntity | null> {
   //   return this.cardService.findOneById(cardId);
   // }
   //
