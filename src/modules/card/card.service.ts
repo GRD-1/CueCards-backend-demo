@@ -37,7 +37,7 @@ export class CardService {
     return this.cardRepo.updateOneById(cardId, payload);
   }
 
-  // async delete(cardId: number): Promise<number> {
-  //   return this.cardRepo.delete(cardId);
-  // }
+  async delete(cardId: number): Promise<number> {
+    return this.cardRepo.delete(cardId);
+  }
 }
