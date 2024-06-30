@@ -24,17 +24,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
       this.logger.error(exception);
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code] || HttpStatus.NOT_ACCEPTABLE;
-      httpStatusCode = httpError.code;
-      httpMessage = httpError.msg;
+      const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code];
+      httpStatusCode = httpError?.code || HttpStatus.UNPROCESSABLE_ENTITY;
+      httpMessage = httpError?.msg || 'Unprocessable data';
 
-      this.logger.warn({ ...exception }, 'Prisma query failed');
+      this.logger.warn({ ...exception }, 'Prisma request error!');
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
       httpStatusCode = HttpStatus.UNPROCESSABLE_ENTITY;
       const arr = exception.message.split('\n');
       httpMessage = arr[arr.length - 1];
 
-      this.logger.warn({ ...exception }, 'Prisma query failed');
+      this.logger.warn({ ...exception }, 'Prisma validation error!');
     } else {
       this.logger.error(exception, 'Unknown exception');
     }

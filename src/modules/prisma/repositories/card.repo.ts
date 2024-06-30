@@ -1,27 +1,96 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { CardInterface, FindManyCardsInterface, FindManyCardsRespInterface } from '@/modules/card/card.interface';
+import {
+  CardAndTagsInterface,
+  FindManyCardsInterface,
+  FindManyCardsRespInterface,
+} from '@/modules/card/card.interface';
+import { CardEntity } from '@/modules/card/card.entity';
+
+const CARD_SELECT_OPTIONS = {
+  id: true,
+  authorId: true,
+  fsLanguage: true,
+  fsValue: true,
+  fsDescription: true,
+  fsMeaningVariants: true,
+  fsWrongMeanings: true,
+  fsTranscription: true,
+  fsSynonyms: true,
+  fsAudio: true,
+  fsHint: true,
+  bsLanguage: true,
+  bsValue: true,
+  bsDescription: true,
+  bsMeaningVariants: true,
+  bsWrongMeanings: true,
+  bsTranscription: true,
+  bsSynonyms: true,
+  bsAudio: true,
+  bsHint: true,
+  tags: {
+    select: {
+      tag: {
+        select: {
+          id: true,
+          authorId: true,
+          name: true,
+        },
+      },
+    },
+  },
+};
 
 @Injectable()
 export class CardRepo {
-  constructor(private readonly db: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(payload: CardInterface, authorId: number): Promise<number> {
-    const newCard = await this.db.card.create({
-      data: {
-        ...payload,
-        authorId,
-      },
-    });
+  async create(payload: CardAndTagsInterface, authorId: number): Promise<number> {
+    const { tags, ...newCardData } = payload;
+    let newCard: Card;
+
+    if (tags.length > 0) {
+      newCard = await this.prisma
+        .$transaction(async (prisma) => {
+          newCard = await prisma.card.create({
+            data: {
+              ...newCardData,
+              authorId,
+            },
+          });
+
+          const cardTags = tags.map((id) => ({ cardId: newCard.id, tagId: id }));
+
+          await prisma.cardTag.createManyAndReturn({
+            data: cardTags,
+          });
+
+          return newCard;
+        })
+        .catch(() => {
+          if (!newCard) {
+            throw new BadRequestException('failed to create a card. Transaction aborted!');
+          } else {
+            throw new BadRequestException("failed to link the tags. The card wasn't created!");
+          }
+        });
+    } else {
+      newCard = await this.prisma.card.create({
+        data: {
+          ...newCardData,
+          authorId,
+        },
+      });
+    }
 
     return newCard.id;
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
     const { page = 1, pageSize = 20, authorId, value } = args;
-
-    const cards = await this.db.card.findMany({
+    const cards = await this.prisma.card.findMany({
+      select: CARD_SELECT_OPTIONS,
       where: {
         AND: {
           authorId,
@@ -36,34 +105,82 @@ export class CardRepo {
   }
 
   async getCount(authorId?: number): Promise<number> {
-    return this.db.card.count({ where: { authorId } });
+    return this.prisma.card.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<Card | null> {
-    return this.db.card.findUnique({
+  async findOneById(id: number): Promise<CardEntity | null> {
+    return this.prisma.card.findUnique({
+      select: CARD_SELECT_OPTIONS,
       where: { id },
     });
   }
 
   async findOneByValue(fsValue: string, bsValue: string): Promise<Card | null> {
-    return this.db.card.findFirst({
+    return this.prisma.card.findFirst({
       where: {
         OR: [{ fsValue }, { bsValue }],
       },
     });
   }
 
-  async updateOneById(cardId: number, payload: Partial<CardInterface>): Promise<number> {
-    const updatedCard = await this.db.card.update({
-      where: { id: cardId },
-      data: payload,
-    });
+  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
+    const { tags: newTagIdArr, ...cardData } = payload;
+    let updatedCard: Card;
 
-    return updatedCard.id;
+    if (newTagIdArr) {
+      const oldTags = await this.prisma.cardTag.findMany({ where: { cardId } });
+      const oldTagIdArr = oldTags.map((item) => item.tagId);
+      const oldTagIdSet = new Set(oldTagIdArr);
+      const newTagIdSet = new Set(newTagIdArr);
+      const uniqueInOldTags = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
+      const uniqueInNewTags = newTagIdArr.filter((item) => !oldTagIdSet.has(item));
+      const newCardTags = uniqueInNewTags.map((tagId) => ({ cardId, tagId }));
+
+      await this.prisma
+        .$transaction(async (prisma) => {
+          await prisma.cardTag.deleteMany({
+            where: {
+              cardId,
+              tagId: {
+                in: uniqueInOldTags,
+              },
+            },
+          });
+
+          await prisma.cardTag.createMany({
+            data: newCardTags,
+          });
+
+          await prisma.card.update({
+            where: { id: cardId },
+            data: {
+              ...cardData,
+            },
+          });
+
+          return updatedCard;
+        })
+        .catch(() => {
+          if (!updatedCard) {
+            throw new BadRequestException('failed to update a card. Transaction aborted!');
+          } else {
+            throw new BadRequestException("failed to link the tags. The card wasn't updated!");
+          }
+        });
+    } else {
+      updatedCard = await this.prisma.card.update({
+        where: { id: cardId },
+        data: {
+          ...cardData,
+        },
+      });
+    }
+
+    return cardId;
   }
 
   async delete(cardId: number): Promise<number> {
-    const deletedCard = await this.db.card.delete({
+    const deletedCard = await this.prisma.card.delete({
       where: { id: cardId },
     });
 

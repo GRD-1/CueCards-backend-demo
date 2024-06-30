@@ -1,3 +1,5 @@
+import { CardEntity } from '@/modules/card/card.entity';
+
 export interface CardInterface {
   id?: number;
   authorId: number | null;
@@ -19,10 +21,10 @@ export interface CardInterface {
   bsSynonyms: string[];
   bsAudio: string | null;
   bsHint: string | null;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  deleteMark: boolean;
+}
+
+export interface CardAndTagsInterface extends CardInterface {
+  tags: number[];
 }
 
 export interface FindManyCardsInterface {
@@ -35,9 +37,10 @@ export interface FindManyCardsInterface {
 export interface FindManyCardsRespInterface {
   page: number;
   pageSize: number;
-  cards: CardInterface[];
+  cards: CardEntity[];
 }
 
 export interface FindManyCardsFullRespInterface extends FindManyCardsRespInterface {
+  records: number;
   totalRecords: number;
 }

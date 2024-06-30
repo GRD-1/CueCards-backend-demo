@@ -35,6 +35,16 @@ export class TagRepo {
     return { page, pageSize, tags };
   }
 
+  async findManyById(idArr: number[]): Promise<Tag[]> {
+    return this.db.tag.findMany({
+      where: {
+        id: {
+          in: idArr,
+        },
+      },
+    });
+  }
+
   async getCount(authorId?: number): Promise<number> {
     return this.db.tag.count({ where: { authorId } });
   }
