@@ -135,6 +135,10 @@ export class GetManyCardsRespDto {
   @IsNumber()
     pageSize: number;
 
+  @ApiProperty({ description: 'number of entries per page', nullable: false })
+  @IsNumber()
+    records: number;
+
   @ApiProperty({ description: 'the total number of entries', nullable: false })
   @IsNumber()
     totalRecords: number;

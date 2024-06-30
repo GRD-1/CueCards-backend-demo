@@ -5,6 +5,7 @@ import {
   FindManyCardsFullRespInterface,
   FindManyCardsInterface,
 } from '@/modules/card/card.interface';
+import { CardEntity } from '@/modules/card/card.entity';
 
 @Injectable()
 export class CardService {
@@ -16,9 +17,7 @@ export class CardService {
       throw new HttpException('A card with that value already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const { tags, ...newCardData } = payload;
-
-    return this.cardRepo.create(newCardData, tags, userId);
+    return this.cardRepo.create(payload, userId);
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
@@ -27,17 +26,17 @@ export class CardService {
       this.cardRepo.getCount(args.authorId),
     ]);
 
-    return { page, pageSize, totalRecords, cards };
+    return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  // async findOneById(cardId: number): Promise<CardEntity | null> {
-  //   return this.cardRepo.findOneById(cardId);
-  // }
-  //
-  // async updateOneById(cardId: number, payload: Partial<CreateCardInterface>): Promise<number> {
-  //   return this.cardRepo.updateOneById(cardId, payload);
-  // }
-  //
+  async findOneById(cardId: number): Promise<CardEntity | null> {
+    return this.cardRepo.findOneById(cardId);
+  }
+
+  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
+    return this.cardRepo.updateOneById(cardId, payload);
+  }
+
   // async delete(cardId: number): Promise<number> {
   //   return this.cardRepo.delete(cardId);
   // }

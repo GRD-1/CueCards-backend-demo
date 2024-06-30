@@ -41,5 +41,6 @@ export interface FindManyCardsRespInterface {
 }
 
 export interface FindManyCardsFullRespInterface extends FindManyCardsRespInterface {
+  records: number;
   totalRecords: number;
 }
