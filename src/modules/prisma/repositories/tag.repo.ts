@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Tag } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { FindManyTagsInterface, FindManyTagsRespInterface } from '@/modules/tag/tag.interface';
+import { TagEntity } from '@/modules/tag/tag.entity';
+
+const TAG_SELECT_OPTIONS = {
+  id: true,
+  authorId: true,
+  name: true,
+};
 
 @Injectable()
 export class TagRepo {
@@ -22,6 +28,7 @@ export class TagRepo {
     const { page = 1, pageSize = 20, authorId, name } = args;
 
     const tags = await this.db.tag.findMany({
+      select: TAG_SELECT_OPTIONS,
       where: {
         AND: {
           authorId,
@@ -35,28 +42,20 @@ export class TagRepo {
     return { page, pageSize, tags };
   }
 
-  async findManyById(idArr: number[]): Promise<Tag[]> {
-    return this.db.tag.findMany({
-      where: {
-        id: {
-          in: idArr,
-        },
-      },
-    });
-  }
-
   async getCount(authorId?: number): Promise<number> {
     return this.db.tag.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<Tag | null> {
+  async findOneById(id: number): Promise<TagEntity | null> {
     return this.db.tag.findUnique({
+      select: TAG_SELECT_OPTIONS,
       where: { id },
     });
   }
 
-  async findOneByName(name: string): Promise<Tag | null> {
+  async findOneByName(name: string): Promise<TagEntity | null> {
     return this.db.tag.findFirst({
+      select: TAG_SELECT_OPTIONS,
       where: { name },
     });
   }

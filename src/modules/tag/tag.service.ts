@@ -22,7 +22,7 @@ export class TagService {
       this.tagRepo.getCount(args.authorId),
     ]);
 
-    return { page, pageSize, totalRecords, tags };
+    return { page, pageSize, records: tags.length, totalRecords, tags };
   }
 
   async findOneById(tagId: number): Promise<TagEntity | null> {
