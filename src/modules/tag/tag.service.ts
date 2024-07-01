@@ -8,8 +8,8 @@ export class TagService {
   constructor(private readonly tagRepo: TagRepo) {}
 
   async create(name: string, userId: number): Promise<number> {
-    const tag = await this.tagRepo.findOneByName(name);
-    if (tag) {
+    const existingTagId = await this.tagRepo.getIdByName(name);
+    if (existingTagId) {
       throw new HttpException('A tag with that value already exists', HttpStatus.BAD_REQUEST);
     }
 

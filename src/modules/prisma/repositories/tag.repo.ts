@@ -11,10 +11,10 @@ const TAG_SELECT_OPTIONS = {
 
 @Injectable()
 export class TagRepo {
-  constructor(private readonly db: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(name: string, authorId: number): Promise<number> {
-    const newTag = await this.db.tag.create({
+    const newTag = await this.prisma.tag.create({
       data: {
         name,
         authorId,
@@ -27,7 +27,7 @@ export class TagRepo {
   async findMany(args: FindManyTagsInterface): Promise<FindManyTagsRespInterface> {
     const { page = 1, pageSize = 20, authorId, name } = args;
 
-    const tags = await this.db.tag.findMany({
+    const tags = await this.prisma.tag.findMany({
       select: TAG_SELECT_OPTIONS,
       where: {
         AND: {
@@ -43,25 +43,27 @@ export class TagRepo {
   }
 
   async getCount(authorId?: number): Promise<number> {
-    return this.db.tag.count({ where: { authorId } });
+    return this.prisma.tag.count({ where: { authorId } });
   }
 
   async findOneById(id: number): Promise<TagEntity | null> {
-    return this.db.tag.findUnique({
+    return this.prisma.tag.findUnique({
       select: TAG_SELECT_OPTIONS,
       where: { id },
     });
   }
 
-  async findOneByName(name: string): Promise<TagEntity | null> {
-    return this.db.tag.findFirst({
-      select: TAG_SELECT_OPTIONS,
+  async getIdByName(name: string): Promise<number | null> {
+    const tag = await this.prisma.tag.findFirst({
+      select: { id: true },
       where: { name },
     });
+
+    return tag?.id || null;
   }
 
   async updateOneById(id: number, name: string): Promise<number> {
-    const updatedTag = await this.db.tag.update({
+    const updatedTag = await this.prisma.tag.update({
       where: { id },
       data: { name },
     });
@@ -70,7 +72,7 @@ export class TagRepo {
   }
 
   async delete(id: number): Promise<number> {
-    const deletedTag = await this.db.tag.delete({
+    const deletedTag = await this.prisma.tag.delete({
       where: { id },
     });
 
