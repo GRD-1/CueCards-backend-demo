@@ -117,13 +117,15 @@ export class CardRepo {
     });
   }
 
-  async findOneByValue(fsValue: string, bsValue: string): Promise<CardEntity | null> {
-    return this.prisma.card.findFirst({
-      select: CARD_SELECT_OPTIONS,
+  async getIdByValue(fsValue: string, bsValue: string): Promise<number | null> {
+    const card = await this.prisma.card.findFirst({
+      select: { id: true },
       where: {
         OR: [{ fsValue }, { bsValue }],
       },
     });
+
+    return card?.id || null;
   }
 
   async updateOneById(args: UpdateCardInterface): Promise<number> {

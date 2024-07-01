@@ -14,8 +14,8 @@ export class CardService {
   constructor(private readonly cardRepo: CardRepo) {}
 
   async create(payload: CardAndTagsInterface, userId: number): Promise<number> {
-    const existingCard = await this.cardRepo.findOneByValue(payload.fsValue, payload.bsValue);
-    if (existingCard) {
+    const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
+    if (existingCardId) {
       throw new HttpException('A card with that value already exists', HttpStatus.BAD_REQUEST);
     }
 
