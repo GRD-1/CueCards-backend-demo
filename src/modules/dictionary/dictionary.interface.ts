@@ -1,23 +1,41 @@
+import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+
 export interface DictionaryInterface {
   id?: number;
   authorId: number | null;
-  title: string;
-  tags: string[];
+  name: string;
 }
 
-export interface FindManyArgsInterface {
+export interface DictionaryAndTagsInterface extends DictionaryInterface {
+  tags: number[];
+}
+
+export interface FindManyDictInterface {
   page?: number;
   pageSize?: number;
   authorId?: number;
-  title?: string;
+  name?: string;
 }
 
-export interface FindManyRespInterface {
+export interface FindManyDictRespInterface {
   page: number;
   pageSize: number;
-  dictionaries: DictionaryInterface[];
+  dictionaries: DictionaryEntity[];
 }
 
-export interface FindManyFullRespInterface extends FindManyRespInterface {
+export interface FindManyFullRespInterface extends FindManyDictRespInterface {
+  records: number;
   totalRecords: number;
+}
+
+export interface DictionaryTagInterface {
+  dictionaryId: number;
+  tagId: number;
+}
+
+export interface UpdateDictionaryInterface {
+  dictionaryId: number;
+  dictionaryData: Partial<DictionaryInterface>;
+  tagIdToDeleteArr?: number[];
+  newTagsArr?: DictionaryTagInterface[];
 }
