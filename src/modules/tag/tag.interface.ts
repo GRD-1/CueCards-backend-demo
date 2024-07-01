@@ -1,11 +1,5 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
 
-export interface TagInterface {
-  id?: number;
-  authorId: number | null;
-  name: string;
-}
-
 export interface FindManyTagsInterface {
   page?: number;
   pageSize?: number;
@@ -20,5 +14,6 @@ export interface FindManyTagsRespInterface {
 }
 
 export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface {
+  records: number;
   totalRecords: number;
 }

@@ -117,8 +117,9 @@ export class CardRepo {
     });
   }
 
-  async findOneByValue(fsValue: string, bsValue: string): Promise<Card | null> {
+  async findOneByValue(fsValue: string, bsValue: string): Promise<CardEntity | null> {
     return this.prisma.card.findFirst({
+      select: CARD_SELECT_OPTIONS,
       where: {
         OR: [{ fsValue }, { bsValue }],
       },

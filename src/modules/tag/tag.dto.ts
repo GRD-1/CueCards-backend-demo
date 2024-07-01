@@ -38,12 +38,6 @@ export class GetManyTagsDto {
 }
 
 export class GetManyTagsRespDto {
-  @ApiProperty({ description: 'an array of tags', nullable: false, type: [TagRespDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TagRespDto)
-    tags: TagRespDto[];
-
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -52,9 +46,19 @@ export class GetManyTagsRespDto {
   @IsNumber()
     pageSize: number;
 
+  @ApiProperty({ description: 'number of records in the response', nullable: false })
+  @IsNumber()
+    records: number;
+
   @ApiProperty({ description: 'the total number of entries', nullable: false })
   @IsNumber()
     totalRecords: number;
+
+  @ApiProperty({ description: 'an array of tags', nullable: false, type: [TagRespDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagRespDto)
+    tags: TagRespDto[];
 }
 
 export class GetTagRespDto extends TagRespDto {}

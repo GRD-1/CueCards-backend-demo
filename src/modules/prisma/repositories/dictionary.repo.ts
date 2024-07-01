@@ -96,8 +96,9 @@ export class DictionaryRepo {
     });
   }
 
-  async findOneByName(name: string): Promise<Dictionary | null> {
+  async findOneByName(name: string): Promise<DictionaryEntity | null> {
     return this.prisma.dictionary.findFirst({
+      select: DICTIONARY_SELECT_OPTIONS,
       where: { name },
     });
   }
