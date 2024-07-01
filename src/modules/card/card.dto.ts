@@ -116,7 +116,7 @@ export class GetManyCardsDto {
   @Min(1)
     pageSize?: number;
 
-  @ApiProperty({ description: 'search records by user' })
+  @ApiProperty({ description: 'search for records by user' })
   @IsOptional()
   @IsBoolean()
     byUser?: boolean;
@@ -131,15 +131,15 @@ export class GetManyCardsRespDto {
   @IsNumber()
     page: number;
 
-  @ApiProperty({ description: 'number of entries per page', nullable: false })
+  @ApiProperty({ description: 'number of records per page', nullable: false })
   @IsNumber()
     pageSize: number;
 
-  @ApiProperty({ description: 'number of entries per page', nullable: false })
+  @ApiProperty({ description: 'number of records in the response', nullable: false })
   @IsNumber()
     records: number;
 
-  @ApiProperty({ description: 'the total number of entries', nullable: false })
+  @ApiProperty({ description: 'the total number of records', nullable: false })
   @IsNumber()
     totalRecords: number;
 

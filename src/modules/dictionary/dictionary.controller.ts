@@ -13,11 +13,13 @@ import { User } from '@/modules/user/decorators/user.decorator';
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import {
   CreateDictionaryDto,
-  GetDictionaryRespDto,
+  DictionaryRespDto,
   GetManyDictionariesDto,
   GetManyDictRespDto,
   UpdateDictionaryDto,
 } from '@/modules/dictionary/dictionary.dto';
+import { BadRequestExample } from '@/filters/errors/error.examples';
+import { plainToInstance } from 'class-transformer';
 import { DictionaryService } from './dictionary.service';
 
 @ApiTags('dictionaries')
@@ -27,8 +29,8 @@ export class DictionaryController {
 
   @Post('')
   @ApiOperation({ summary: 'Create a new dictionary' })
-  @ApiOkResponse({ description: 'new dictionary id', type: Number })
-  @ApiBadRequestResponse({ description: "Raises when dictionary's data is invalid" })
+  @ApiOkResponse({ description: 'The new dictionary has been created', type: Number })
+  @ApiBadRequestResponse({ description: 'Appears when the dictionary data is invalid', type: BadRequestExample })
   async create(@Body() payload: CreateDictionaryDto, @User() user: UserEntity): Promise<number> {
     return this.dictionaryService.create(payload, user?.id);
   }
@@ -39,38 +41,42 @@ export class DictionaryController {
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
   @ApiQuery({ name: 'title', required: false, type: String, description: 'dictionary title' })
-  @ApiOkResponse({ type: GetManyDictRespDto })
+  @ApiOkResponse({ description: 'Successful request', type: GetManyDictRespDto })
+  @ApiBadRequestResponse({ description: 'Raises when params are invalid', type: BadRequestExample })
   async findMany(@Query() query: GetManyDictionariesDto, @User() user: UserEntity): Promise<GetManyDictRespDto> {
     const authorId = query.byUser ? user.id : undefined;
+    const data = await this.dictionaryService.findMany({ ...query, authorId });
 
-    return this.dictionaryService.findMany({ ...query, authorId });
+    return plainToInstance(GetManyDictRespDto, data, { enableImplicitConversion: true });
   }
 
   @Get(':dictionaryId')
   @ApiOperation({ summary: 'Get a dictionary with a specific id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
-  @ApiResponse({ status: 200, description: 'Dictionary found', type: GetDictionaryRespDto })
-  @ApiResponse({ status: 204, description: 'No dictionary found', type: undefined })
-  async findOneById(@Param('dictionaryId', ParseIntPipe) dictionaryId: number): Promise<GetDictionaryRespDto | null> {
-    return this.dictionaryService.findOneById(dictionaryId);
+  @ApiResponse({ status: 200, description: 'The dictionary has been found', type: DictionaryRespDto })
+  @ApiResponse({ status: 204, description: 'The dictionary was not found', type: undefined })
+  async findOneById(@Param('dictionaryId', ParseIntPipe) id: number): Promise<DictionaryRespDto | null> {
+    const data = this.dictionaryService.findOneById(id);
+
+    return plainToInstance(DictionaryRespDto, data, { enableImplicitConversion: true });
   }
 
   @Patch(':dictionaryId')
   @ApiOperation({ summary: 'Update a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiBody({ type: UpdateDictionaryDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
-  @ApiOkResponse({ description: 'updated dictionary id', type: Number })
-  @ApiBadRequestResponse({ description: 'Record not found' })
-  async update(@Param('dictionaryId') dictionaryId: number, @Body() payload: UpdateDictionaryDto): Promise<number> {
-    return this.dictionaryService.updateOneById(dictionaryId, payload);
+  @ApiOkResponse({ description: 'The dictionary has been updated', type: Number })
+  @ApiBadRequestResponse({ description: 'Record not found', type: BadRequestExample })
+  async update(@Param('dictionaryId', ParseIntPipe) id: number, @Body() payload: UpdateDictionaryDto): Promise<number> {
+    return this.dictionaryService.updateOneById(id, payload);
   }
 
   @Delete(':dictionaryId')
   @ApiOperation({ summary: 'Delete a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
-  @ApiOkResponse({ description: 'deleted dictionary id', type: Number })
-  @ApiBadRequestResponse({ description: 'Record not found' })
-  async delete(@Param('dictionaryId') dictionaryId: number): Promise<number> {
-    return this.dictionaryService.delete(dictionaryId);
+  @ApiOkResponse({ description: 'The dictionary has been deleted', type: Number })
+  @ApiBadRequestResponse({ description: 'Record not found', type: BadRequestExample })
+  async delete(@Param('dictionaryId', ParseIntPipe) id: number): Promise<number> {
+    return this.dictionaryService.delete(id);
   }
 }

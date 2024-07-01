@@ -1,19 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { TagEntity } from '@/modules/tag/tag.entity';
 
 export class DictionaryEntity {
-  @ApiProperty({ description: 'dictionary id', nullable: true })
-    id?: number;
+  id: number;
+  authorId: number | null;
+  name: string;
+  tags: DictionaryTags[];
+}
 
-  @ApiProperty({ description: 'user id', nullable: true })
-    authorId: number | null;
-
-  @ApiProperty({ description: 'dictionary title', nullable: false })
-  @IsString()
-    title: string;
-
-  @ApiProperty({ description: 'dictionary tags', nullable: true })
-  @IsArray()
-  @IsString({ each: true })
-    tags: string[];
+class DictionaryTags {
+  tag: TagEntity;
 }
