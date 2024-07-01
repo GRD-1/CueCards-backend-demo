@@ -96,11 +96,13 @@ export class DictionaryRepo {
     });
   }
 
-  async findOneByName(name: string): Promise<DictionaryEntity | null> {
-    return this.prisma.dictionary.findFirst({
-      select: DICTIONARY_SELECT_OPTIONS,
+  async getIdByName(name: string): Promise<number | null> {
+    const dictionary = await this.prisma.dictionary.findFirst({
+      select: { id: true },
       where: { name },
     });
+
+    return dictionary?.id || null;
   }
 
   async updateOneById(args: UpdateDictionaryInterface): Promise<number> {

@@ -8,15 +8,14 @@ import {
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryRepo } from '@/modules/prisma/repositories/dictionary.repo';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
-import { CardTagInterface, UpdateCardInterface } from '@/modules/card/card.interface';
 
 @Injectable()
 export class DictionaryService {
   constructor(private readonly dictionaryRepo: DictionaryRepo) {}
 
   async create(payload: DictionaryAndTagsInterface, userId: number): Promise<number> {
-    const dictionary = await this.dictionaryRepo.findOneByName(payload.name);
-    if (dictionary) {
+    const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.name);
+    if (existingDictionaryId) {
       throw new HttpException('A dictionary with that name already exists', HttpStatus.BAD_REQUEST);
     }
 
