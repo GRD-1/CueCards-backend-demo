@@ -36,15 +36,27 @@ jobs:
           echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
           echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
 
-      - name: Check if base commit exists
+      - name: Get Previous Commit
+        id: prev_commit
+        run: |
+          if [ "${{ github.base_ref }}" = "" ]; then
+            echo "::set-output name=sha::0000000000000000000000000000000000000000"
+          else
+            echo "::set-output name=sha::$(git rev-parse ${{ github.base_ref }}~1)"
+          fi
+
+      - name: Check if Base Commit Exists
         id: check_base_commit
         run: |
-          git fetch origin ${{ github.base_ref }}
-          git cat-file -e ${{ github.base_ref }} 2>/dev/null || echo "base_commit_not_found"
+          if [ "${{ steps.prev_commit.outputs.sha }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "base_commit_not_found=true" >> $GITHUB_ENV
+          else
+            echo "base_commit_not_found=false" >> $GITHUB_ENV
+          fi
 
       - name: Get File Changes
+        if: env.base_commit_not_found == 'false'
         id: file_changes
-        if: steps.check_base_commit.outputs.result != 'base_commit_not_found'
         uses: trilom/file-changes-action@v1.2.4
         with:
           githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
