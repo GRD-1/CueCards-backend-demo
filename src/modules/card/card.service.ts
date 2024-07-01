@@ -2,8 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CardRepo } from '@/modules/prisma/repositories/card.repo';
 import {
   CardAndTagsInterface,
+  CardTagInterface,
   FindManyCardsFullRespInterface,
   FindManyCardsInterface,
+  UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
 
@@ -34,7 +36,23 @@ export class CardService {
   }
 
   async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
-    return this.cardRepo.updateOneById(cardId, payload);
+    const { tags: newTags, ...cardData } = payload;
+    let tagIdToDeleteArr: number[];
+    let newTagsArr: CardTagInterface[];
+    let args: UpdateCardInterface = { cardId, cardData };
+
+    if (newTags) {
+      const oldTags = await this.cardRepo.getCardTags(cardId);
+      const oldTagIdArr = oldTags.map((item) => item.tagId);
+      const newTagIdSet = new Set(newTags);
+      const uniqueInNewTags = newTags.filter((item) => !oldTagIdArr.includes(item));
+
+      tagIdToDeleteArr = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
+      newTagsArr = uniqueInNewTags.map((tagId) => ({ cardId, tagId }));
+      args = { cardId, cardData, tagIdToDeleteArr, newTagsArr };
+    }
+
+    return this.cardRepo.updateOneById(args);
   }
 
   async delete(cardId: number): Promise<number> {

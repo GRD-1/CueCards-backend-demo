@@ -3,8 +3,10 @@ import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
   CardAndTagsInterface,
+  CardTagInterface,
   FindManyCardsInterface,
   FindManyCardsRespInterface,
+  UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
 
@@ -123,33 +125,29 @@ export class CardRepo {
     });
   }
 
-  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
-    const { tags: newTagIdArr, ...cardData } = payload;
+  async updateOneById(args: UpdateCardInterface): Promise<number> {
+    const { cardId, cardData, tagIdToDeleteArr, newTagsArr } = args;
     let updatedCard: Card;
 
-    if (newTagIdArr) {
-      const oldTags = await this.prisma.cardTag.findMany({ where: { cardId } });
-      const oldTagIdArr = oldTags.map((item) => item.tagId);
-      const oldTagIdSet = new Set(oldTagIdArr);
-      const newTagIdSet = new Set(newTagIdArr);
-      const uniqueInOldTags = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
-      const uniqueInNewTags = newTagIdArr.filter((item) => !oldTagIdSet.has(item));
-      const newCardTags = uniqueInNewTags.map((tagId) => ({ cardId, tagId }));
-
+    if (tagIdToDeleteArr || newTagsArr) {
       await this.prisma
         .$transaction(async (prisma) => {
-          await prisma.cardTag.deleteMany({
-            where: {
-              cardId,
-              tagId: {
-                in: uniqueInOldTags,
+          if (tagIdToDeleteArr) {
+            await prisma.cardTag.deleteMany({
+              where: {
+                cardId,
+                tagId: {
+                  in: tagIdToDeleteArr,
+                },
               },
-            },
-          });
+            });
+          }
 
-          await prisma.cardTag.createMany({
-            data: newCardTags,
-          });
+          if (newTagsArr) {
+            await prisma.cardTag.createMany({
+              data: newTagsArr,
+            });
+          }
 
           await prisma.card.update({
             where: { id: cardId },
@@ -185,5 +183,11 @@ export class CardRepo {
     });
 
     return deletedCard.id;
+  }
+
+  async getCardTags(cardId: number): Promise<CardTagInterface[]> {
+    return this.prisma.cardTag.findMany({
+      where: { cardId },
+    });
   }
 }

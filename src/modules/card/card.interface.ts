@@ -44,3 +44,15 @@ export interface FindManyCardsFullRespInterface extends FindManyCardsRespInterfa
   records: number;
   totalRecords: number;
 }
+
+export interface CardTagInterface {
+  cardId: number;
+  tagId: number;
+}
+
+export interface UpdateCardInterface {
+  cardId: number;
+  cardData: Partial<CardInterface>;
+  tagIdToDeleteArr?: number[];
+  newTagsArr?: CardTagInterface[];
+}
