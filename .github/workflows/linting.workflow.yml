@@ -36,24 +36,28 @@ jobs:
           echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
           echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
 
-      - name: Get Previous Commit
-        id: prev_commit
-        run: echo "::set-output name=sha::$(git rev-parse HEAD~1)"
+      - name: Check if base commit exists
+        id: check_base_commit
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git cat-file -e ${{ github.base_ref }} 2>/dev/null || echo "base_commit_not_found"
 
       - name: Get File Changes
         id: file_changes
+        if: steps.check_base_commit.outputs.result != 'base_commit_not_found'
         uses: trilom/file-changes-action@v1.2.4
         with:
           githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
 
       - name: Echo File Changes
+        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified || steps.file_changes.outputs.files_removed
         run: |
           echo "Added files: ${{ steps.file_changes.outputs.files_added }}"
           echo "Modified files: ${{ steps.file_changes.outputs.files_modified }}"
           echo "Removed files: ${{ steps.file_changes.outputs.files_removed }}"
 
       - name: Format Checking
-        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
+        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified
         run: |
           echo "Format checking..."
           if npm run format -- . 'src/**/*.ts' 'test/**/*.ts'; then
@@ -64,7 +68,7 @@ jobs:
           fi
 
       - name: ESLint Checking
-        if: ${{ steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified }}
+        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified
         run: |
           echo "ESLint checking..."
           if npm run lint -- . 'src/**/*.ts' 'test/**/*.ts'; then
