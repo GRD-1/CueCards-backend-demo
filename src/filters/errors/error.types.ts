@@ -1,7 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-export class CueCardsError extends Error {}
+export class CueCardsError extends Error {
+  constructor(public code: string, message: string, public cause?: string) {
+    super(message);
+    this.name = 'CueCardsError';
+  }
+}
 
 export interface ErrorToHttpInterface {
   error: boolean;

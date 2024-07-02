@@ -8,6 +8,8 @@ import {
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryRepo } from '@/modules/prisma/repositories/dictionary.repo';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 @Injectable()
 export class DictionaryService {
@@ -16,7 +18,7 @@ export class DictionaryService {
   async create(payload: DictionaryAndTagsInterface, userId: number): Promise<number> {
     const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.name);
     if (existingDictionaryId) {
-      throw new HttpException('A dictionary with that name already exists', HttpStatus.BAD_REQUEST);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A dictionary with that name already exists');
     }
 
     return this.dictionaryRepo.create(payload, userId);

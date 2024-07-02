@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logge
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { CueCardsError, ErrorToHttpInterface, GlobalExceptionType } from '@/filters/errors/error.types';
-import { PRISMA_ERROR_CODES, PRISMA_ERROR_TO_HTTP } from '@/filters/errors/prisma-error.registry';
+import { PRISMA_ERROR_TO_HTTP } from '@/filters/errors/prisma-error.registry';
 import { CCBK_ERROR_CODES, CCBK_ERROR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 
 @Catch()
@@ -15,21 +15,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let responsePayload: ErrorToHttpInterface = CCBK_ERROR_TO_HTTP[CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR];
 
     if (exception instanceof CueCardsError) {
-      responsePayload = PRISMA_ERROR_TO_HTTP[exception.name];
+      responsePayload = CCBK_ERROR_TO_HTTP[exception.code];
+      responsePayload.errorMsg = `${responsePayload.errorMsg}: ${exception.message}`;
 
       this.logger.error(exception);
     } else if (exception instanceof HttpException) {
       responsePayload.statusCode = exception.getStatus();
       responsePayload.errorMsg = exception.message;
 
-      if (responsePayload.statusCode === HttpStatus.FORBIDDEN) {
-        responsePayload.statusCode = HttpStatus.UNAUTHORIZED;
-      }
       this.logger.error(exception);
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log('\nPrismaClientKnownRequestError:');
       const errorPayload = PRISMA_ERROR_TO_HTTP[exception.code];
-      console.log('prismaError:', errorPayload, '\n');
 
       if (errorPayload) {
         responsePayload = errorPayload;

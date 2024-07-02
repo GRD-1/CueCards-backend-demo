@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -9,6 +9,8 @@ import {
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 const DICTIONARY_SELECT_OPTIONS = {
   id: true,
@@ -53,11 +55,15 @@ export class DictionaryRepo {
 
           return newDictionary;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!newDictionary) {
-            throw new BadRequestException('failed to create a dictionary. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a dictionary!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The dictionary wasn't created!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The dictionary wasn't created!",
+              err,
+            );
           }
         });
     } else {
@@ -138,11 +144,15 @@ export class DictionaryRepo {
 
           return updatedDictionary;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!updatedDictionary) {
-            throw new BadRequestException('failed to update a dictionary. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to update a dictionary!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The dictionary wasn't updated!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The dictionary wasn't updated!",
+              err,
+            );
           }
         });
     } else {

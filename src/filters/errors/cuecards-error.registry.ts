@@ -3,10 +3,11 @@ import { HttpStatus } from '@nestjs/common';
 
 export const CCBK_ERROR_CODES = {
   INTERNAL_SERVER_ERROR: 'CCBK01',
-  TOKEN_DEACTIVATED: 'CCBK02',
-  TOKEN_ALREADY_EXISTS: 'CCBK03',
+  UNAUTHORIZED: 'CCBK02',
+  FORBIDDEN: 'CCBK03',
   INVALID_DATA: 'CCBK04',
-  USER_NOT_FOUND: 'CCBK05',
+  RECORD_NOT_FOUND: 'CCBK05',
+  UNIQUE_VIOLATION: 'CCBK06',
 };
 
 export const CCBK_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
@@ -15,24 +16,29 @@ export const CCBK_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     errorMsg: 'Internal server error',
   },
-  [CCBK_ERROR_CODES.TOKEN_DEACTIVATED]: {
+  [CCBK_ERROR_CODES.UNAUTHORIZED]: {
+    error: true,
+    statusCode: HttpStatus.UNAUTHORIZED,
+    errorMsg: 'Authorization is required',
+  },
+  [CCBK_ERROR_CODES.FORBIDDEN]: {
     error: true,
     statusCode: HttpStatus.FORBIDDEN,
-    errorMsg: 'Deactivated token',
-  },
-  [CCBK_ERROR_CODES.TOKEN_ALREADY_EXISTS]: {
-    error: true,
-    statusCode: HttpStatus.CONFLICT,
-    errorMsg: 'Token already exists',
+    errorMsg: 'Access denied',
   },
   [CCBK_ERROR_CODES.INVALID_DATA]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     errorMsg: 'Invalid data',
   },
-  [CCBK_ERROR_CODES.USER_NOT_FOUND]: {
+  [CCBK_ERROR_CODES.RECORD_NOT_FOUND]: {
     error: true,
-    statusCode: HttpStatus.BAD_REQUEST,
-    errorMsg: 'The user already exists',
+    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+    errorMsg: 'The record was not found',
+  },
+  [CCBK_ERROR_CODES.UNIQUE_VIOLATION]: {
+    error: true,
+    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+    errorMsg: 'Unique key violation',
   },
 };

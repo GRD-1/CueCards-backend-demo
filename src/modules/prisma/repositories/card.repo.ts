@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -9,6 +9,8 @@ import {
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 const CARD_SELECT_OPTIONS = {
   id: true,
@@ -70,11 +72,15 @@ export class CardRepo {
 
           return newCard;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!newCard) {
-            throw new BadRequestException('failed to create a card. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a card!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The card wasn't created!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The card wasn't created!",
+              err,
+            );
           }
         });
     } else {
@@ -161,11 +167,15 @@ export class CardRepo {
 
           return updatedCard;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!updatedCard) {
-            throw new BadRequestException('failed to update a card. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to update a card!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The card wasn't updated!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The card wasn't updated!",
+              err,
+            );
           }
         });
     } else {
