@@ -1,44 +1,47 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PRISMA_ERR_TO_HTTP_ERR } from '@/filters/errors/prisma-error-codes';
 import { Response } from 'express';
-
-type ExceptionType = Error | HttpException | Prisma.PrismaClientKnownRequestError;
+import { CueCardsError, ErrorToHttpInterface, GlobalExceptionType } from '@/filters/errors/error.types';
+import { PRISMA_ERROR_CODES, PRISMA_ERROR_TO_HTTP } from '@/filters/errors/prisma-error.registry';
+import { CCBK_ERROR_CODES, CCBK_ERROR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
 
-  async catch(exception: ExceptionType, host: ArgumentsHost): Promise<void> {
+  async catch(exception: GlobalExceptionType, host: ArgumentsHost): Promise<void> {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
-    let httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    let httpMessage = 'Internal server error';
+    let responsePayload: ErrorToHttpInterface = CCBK_ERROR_TO_HTTP[CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR];
 
-    if (exception instanceof HttpException) {
-      httpStatusCode = exception.getStatus();
-      httpMessage = exception.message;
+    if (exception instanceof CueCardsError) {
+      responsePayload = PRISMA_ERROR_TO_HTTP[exception.name];
 
-      if (httpStatusCode === HttpStatus.FORBIDDEN) {
-        httpStatusCode = HttpStatus.UNAUTHORIZED;
+      this.logger.error(exception);
+    } else if (exception instanceof HttpException) {
+      responsePayload.statusCode = exception.getStatus();
+      responsePayload.errorMsg = exception.message;
+
+      if (responsePayload.statusCode === HttpStatus.FORBIDDEN) {
+        responsePayload.statusCode = HttpStatus.UNAUTHORIZED;
       }
       this.logger.error(exception);
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      const httpError = PRISMA_ERR_TO_HTTP_ERR[exception.code];
-      httpStatusCode = httpError?.code || HttpStatus.UNPROCESSABLE_ENTITY;
-      httpMessage = httpError?.msg || 'Unprocessable data';
+      console.log('\nPrismaClientKnownRequestError:');
+      const errorPayload = PRISMA_ERROR_TO_HTTP[exception.code];
+      console.log('prismaError:', errorPayload, '\n');
 
-      this.logger.warn({ ...exception }, 'Prisma request error!');
+      if (errorPayload) {
+        responsePayload = errorPayload;
+      }
+
+      this.logger.error({ ...exception }, 'Prisma query failed!');
     } else if (exception instanceof Prisma.PrismaClientValidationError) {
-      httpStatusCode = HttpStatus.UNPROCESSABLE_ENTITY;
-      const arr = exception.message.split('\n');
-      httpMessage = arr[arr.length - 1];
-
-      this.logger.warn({ ...exception }, 'Prisma validation error!');
+      this.logger.error({ ...exception }, 'Prisma validation error!');
     } else {
       this.logger.error(exception, 'Unknown exception');
     }
 
-    response.status(httpStatusCode).send({ error: true, code: httpStatusCode, message: httpMessage });
+    response.status(responsePayload.statusCode).send(responsePayload);
   }
 }
