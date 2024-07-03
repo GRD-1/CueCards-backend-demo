@@ -13,7 +13,7 @@ export const PRISMA_ERROR_CODES = {
   NOT_FOUND: 'P2025',
 };
 
-export const PRISMA_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
+export const PRISMA_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [PRISMA_ERROR_CODES.VALUE_TOO_LONG]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -56,7 +56,7 @@ export const PRISMA_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   },
   [PRISMA_ERROR_CODES.NOT_FOUND]: {
     error: true,
-    statusCode: HttpStatus.BAD_REQUEST,
+    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     errorMsg: 'The record was not found',
   },
 };

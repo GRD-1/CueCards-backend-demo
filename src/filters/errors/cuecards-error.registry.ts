@@ -8,9 +8,10 @@ export const CCBK_ERROR_CODES = {
   INVALID_DATA: 'CCBK04',
   RECORD_NOT_FOUND: 'CCBK05',
   UNIQUE_VIOLATION: 'CCBK06',
+  BAD_REQUEST: 'CCBK07',
 };
 
-export const CCBK_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
+export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR]: {
     error: true,
     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -40,5 +41,10 @@ export const CCBK_ERROR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     errorMsg: 'Unique key violation',
+  },
+  [CCBK_ERROR_CODES.BAD_REQUEST]: {
+    error: true,
+    statusCode: HttpStatus.BAD_REQUEST,
+    errorMsg: 'Bad request',
   },
 };

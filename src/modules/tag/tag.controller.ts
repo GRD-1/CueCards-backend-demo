@@ -21,10 +21,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-// import { GetManyTagsDto, GetManyTagsRespDto, GetTagRespDto, UpdateTagDto } from '@/modules/tag/tag.dto';
 import { BadRequestExample } from '@/filters/errors/error.examples';
 import { GetManyTagsDto, GetManyTagsRespDto, GetTagRespDto } from '@/modules/tag/tag.dto';
 import { Response } from 'express';
+import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { TagService } from './tag.service';
 import { User } from '../user/decorators/user.decorator';
 import { UserEntity } from '../user/entities/user.entity';
@@ -40,7 +40,7 @@ export class TagController {
   @ApiOperation({ summary: 'Create a new tag' })
   @ApiBody({ type: String, examples: { example1: { value: { name: 'tag1' } } } })
   @ApiOkResponse({ description: 'The new tag has been created', type: Number })
-  @ApiBadRequestResponse({ description: 'Appears when the tag data is invalid', type: BadRequestExample })
+  @ApiResponse({ status: 422, description: 'Invalid tag data', schema: { example: CCBK_ERR_TO_HTTP.CCBK04 } })
   async create(@Body('name') name: string, @User() user: UserEntity): Promise<number> {
     return this.tagService.create(name, user?.id);
   }
@@ -52,7 +52,7 @@ export class TagController {
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
   @ApiQuery({ name: 'name', required: false, type: String, description: 'tag name' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyTagsRespDto })
-  @ApiBadRequestResponse({ description: 'Raises when params are invalid', type: BadRequestExample })
+  @ApiResponse({ status: 400, description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findMany(@Query() query: GetManyTagsDto, @User() user: UserEntity): Promise<GetManyTagsRespDto> {
     const authorId = query.byUser ? user.id : undefined;
 
@@ -63,8 +63,8 @@ export class TagController {
   @ApiOperation({ summary: 'Get a tag with a specific id' })
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiResponse({ status: 200, description: 'The tag has been found', type: GetTagRespDto })
-  @ApiResponse({ status: 204, description: 'The tag was not found', type: undefined })
-  @ApiBadRequestResponse({ description: 'Raises when the query parameters are invalid', type: BadRequestExample })
+  @ApiResponse({ status: 204, description: 'The tag was not found', schema: { example: {} } })
+  @ApiResponse({ status: 400, description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findOneById(@Param('tagId', ParseIntPipe) tagId: number, @Res() res: Response): Promise<Response> {
     const tag = await this.tagService.findOneById(tagId);
     if (!tag) {
@@ -79,7 +79,7 @@ export class TagController {
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiBody({ type: String, examples: { example1: { value: { name: 'tag1' } } } })
   @ApiOkResponse({ description: 'The tag has been updated', type: Number })
-  @ApiBadRequestResponse({ description: 'Record not found', type: BadRequestExample })
+  @ApiResponse({ status: 422, description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async update(@Param('tagId') tagId: number, @Body('name') name: string): Promise<number> {
     return this.tagService.updateOneById(tagId, name);
   }
@@ -88,7 +88,7 @@ export class TagController {
   @ApiOperation({ summary: 'Delete a tag with a specified id' })
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiOkResponse({ description: 'The tag has been deleted', type: Number })
-  @ApiBadRequestResponse({ description: 'Record not found', type: BadRequestExample })
+  @ApiResponse({ status: 422, description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async delete(@Param('tagId') tagId: number): Promise<number> {
     return this.tagService.delete(tagId);
   }
