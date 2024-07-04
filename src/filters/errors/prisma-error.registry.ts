@@ -9,8 +9,8 @@ export const PRISMA_ERROR_CODES = {
   RAW_QUERY_FAILED: 'P2010',
   NOT_NULL_VIOLATION: 'P2011',
   RELATION_NOT_FOUND: 'P2018',
-  INPUT_ERROR: 'P2019',
   NOT_FOUND: 'P2025',
+  INPUT_ERROR: 'P2019',
 };
 
 export const PRISMA_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
@@ -22,41 +22,41 @@ export const PRISMA_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [PRISMA_ERROR_CODES.UNIQUE_VIOLATION]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Data conflict',
+    errorMsg: 'Unique key violation',
   },
   [PRISMA_ERROR_CODES.FOREIGN_KEY_CONSTRAINT_FAILED]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Invalid data',
+    errorMsg: 'Constraint violation',
   },
   [PRISMA_ERROR_CODES.DATA_VALIDATION]: {
     error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Unprocessable Data',
+    statusCode: HttpStatus.BAD_REQUEST,
+    errorMsg: 'Invalid Data',
   },
   [PRISMA_ERROR_CODES.RAW_QUERY_FAILED]: {
     error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Data conflict',
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Internal Server Error',
   },
   [PRISMA_ERROR_CODES.NOT_NULL_VIOLATION]: {
     error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Data conflict',
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Internal Server Error',
   },
   [PRISMA_ERROR_CODES.RELATION_NOT_FOUND]: {
     error: true,
-    statusCode: HttpStatus.BAD_REQUEST,
-    errorMsg: 'Not found',
-  },
-  [PRISMA_ERROR_CODES.INPUT_ERROR]: {
-    error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Unprocessable Data',
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Internal Server Error',
   },
   [PRISMA_ERROR_CODES.NOT_FOUND]: {
     error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+    statusCode: HttpStatus.NOT_FOUND,
     errorMsg: 'The record was not found',
+  },
+  [PRISMA_ERROR_CODES.INPUT_ERROR]: {
+    error: true,
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Internal Server Error',
   },
 };

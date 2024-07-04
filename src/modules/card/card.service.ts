@@ -33,7 +33,7 @@ export class CardService {
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async findOneById(cardId: number): Promise<CardEntity | null> {
+  async findOneById(cardId: number): Promise<CardEntity> {
     return this.cardRepo.findOneById(cardId);
   }
 
@@ -42,6 +42,8 @@ export class CardService {
     let tagIdToDeleteArr: number[];
     let newTagsArr: CardTagInterface[];
     let args: UpdateCardInterface = { cardId, cardData };
+
+    await this.cardRepo.findOneById(cardId);
 
     if (newTags) {
       const oldTags = await this.cardRepo.getCardTags(cardId);

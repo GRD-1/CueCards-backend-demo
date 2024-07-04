@@ -1,18 +1,20 @@
-import { IsArray, IsInt, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class TagDto {
-  @ApiProperty({ description: 'user id', nullable: true, type: Number })
-    authorId: number | null;
-
   @ApiProperty({ description: 'tag name', nullable: false })
+  @IsString()
+  @IsNotEmpty()
     name: string;
 }
 
 export class TagRespDto extends TagDto {
-  @ApiProperty({ description: 'tag id', nullable: true })
-    id?: number;
+  @ApiProperty({ description: 'user id', nullable: true, type: Number })
+    authorId?: number | null;
+
+  @ApiProperty({ description: 'tag id', nullable: false, type: Number })
+    id: number;
 }
 
 export class GetManyTagsDto {
@@ -60,5 +62,3 @@ export class GetManyTagsRespDto {
   @Type(() => TagRespDto)
     tags: TagRespDto[];
 }
-
-export class GetTagRespDto extends TagRespDto {}

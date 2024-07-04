@@ -34,7 +34,7 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   },
   [CCBK_ERROR_CODES.RECORD_NOT_FOUND]: {
     error: true,
-    statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+    statusCode: HttpStatus.NOT_FOUND,
     errorMsg: 'The record was not found',
   },
   [CCBK_ERROR_CODES.UNIQUE_VIOLATION]: {
@@ -45,6 +45,6 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [CCBK_ERROR_CODES.BAD_REQUEST]: {
     error: true,
     statusCode: HttpStatus.BAD_REQUEST,
-    errorMsg: 'Bad request',
+    errorMsg: 'Bad Request Exception',
   },
 };

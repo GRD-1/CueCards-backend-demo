@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query 
 import {
   ApiBadRequestResponse,
   ApiBody,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
@@ -17,7 +19,6 @@ import {
   UpdateCardDto,
 } from '@/modules/card/card.dto';
 import { plainToInstance } from 'class-transformer';
-import { BadRequestExample } from '@/filters/errors/error.examples';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { CardService } from './card.service';
 import { User } from '../user/decorators/user.decorator';
@@ -32,8 +33,9 @@ export class CardController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new card' })
-  @ApiOkResponse({ description: 'The new card has been created', type: Number })
-  @ApiResponse({ status: 422, description: 'Invalid card data', schema: { example: CCBK_ERR_TO_HTTP.CCBK04 } })
+  @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   async create(@Body() payload: CreateCardDto, @User() user: UserEntity): Promise<number> {
     return this.cardService.create(payload, user?.id);
   }
@@ -45,7 +47,7 @@ export class CardController {
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
   @ApiQuery({ name: 'value', required: false, type: String, description: 'card value (both of them)' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
-  @ApiResponse({ status: 400, description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
     const authorId = query.byUser ? user?.id : undefined;
     const data = await this.cardService.findMany({ ...query, authorId });
@@ -56,10 +58,9 @@ export class CardController {
   @Get(':cardId')
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
-  @ApiResponse({ status: 200, description: 'The card has been found', type: CardRespDto })
-  @ApiResponse({ status: 204, description: 'The card was not found', schema: { example: {} } })
-  @ApiResponse({ status: 400, description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardRespDto | null> {
+  @ApiOkResponse({ description: 'The card has been found', type: CardRespDto })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardRespDto> {
     const data = await this.cardService.findOneById(cardId);
 
     return plainToInstance(CardRespDto, data, { enableImplicitConversion: true });
@@ -69,9 +70,10 @@ export class CardController {
   @ApiOperation({ summary: 'Update a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiBody({ type: UpdateCardDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
-  @ApiOkResponse({ description: 'The card has been updated', type: Number })
-  @ApiResponse({ status: 422, description: 'Invalid card data', schema: { example: CCBK_ERR_TO_HTTP.CCBK04 } })
-  @ApiResponse({ status: 422, description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  @ApiOkResponse({ description: 'The card has been updated. The id:', schema: { example: 123 } })
+  @ApiBadRequestResponse({ description: 'Invalid card data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   async update(@Param('cardId', ParseIntPipe) cardId: number, @Body() payload: UpdateCardDto): Promise<number> {
     return this.cardService.updateOneById(cardId, payload);
   }
@@ -79,8 +81,8 @@ export class CardController {
   @Delete(':cardId')
   @ApiOperation({ summary: 'Delete a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
-  @ApiOkResponse({ description: 'The card has been deleted', type: Number })
-  @ApiResponse({ status: 422, description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  @ApiOkResponse({ description: 'The card has been deleted. The id:', schema: { example: 123 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async delete(@Param('cardId', ParseIntPipe) cardId: number): Promise<number> {
     return this.cardService.delete(cardId);
   }

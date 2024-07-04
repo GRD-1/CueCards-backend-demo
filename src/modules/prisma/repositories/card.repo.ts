@@ -116,8 +116,8 @@ export class CardRepo {
     return this.prisma.card.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<CardEntity | null> {
-    return this.prisma.card.findUnique({
+  async findOneById(id: number): Promise<CardEntity> {
+    return this.prisma.card.findUniqueOrThrow({
       select: CARD_SELECT_OPTIONS,
       where: { id },
     });

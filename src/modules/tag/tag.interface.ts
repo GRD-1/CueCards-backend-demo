@@ -1,5 +1,9 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
 
+export interface TagInterface {
+  name: string;
+}
+
 export interface FindManyTagsInterface {
   page?: number;
   pageSize?: number;

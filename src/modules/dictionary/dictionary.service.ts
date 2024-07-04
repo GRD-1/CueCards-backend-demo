@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
@@ -33,7 +33,7 @@ export class DictionaryService {
     return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries };
   }
 
-  async findOneById(dictionaryId: number): Promise<DictionaryEntity | null> {
+  async findOneById(dictionaryId: number): Promise<DictionaryEntity> {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
@@ -42,6 +42,8 @@ export class DictionaryService {
     let tagIdToDeleteArr: number[];
     let newTagsArr: DictionaryTagInterface[];
     let args: UpdateDictionaryInterface = { dictionaryId, dictionaryData };
+
+    await this.dictionaryRepo.findOneById(dictionaryId);
 
     if (newTags) {
       const oldTags = await this.dictionaryRepo.getDictionaryTags(dictionaryId);

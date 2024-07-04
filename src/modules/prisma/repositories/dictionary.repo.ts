@@ -95,8 +95,8 @@ export class DictionaryRepo {
     return this.prisma.dictionary.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<DictionaryEntity | null> {
-    return this.prisma.dictionary.findUnique({
+  async findOneById(id: number): Promise<DictionaryEntity> {
+    return this.prisma.dictionary.findUniqueOrThrow({
       select: DICTIONARY_SELECT_OPTIONS,
       where: { id },
     });
