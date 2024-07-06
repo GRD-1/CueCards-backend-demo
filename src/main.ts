@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import config from '@/config/config.service';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
@@ -16,6 +16,16 @@ async function bootstrap(): Promise<void> {
       whitelist: true,
       transformOptions: {
         enableImplicitConversion: true,
+      },
+      exceptionFactory: (validationErrors: ValidationError[] = []): BadRequestException => {
+        const errors = validationErrors.map(error => {
+          return {
+            property: error.property,
+            constraints: Object.values(error.constraints || {}),
+          };
+        });
+
+        return new BadRequestException(JSON.stringify(errors));
       },
     }),
   );
