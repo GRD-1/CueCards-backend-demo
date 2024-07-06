@@ -1,9 +1,9 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { CueCardsError, ErrorToHttpInterface, GlobalExceptionType } from '@/filters/errors/error.types';
 import { PRISMA_ERR_TO_HTTP } from '@/filters/errors/prisma-error.registry';
-import { CCBK_ERROR_CODES, CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
+import { CCBK_ERR_TO_HTTP, CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -12,30 +12,37 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   async catch(exception: GlobalExceptionType, host: ArgumentsHost): Promise<void> {
     const ctx = host.switchToHttp();
     const response: Response = ctx.getResponse();
-    let responsePayload: ErrorToHttpInterface = CCBK_ERR_TO_HTTP[CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR];
+    let responsePayload: ErrorToHttpInterface = { ...CCBK_ERR_TO_HTTP[CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR] };
+    let tempErrorPayload: ErrorToHttpInterface;
 
-    if (exception instanceof CueCardsError) {
-      responsePayload = CCBK_ERR_TO_HTTP[exception.code];
-      responsePayload.errorMsg = `${responsePayload.errorMsg}: ${exception.message}`;
+    switch (true) {
+      case exception instanceof CueCardsError:
+        responsePayload = { ...CCBK_ERR_TO_HTTP[(exception as CueCardsError).code] };
+        responsePayload.errorMsg = `${responsePayload.errorMsg}: ${(exception as CueCardsError).message}`;
+        this.logger.error(exception);
+        break;
 
-      this.logger.error(exception);
-    } else if (exception instanceof HttpException) {
-      responsePayload.statusCode = exception.getStatus();
-      responsePayload.errorMsg = exception.message;
+      case exception instanceof HttpException:
+        responsePayload.statusCode = (exception as HttpException).getStatus();
+        responsePayload.errorMsg = (exception as HttpException).message;
+        this.logger.error(exception);
+        break;
 
-      this.logger.error(exception);
-    } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      const errorPayload = PRISMA_ERR_TO_HTTP[exception.code];
+      case exception instanceof Prisma.PrismaClientKnownRequestError:
+        tempErrorPayload = PRISMA_ERR_TO_HTTP[(exception as Prisma.PrismaClientKnownRequestError).code];
+        if (tempErrorPayload) {
+          responsePayload = { ...tempErrorPayload };
+        }
+        this.logger.error({ ...exception }, 'Prisma query failed!');
+        break;
 
-      if (errorPayload) {
-        responsePayload = errorPayload;
-      }
+      case exception instanceof Prisma.PrismaClientValidationError:
+        this.logger.error({ ...exception }, 'Prisma validation error!');
+        break;
 
-      this.logger.error({ ...exception }, 'Prisma query failed!');
-    } else if (exception instanceof Prisma.PrismaClientValidationError) {
-      this.logger.error({ ...exception }, 'Prisma validation error!');
-    } else {
-      this.logger.error(exception, 'Unknown exception');
+      default:
+        this.logger.error(exception, 'Unknown exception');
+        break;
     }
 
     response.status(responsePayload.statusCode).send(responsePayload);

@@ -9,7 +9,7 @@ export const PRISMA_ERROR_CODES = {
   RAW_QUERY_FAILED: 'P2010',
   NOT_NULL_VIOLATION: 'P2011',
   RELATION_NOT_FOUND: 'P2018',
-  NOT_FOUND: 'P2025',
+  RECORD_NOT_FOUND: 'P2025',
   INPUT_ERROR: 'P2019',
 };
 
@@ -49,7 +49,7 @@ export const PRISMA_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     errorMsg: 'Internal Server Error',
   },
-  [PRISMA_ERROR_CODES.NOT_FOUND]: {
+  [PRISMA_ERROR_CODES.RECORD_NOT_FOUND]: {
     error: true,
     statusCode: HttpStatus.NOT_FOUND,
     errorMsg: 'The record was not found',

@@ -11,6 +11,7 @@ import {
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { PRISMA_ERROR_CODES } from '@/filters/errors/prisma-error.registry';
 
 const DICTIONARY_SELECT_OPTIONS = {
   id: true,
@@ -118,6 +119,13 @@ export class DictionaryRepo {
     if (tagIdToDeleteArr || newTagsArr) {
       await this.prisma
         .$transaction(async (prisma) => {
+          await prisma.dictionary.update({
+            where: { id: dictionaryId },
+            data: {
+              ...dictionaryData,
+            },
+          });
+
           if (tagIdToDeleteArr) {
             await prisma.dictionaryTag.deleteMany({
               where: {
@@ -135,24 +143,18 @@ export class DictionaryRepo {
             });
           }
 
-          await prisma.dictionary.update({
-            where: { id: dictionaryId },
-            data: {
-              ...dictionaryData,
-            },
-          });
-
           return updatedDictionary;
         })
         .catch((err) => {
-          if (!updatedDictionary) {
-            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to update a dictionary!', err);
-          } else {
-            throw new CueCardsError(
-              CCBK_ERROR_CODES.INVALID_DATA,
-              "failed to link the tags. The dictionary wasn't updated!",
-              err,
-            );
+          switch (err.code) {
+            case 'P2025':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!', err);
+            case 'P2002':
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This dictionary name already exists', err);
+            case 'P2003':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The tag was not found!', err);
+            default:
+              throw err;
           }
         });
     } else {

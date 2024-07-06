@@ -40,7 +40,7 @@ model Card {
   id                Int       @id @default(autoincrement())
   authorId          Int?
   fsLanguage        String
-  fsValue           String    @db.VarChar
+  fsValue           String    @unique @db.VarChar
   fsDescription     String?   @default("") @db.VarChar
   fsMeaningVariants String[]
   fsWrongMeanings   String[]
@@ -49,7 +49,7 @@ model Card {
   fsAudio           String?   @db.VarChar
   fsHint            String?   @db.VarChar
   bsLanguage        String
-  bsValue           String    @db.VarChar
+  bsValue           String    @unique @db.VarChar
   bsDescription     String?   @default("") @db.VarChar
   bsMeaningVariants String[]
   bsWrongMeanings   String[]

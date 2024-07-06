@@ -43,8 +43,6 @@ export class DictionaryService {
     let newTagsArr: DictionaryTagInterface[];
     let args: UpdateDictionaryInterface = { dictionaryId, dictionaryData };
 
-    await this.dictionaryRepo.findOneById(dictionaryId);
-
     if (newTags) {
       const oldTags = await this.dictionaryRepo.getDictionaryTags(dictionaryId);
       const oldTagIdArr = oldTags.map((item) => item.tagId);

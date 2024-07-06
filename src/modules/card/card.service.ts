@@ -43,8 +43,6 @@ export class CardService {
     let newTagsArr: CardTagInterface[];
     let args: UpdateCardInterface = { cardId, cardData };
 
-    await this.cardRepo.findOneById(cardId);
-
     if (newTags) {
       const oldTags = await this.cardRepo.getCardTags(cardId);
       const oldTagIdArr = oldTags.map((item) => item.tagId);
