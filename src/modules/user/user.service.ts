@@ -6,6 +6,8 @@ import { UserRepo } from '@/modules/prisma/repositories/user.repo';
 import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
 import { LoginUserResponse } from '@/modules/user/interfaces/user-login-response.type';
 import { UserInterface } from '@/modules/user/interfaces/user.interface';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -19,7 +21,9 @@ export class UserService {
   async create(userData: UserInterface): Promise<number> {
     const { email } = userData;
     const oldUser = await this.userRepo.findOne(email);
-    if (oldUser?.email === email) throw new HttpException(EMAIL_ALREADY_IN_USE, HttpStatus.UNPROCESSABLE_ENTITY);
+    if (oldUser?.email === email) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A user with that email already exists');
+    }
     const newUser = new UserEntity();
     Object.assign(newUser, userData);
     const user = await this.userRepo.create(newUser);

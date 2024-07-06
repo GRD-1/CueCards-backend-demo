@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { FindManyTagsInterface, FindManyTagsRespInterface } from '@/modules/tag/tag.interface';
+import { FindManyTagsInterface, FindManyTagsRespInterface, TagInterface } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 
 const TAG_SELECT_OPTIONS = {
@@ -46,8 +46,8 @@ export class TagRepo {
     return this.prisma.tag.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<TagEntity | null> {
-    return this.prisma.tag.findUnique({
+  async findOneById(id: number): Promise<TagEntity> {
+    return this.prisma.tag.findUniqueOrThrow({
       select: TAG_SELECT_OPTIONS,
       where: { id },
     });
@@ -62,7 +62,8 @@ export class TagRepo {
     return tag?.id || null;
   }
 
-  async updateOneById(id: number, name: string): Promise<number> {
+  async updateOneById(id: number, payload: TagInterface): Promise<number> {
+    const { name } = payload;
     const updatedTag = await this.prisma.tag.update({
       where: { id },
       data: { name },

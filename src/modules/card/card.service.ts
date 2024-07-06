@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CardRepo } from '@/modules/prisma/repositories/card.repo';
 import {
   CardAndTagsInterface,
@@ -8,6 +8,8 @@ import {
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 @Injectable()
 export class CardService {
@@ -16,7 +18,7 @@ export class CardService {
   async create(payload: CardAndTagsInterface, userId: number): Promise<number> {
     const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
     if (existingCardId) {
-      throw new HttpException('A card with that value already exists', HttpStatus.BAD_REQUEST);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A card with that value already exists');
     }
 
     return this.cardRepo.create(payload, userId);
@@ -31,7 +33,7 @@ export class CardService {
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async findOneById(cardId: number): Promise<CardEntity | null> {
+  async findOneById(cardId: number): Promise<CardEntity> {
     return this.cardRepo.findOneById(cardId);
   }
 

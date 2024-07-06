@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -9,6 +9,9 @@ import {
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { PRISMA_ERROR_CODES } from '@/filters/errors/prisma-error.registry';
 
 const DICTIONARY_SELECT_OPTIONS = {
   id: true,
@@ -53,11 +56,15 @@ export class DictionaryRepo {
 
           return newDictionary;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!newDictionary) {
-            throw new BadRequestException('failed to create a dictionary. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a dictionary!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The dictionary wasn't created!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The dictionary wasn't created!",
+              err,
+            );
           }
         });
     } else {
@@ -89,8 +96,8 @@ export class DictionaryRepo {
     return this.prisma.dictionary.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<DictionaryEntity | null> {
-    return this.prisma.dictionary.findUnique({
+  async findOneById(id: number): Promise<DictionaryEntity> {
+    return this.prisma.dictionary.findUniqueOrThrow({
       select: DICTIONARY_SELECT_OPTIONS,
       where: { id },
     });
@@ -112,6 +119,13 @@ export class DictionaryRepo {
     if (tagIdToDeleteArr || newTagsArr) {
       await this.prisma
         .$transaction(async (prisma) => {
+          await prisma.dictionary.update({
+            where: { id: dictionaryId },
+            data: {
+              ...dictionaryData,
+            },
+          });
+
           if (tagIdToDeleteArr) {
             await prisma.dictionaryTag.deleteMany({
               where: {
@@ -129,20 +143,18 @@ export class DictionaryRepo {
             });
           }
 
-          await prisma.dictionary.update({
-            where: { id: dictionaryId },
-            data: {
-              ...dictionaryData,
-            },
-          });
-
           return updatedDictionary;
         })
-        .catch(() => {
-          if (!updatedDictionary) {
-            throw new BadRequestException('failed to update a dictionary. Transaction aborted!');
-          } else {
-            throw new BadRequestException("failed to link the tags. The dictionary wasn't updated!");
+        .catch((err) => {
+          switch (err.code) {
+            case 'P2025':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!', err);
+            case 'P2002':
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This dictionary name already exists', err);
+            case 'P2003':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The tag was not found!', err);
+            default:
+              throw err;
           }
         });
     } else {

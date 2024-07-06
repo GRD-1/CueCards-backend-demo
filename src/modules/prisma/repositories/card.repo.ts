@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -9,6 +9,9 @@ import {
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { PRISMA_ERROR_CODES } from '@/filters/errors/prisma-error.registry';
 
 const CARD_SELECT_OPTIONS = {
   id: true,
@@ -70,11 +73,15 @@ export class CardRepo {
 
           return newCard;
         })
-        .catch(() => {
+        .catch((err) => {
           if (!newCard) {
-            throw new BadRequestException('failed to create a card. Transaction aborted!');
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a card!', err);
           } else {
-            throw new BadRequestException("failed to link the tags. The card wasn't created!");
+            throw new CueCardsError(
+              CCBK_ERROR_CODES.INVALID_DATA,
+              "failed to link the tags. The card wasn't created!",
+              err,
+            );
           }
         });
     } else {
@@ -110,8 +117,8 @@ export class CardRepo {
     return this.prisma.card.count({ where: { authorId } });
   }
 
-  async findOneById(id: number): Promise<CardEntity | null> {
-    return this.prisma.card.findUnique({
+  async findOneById(id: number): Promise<CardEntity> {
+    return this.prisma.card.findUniqueOrThrow({
       select: CARD_SELECT_OPTIONS,
       where: { id },
     });
@@ -135,6 +142,13 @@ export class CardRepo {
     if (tagIdToDeleteArr || newTagsArr) {
       await this.prisma
         .$transaction(async (prisma) => {
+          await prisma.card.update({
+            where: { id: cardId },
+            data: {
+              ...cardData,
+            },
+          });
+
           if (tagIdToDeleteArr) {
             await prisma.cardTag.deleteMany({
               where: {
@@ -152,20 +166,18 @@ export class CardRepo {
             });
           }
 
-          await prisma.card.update({
-            where: { id: cardId },
-            data: {
-              ...cardData,
-            },
-          });
-
           return updatedCard;
         })
-        .catch(() => {
-          if (!updatedCard) {
-            throw new BadRequestException('failed to update a card. Transaction aborted!');
-          } else {
-            throw new BadRequestException("failed to link the tags. The card wasn't updated!");
+        .catch((err) => {
+          switch (err.code) {
+            case 'P2025':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+            case 'P2002':
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This card value already exists', err);
+            case 'P2003':
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The tag was not found!', err);
+            default:
+              throw err;
           }
         });
     } else {
