@@ -1,31 +1,63 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateCardDto } from './dto/create-card.dto';
-import { UpdateCardDto } from './dto/update-card.dto';
-import { CardEntity } from './entities/card.entity';
+import { CardRepo } from '@/modules/prisma/repositories/card.repo';
+import {
+  CardAndTagsInterface,
+  CardTagInterface,
+  FindManyCardsFullRespInterface,
+  FindManyCardsInterface,
+  UpdateCardInterface,
+} from '@/modules/card/card.interface';
+import { CardEntity } from '@/modules/card/card.entity';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 @Injectable()
 export class CardService {
-  constructor(@InjectRepository(CardEntity) private readonly cardRepository: Repository<CardEntity>) {}
+  constructor(private readonly cardRepo: CardRepo) {}
 
-  async create(dto: CreateCardDto): Promise<string> {
-    return 'A new card has been created!';
+  async create(payload: CardAndTagsInterface, userId: number): Promise<number> {
+    const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
+    if (existingCardId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A card with that value already exists');
+    }
+
+    return this.cardRepo.create(payload, userId);
   }
 
-  async findAll(): Promise<CardEntity[]> {
-    return this.cardRepository.find();
+  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+      this.cardRepo.findMany(args),
+      this.cardRepo.getCount(args.authorId),
+    ]);
+
+    return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async findOne(cardId: number): Promise<CardEntity | null> {
-    return this.cardRepository.findOneBy({ id: cardId });
+  async findOneById(cardId: number): Promise<CardEntity> {
+    return this.cardRepo.findOneById(cardId);
   }
 
-  async update(cardId: number, dto: UpdateCardDto): Promise<string> {
-    return `the card with id = ${cardId} has been updated!`;
+  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
+    const { tags: newTags, ...cardData } = payload;
+    let tagIdToDeleteArr: number[];
+    let newTagsArr: CardTagInterface[];
+    let args: UpdateCardInterface = { cardId, cardData };
+
+    if (newTags) {
+      const oldTags = await this.cardRepo.getCardTags(cardId);
+      const oldTagIdArr = oldTags.map((item) => item.tagId);
+      const newTagIdSet = new Set(newTags);
+      const uniqueInNewTags = newTags.filter((item) => !oldTagIdArr.includes(item));
+
+      tagIdToDeleteArr = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
+      newTagsArr = uniqueInNewTags.map((tagId) => ({ cardId, tagId }));
+      args = { cardId, cardData, tagIdToDeleteArr, newTagsArr };
+    }
+
+    return this.cardRepo.updateOneById(args);
   }
 
-  async remove(cardId: number): Promise<string> {
-    return `the card with id = ${cardId} has been deleted!`;
+  async delete(cardId: number): Promise<number> {
+    return this.cardRepo.delete(cardId);
   }
 }

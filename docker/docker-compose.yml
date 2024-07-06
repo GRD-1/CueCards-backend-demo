@@ -1,32 +1,8 @@
 version: '3.7'
 
 services:
-  node:
-    image: 'cuecards-nodeimg-${NODE_ENV}'
-    container_name: 'cuecards-node-${NODE_ENV}'
-    restart: on-failure
-    environment:
-      - DOCKER_MODE=true
-      - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
-      - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
-      - 'POSTGRES_USER=${POSTGRES_USER}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
-      - 'POSTGRES_DB=${POSTGRES_DB}'
-    build:
-      context: ..
-      dockerfile: 'docker/Dockerfile-${NODE_ENV}'
-    ports:
-      - '${NODE_PORT_EXTERNAL}:${NODE_PORT_INTERNAL}'
-      - '${NODE_DEBUG_PORT_EXTERNAL}:${NODE_DEBUG_PORT_INTERNAL}'
-    volumes:
-      - ../src:/projectFiles/src
-      - ../test:/projectFiles/test
-      - ../env:/projectFiles/env
-    depends_on:
-      - postgres
-
   postgres:
-    image: postgres:14
+    image: postgres:16
     container_name: 'cuecards-postgres-${NODE_ENV}'
     restart: unless-stopped
     environment:
