@@ -124,6 +124,10 @@ export class GetManyCardsDto {
   @ApiProperty({ description: 'card value' })
   @IsOptional()
     value?: string;
+
+  @ApiProperty({ description: 'part of the card value' })
+  @IsOptional()
+    valuePartial?: string;
 }
 
 export class GetManyCardsRespDto {

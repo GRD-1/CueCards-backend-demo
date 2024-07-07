@@ -32,6 +32,7 @@ export interface FindManyCardsInterface {
   pageSize?: number;
   authorId?: number;
   value?: string;
+  valuePartial?: string;
 }
 
 export interface FindManyCardsRespInterface {

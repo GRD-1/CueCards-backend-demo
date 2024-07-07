@@ -113,6 +113,27 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
+  async findManyPartial(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
+    const { page = 1, pageSize = 20, authorId, valuePartial } = args;
+
+    const cards = await this.prisma.card.findMany({
+      select: CARD_SELECT_OPTIONS,
+      where: {
+        AND: {
+          authorId,
+          OR: [
+            { fsValue: { contains: valuePartial } },
+            { bsValue: { contains: valuePartial } },
+          ],
+        },
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    return { page, pageSize, cards };
+  }
+
   async getCount(authorId?: number): Promise<number> {
     return this.prisma.card.count({ where: { authorId } });
   }

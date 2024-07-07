@@ -45,7 +45,8 @@ export class CardController {
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
-  @ApiQuery({ name: 'value', required: false, type: String, description: 'card value (both of them)' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'search records by card value' })
+  @ApiQuery({ name: 'valuePartial', required: false, type: String, description: 'search by partial card value match' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
