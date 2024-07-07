@@ -41,9 +41,10 @@ export class DictionaryController {
   @Get()
   @ApiOperation({ summary: 'Get dictionaries according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of entries per page' })
-  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
-  @ApiQuery({ name: 'name', required: false, type: String, description: 'dictionary title' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })
+  @ApiQuery({ name: 'name', required: false, type: String, description: 'search for records by dictionary name' })
+  @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyDictRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findMany(@Query() query: GetManyDictionariesDto, @User() user: UserEntity): Promise<GetManyDictRespDto> {

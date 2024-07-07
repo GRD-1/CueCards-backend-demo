@@ -9,6 +9,7 @@ export interface FindManyTagsInterface {
   pageSize?: number;
   authorId?: number;
   name?: string;
+  partOfName?: string;
 }
 
 export interface FindManyTagsRespInterface {
@@ -20,4 +21,9 @@ export interface FindManyTagsRespInterface {
 export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface {
   records: number;
   totalRecords: number;
+}
+
+export interface FindManyTagsConditionsInterface {
+  authorId?: number;
+  name?: { contains: string } | string;
 }

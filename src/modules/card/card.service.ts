@@ -27,7 +27,7 @@ export class CardService {
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
       this.cardRepo.findMany(args),
-      this.cardRepo.getCount(args.authorId),
+      this.cardRepo.getTotalCount(args.authorId),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };

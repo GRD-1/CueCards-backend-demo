@@ -27,7 +27,7 @@ export class DictionaryService {
   async findMany(args: FindManyDictInterface): Promise<FindManyFullRespInterface> {
     const [{ page, pageSize, dictionaries }, totalRecords] = await Promise.all([
       this.dictionaryRepo.findMany(args),
-      this.dictionaryRepo.getCount(args.authorId),
+      this.dictionaryRepo.getTotalCount(args.authorId),
     ]);
 
     return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries };

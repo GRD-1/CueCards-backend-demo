@@ -15,6 +15,7 @@ export interface FindManyDictInterface {
   pageSize?: number;
   authorId?: number;
   name?: string;
+  partOfName?: string;
 }
 
 export interface FindManyDictRespInterface {
@@ -38,4 +39,9 @@ export interface UpdateDictionaryInterface {
   dictionaryData: Partial<DictionaryInterface>;
   tagIdToDeleteArr?: number[];
   newTagsArr?: DictionaryTagInterface[];
+}
+
+export interface FindManyDictConditionsInterface {
+  authorId?: number;
+  name?: { contains: string } | string;
 }

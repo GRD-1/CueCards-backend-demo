@@ -18,7 +18,7 @@ async function bootstrap(): Promise<void> {
         enableImplicitConversion: true,
       },
       exceptionFactory: (validationErrors: ValidationError[] = []): BadRequestException => {
-        const errors = validationErrors.map(error => {
+        const errors = validationErrors.map((error) => {
           return {
             property: error.property,
             constraints: Object.values(error.constraints || {}),

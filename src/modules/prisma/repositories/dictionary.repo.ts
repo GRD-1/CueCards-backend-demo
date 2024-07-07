@@ -4,6 +4,7 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
+  FindManyDictConditionsInterface,
   FindManyDictInterface,
   FindManyDictRespInterface,
   UpdateDictionaryInterface,
@@ -11,7 +12,6 @@ import {
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { PRISMA_ERROR_CODES } from '@/filters/errors/prisma-error.registry';
 
 const DICTIONARY_SELECT_OPTIONS = {
   id: true,
@@ -80,11 +80,22 @@ export class DictionaryRepo {
   }
 
   async findMany(args: FindManyDictInterface): Promise<FindManyDictRespInterface> {
-    const { page = 1, pageSize = 20, authorId, name } = args;
+    const { page = 1, pageSize = 20, authorId, name, partOfName } = args;
+    const whereConditions: FindManyDictConditionsInterface = {};
+
+    if (authorId) {
+      whereConditions.authorId = authorId as number;
+    }
+
+    if (partOfName) {
+      whereConditions.name = { contains: partOfName };
+    } else if (name) {
+      whereConditions.name = name;
+    }
 
     const dictionaries = await this.prisma.dictionary.findMany({
       select: DICTIONARY_SELECT_OPTIONS,
-      where: { authorId, name },
+      where: whereConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -92,7 +103,7 @@ export class DictionaryRepo {
     return { page, pageSize, dictionaries };
   }
 
-  async getCount(authorId?: number): Promise<number> {
+  async getTotalCount(authorId?: number): Promise<number> {
     return this.prisma.dictionary.count({ where: { authorId } });
   }
 

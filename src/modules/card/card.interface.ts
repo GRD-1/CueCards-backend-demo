@@ -32,6 +32,7 @@ export interface FindManyCardsInterface {
   pageSize?: number;
   authorId?: number;
   value?: string;
+  partOfValue?: string;
 }
 
 export interface FindManyCardsRespInterface {
@@ -55,4 +56,9 @@ export interface UpdateCardInterface {
   cardData: Partial<CardInterface>;
   tagIdToDeleteArr?: number[];
   newTagsArr?: CardTagInterface[];
+}
+
+export interface FindManyCardsConditionsInterface {
+  authorId?: number;
+  OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
 }
