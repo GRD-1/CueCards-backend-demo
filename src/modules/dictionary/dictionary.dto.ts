@@ -51,6 +51,10 @@ export class GetManyDictionariesDto {
   @ApiProperty({ description: 'dictionary name' })
   @IsOptional()
     name?: string;
+
+  @ApiProperty({ description: 'part of the dictionary name' })
+  @IsOptional()
+    partOfName?: string;
 }
 
 export class GetManyDictRespDto {
