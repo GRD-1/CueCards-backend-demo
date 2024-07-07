@@ -29,7 +29,7 @@ import { DictionaryService } from './dictionary.service';
 export class DictionaryController {
   constructor(private readonly dictionaryService: DictionaryService) {}
 
-  @Post('')
+  @Post('create')
   @ApiOperation({ summary: 'Create a new dictionary' })
   @ApiCreatedResponse({ description: 'The new dictionary has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
@@ -53,7 +53,7 @@ export class DictionaryController {
     return plainToInstance(GetManyDictRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get(':dictionaryId')
+  @Get(':dictionaryId/get-one')
   @ApiOperation({ summary: 'Get a dictionary with a specific id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiOkResponse({ description: 'The dictionary has been found', type: DictionaryRespDto })
@@ -64,7 +64,7 @@ export class DictionaryController {
     return plainToInstance(DictionaryRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Patch(':dictionaryId')
+  @Patch(':dictionaryId/update')
   @ApiOperation({ summary: 'Update a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiBody({ type: UpdateDictionaryDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
@@ -76,7 +76,7 @@ export class DictionaryController {
     return this.dictionaryService.updateOneById(id, payload);
   }
 
-  @Delete(':dictionaryId')
+  @Delete(':dictionaryId/delete')
   @ApiOperation({ summary: 'Delete a dictionary with a specified id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiOkResponse({ description: 'The dictionary has been deleted. The id:', schema: { example: 123 } })

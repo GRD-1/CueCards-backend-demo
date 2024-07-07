@@ -31,7 +31,7 @@ import { UserEntity } from '../user/entities/user.entity';
 export class CardController {
   constructor(private readonly cardService: CardService) {}
 
-  @Post()
+  @Post('create')
   @ApiOperation({ summary: 'Create a new card' })
   @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
@@ -55,7 +55,7 @@ export class CardController {
     return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get(':cardId')
+  @Get(':cardId/get-one')
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card has been found', type: CardRespDto })
@@ -66,7 +66,7 @@ export class CardController {
     return plainToInstance(CardRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Patch(':cardId')
+  @Patch(':cardId/update')
   @ApiOperation({ summary: 'Update a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiBody({ type: UpdateCardDto, examples: { example1: { value: { tags: ['tag1', 'tag2'] } } } })
@@ -78,7 +78,7 @@ export class CardController {
     return this.cardService.updateOneById(cardId, payload);
   }
 
-  @Delete(':cardId')
+  @Delete(':cardId/delete')
   @ApiOperation({ summary: 'Delete a card with a specified id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card has been deleted. The id:', schema: { example: 123 } })

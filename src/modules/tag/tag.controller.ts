@@ -24,7 +24,7 @@ import { UserEntity } from '../user/entities/user.entity';
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @Post()
+  @Post('create')
   @ApiOperation({ summary: 'Create a new tag' })
   @ApiBody({ type: String, examples: { example1: { value: { name: 'tag1' } } } })
   @ApiCreatedResponse({ description: 'The new tag has been created. The id:', schema: { example: 123 } })
@@ -48,7 +48,7 @@ export class TagController {
     return this.tagService.findMany({ ...query, authorId });
   }
 
-  @Get(':tagId')
+  @Get(':tagId/get-one')
   @ApiOperation({ summary: 'Get a tag with a specific id' })
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiOkResponse({ description: 'The tag has been found', type: TagRespDto })
@@ -57,7 +57,7 @@ export class TagController {
     return this.tagService.findOneById(tagId);
   }
 
-  @Patch(':tagId')
+  @Patch(':tagId/update')
   @ApiOperation({ summary: 'Update a tag with a specified id' })
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiBody({ type: String, examples: { example1: { value: { name: 'tag1' } } } })
@@ -69,7 +69,7 @@ export class TagController {
     return this.tagService.updateOneById(tagId, payload);
   }
 
-  @Delete(':tagId')
+  @Delete(':tagId/delete')
   @ApiOperation({ summary: 'Delete a tag with a specified id' })
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiOkResponse({ description: 'The tag has been deleted. The id:', schema: { example: 123 } })
