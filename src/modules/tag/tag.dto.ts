@@ -37,6 +37,10 @@ export class GetManyTagsDto {
   @ApiProperty({ description: 'tag name' })
   @IsOptional()
     name?: string;
+
+  @ApiProperty({ description: 'part of the tag name' })
+  @IsOptional()
+    partOfName?: string;
 }
 
 export class GetManyTagsRespDto {

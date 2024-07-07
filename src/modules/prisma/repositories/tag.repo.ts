@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { FindManyTagsInterface, FindManyTagsRespInterface, TagInterface } from '@/modules/tag/tag.interface';
+import {
+  FindManyTagsConditionsInterface,
+  FindManyTagsInterface,
+  FindManyTagsRespInterface,
+  TagInterface,
+} from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 
 const TAG_SELECT_OPTIONS = {
@@ -25,16 +30,23 @@ export class TagRepo {
   }
 
   async findMany(args: FindManyTagsInterface): Promise<FindManyTagsRespInterface> {
-    const { page = 1, pageSize = 20, authorId, name } = args;
+    const { page = 1, pageSize = 20, authorId, name, partOfName } = args;
+
+    const whereConditions: FindManyTagsConditionsInterface = {};
+
+    if (authorId) {
+      whereConditions.authorId = authorId as number;
+    }
+
+    if (partOfName) {
+      whereConditions.name = { contains: partOfName };
+    } else if (name) {
+      whereConditions.name = name;
+    }
 
     const tags = await this.prisma.tag.findMany({
       select: TAG_SELECT_OPTIONS,
-      where: {
-        AND: {
-          authorId,
-          name,
-        },
-      },
+      where: whereConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -42,7 +54,7 @@ export class TagRepo {
     return { page, pageSize, tags };
   }
 
-  async getCount(authorId?: number): Promise<number> {
+  async getTotalCount(authorId?: number): Promise<number> {
     return this.prisma.tag.count({ where: { authorId } });
   }
 
