@@ -7,11 +7,11 @@ import {
   FindManyCardsInterface,
   FindManyCardsRespInterface,
   UpdateCardInterface,
+  WhereConditionsInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { PRISMA_ERROR_CODES } from '@/filters/errors/prisma-error.registry';
 
 const CARD_SELECT_OPTIONS = {
   id: true,
@@ -97,15 +97,22 @@ export class CardRepo {
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
-    const { page = 1, pageSize = 20, authorId, value } = args;
+    const { page = 1, pageSize = 20, authorId, value, partOfValue } = args;
+    const whereConditions: WhereConditionsInterface = {};
+
+    if (authorId) {
+      whereConditions.authorId = authorId as number;
+    }
+
+    if (partOfValue) {
+      whereConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
+    } else if (value) {
+      whereConditions.OR = [{ fsValue: value }, { bsValue: value }];
+    }
+
     const cards = await this.prisma.card.findMany({
       select: CARD_SELECT_OPTIONS,
-      where: {
-        AND: {
-          authorId,
-          OR: [{ fsValue: value }, { bsValue: value }],
-        },
-      },
+      where: whereConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -113,28 +120,7 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
-  async findManyPartial(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
-    const { page = 1, pageSize = 20, authorId, valuePartial } = args;
-
-    const cards = await this.prisma.card.findMany({
-      select: CARD_SELECT_OPTIONS,
-      where: {
-        AND: {
-          authorId,
-          OR: [
-            { fsValue: { contains: valuePartial } },
-            { bsValue: { contains: valuePartial } },
-          ],
-        },
-      },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    return { page, pageSize, cards };
-  }
-
-  async getCount(authorId?: number): Promise<number> {
+  async getTotalCount(authorId?: number): Promise<number> {
     return this.prisma.card.count({ where: { authorId } });
   }
 

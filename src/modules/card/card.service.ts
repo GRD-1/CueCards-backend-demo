@@ -25,22 +25,10 @@ export class CardService {
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
-    let page: number;
-    let pageSize: number;
-    let cards: CardEntity[];
-    let totalRecords: number;
-
-    if (args.valuePartial) {
-      [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-        this.cardRepo.findManyPartial(args),
-        this.cardRepo.getCount(args.authorId),
-      ]);
-    } else {
-      [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-        this.cardRepo.findMany(args),
-        this.cardRepo.getCount(args.authorId),
-      ]);
-    }
+    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+      this.cardRepo.findMany(args),
+      this.cardRepo.getTotalCount(args.authorId),
+    ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
