@@ -4,10 +4,10 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
+  FindManyDictConditionsInterface,
   FindManyDictInterface,
   FindManyDictRespInterface,
   UpdateDictionaryInterface,
-  WhereConditionsInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
@@ -81,7 +81,7 @@ export class DictionaryRepo {
 
   async findMany(args: FindManyDictInterface): Promise<FindManyDictRespInterface> {
     const { page = 1, pageSize = 20, authorId, name, partOfName } = args;
-    const whereConditions: WhereConditionsInterface = {};
+    const whereConditions: FindManyDictConditionsInterface = {};
 
     if (authorId) {
       whereConditions.authorId = authorId as number;
@@ -103,7 +103,7 @@ export class DictionaryRepo {
     return { page, pageSize, dictionaries };
   }
 
-  async getCount(authorId?: number): Promise<number> {
+  async getTotalCount(authorId?: number): Promise<number> {
     return this.prisma.dictionary.count({ where: { authorId } });
   }
 

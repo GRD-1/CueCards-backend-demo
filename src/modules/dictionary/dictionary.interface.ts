@@ -41,7 +41,7 @@ export interface UpdateDictionaryInterface {
   newTagsArr?: DictionaryTagInterface[];
 }
 
-export interface WhereConditionsInterface {
+export interface FindManyDictConditionsInterface {
   authorId?: number;
   name?: { contains: string } | string;
 }
