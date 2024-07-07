@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { CueCardsError, ErrorToHttpInterface, GlobalExceptionType } from '@/filters/errors/error.types';
@@ -25,6 +25,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case exception instanceof HttpException:
         responsePayload.statusCode = (exception as HttpException).getStatus();
         responsePayload.errorMsg = (exception as HttpException).message;
+        if (responsePayload.statusCode === HttpStatus.NOT_FOUND) {
+          responsePayload.errorMsg = `The path was not found: ${responsePayload.errorMsg}`;
+        }
         this.logger.error(exception);
         break;
 
