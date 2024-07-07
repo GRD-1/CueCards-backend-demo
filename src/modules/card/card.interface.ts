@@ -58,7 +58,7 @@ export interface UpdateCardInterface {
   newTagsArr?: CardTagInterface[];
 }
 
-export interface WhereConditionsInterface {
+export interface FindManyCardsConditionsInterface {
   authorId?: number;
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
 }

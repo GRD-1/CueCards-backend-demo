@@ -4,10 +4,10 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
   CardAndTagsInterface,
   CardTagInterface,
+  FindManyCardsConditionsInterface,
   FindManyCardsInterface,
   FindManyCardsRespInterface,
   UpdateCardInterface,
-  WhereConditionsInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
@@ -98,7 +98,7 @@ export class CardRepo {
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
     const { page = 1, pageSize = 20, authorId, value, partOfValue } = args;
-    const whereConditions: WhereConditionsInterface = {};
+    const whereConditions: FindManyCardsConditionsInterface = {};
 
     if (authorId) {
       whereConditions.authorId = authorId as number;
