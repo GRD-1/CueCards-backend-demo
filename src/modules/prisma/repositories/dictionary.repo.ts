@@ -94,8 +94,8 @@ export class DictionaryRepo {
     return { page, pageSize, dictionaries };
   }
 
-  async getTotalCount(authorId: number, byUser?: boolean): Promise<number> {
-    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions({ authorId, byUser });
+  async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
+    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
 
     return this.prisma.dictionary.count({ where: searchConditions });
   }
