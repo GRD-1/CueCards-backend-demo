@@ -1,14 +1,9 @@
-import { Body, Controller, Get, HttpStatus, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
-import { LoginUserResponse } from '@/modules/user/interfaces/user-login-response.type';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './entities/user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { User } from './decorators/user.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
+import { UserId } from './decorators/user-id.decorator';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -31,8 +26,8 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponseDto })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async getCurrentUser(@User() user: UserEntity): Promise<UserResponseDto | null> {
-    return this.userService.findOneById(user.id);
+  async getCurrentUser(@UserId() userId: number): Promise<UserResponseDto | null> {
+    return this.userService.findOneById(userId);
   }
 
   // @Put()

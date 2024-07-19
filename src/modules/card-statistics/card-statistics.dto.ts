@@ -20,16 +20,6 @@ export class CardStatsDto {
     bsCorrectAnswers: number;
 }
 
-export class CardStatsRespDto extends CardStatsDto {
-  @ApiProperty({ description: 'card id', nullable: true, example: 1 })
-  @IsInt()
-    cardId: number;
-
-  @ApiProperty({ description: 'user id', nullable: true, example: 1 })
-  @IsInt()
-    authorId: number;
-}
-
 export class UpdateStatsDto {
   @ApiProperty({ description: 'the side of card', nullable: true, example: 'frontSide' })
   @IsIn(Object.values(CardSide))

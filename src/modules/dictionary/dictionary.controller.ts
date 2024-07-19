@@ -11,8 +11,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { User } from '@/modules/user/decorators/user.decorator';
-import { UserEntity } from '@/modules/user/entities/user.entity';
+import { UserId } from '@/modules/user/decorators/user-id.decorator';
 import {
   CreateDictionaryDto,
   DictionaryRespDto,
@@ -34,8 +33,8 @@ export class DictionaryController {
   @ApiCreatedResponse({ description: 'The new dictionary has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: CreateDictionaryDto, @User() user: UserEntity): Promise<number> {
-    return this.dictionaryService.create(payload, user?.id);
+  async create(@Body() payload: CreateDictionaryDto, @UserId() userId: number): Promise<number> {
+    return this.dictionaryService.create(payload, userId);
   }
 
   @Get()
@@ -47,8 +46,8 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyDictRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyDictionariesDto, @User() user: UserEntity): Promise<GetManyDictRespDto> {
-    const authorId = query.byUser ? user.id : undefined;
+  async findMany(@Query() query: GetManyDictionariesDto, @UserId() userId: number): Promise<GetManyDictRespDto> {
+    const authorId = query.byUser ? userId : undefined;
     const data = await this.dictionaryService.findMany({ ...query, authorId });
 
     return plainToInstance(GetManyDictRespDto, data, { enableImplicitConversion: true });

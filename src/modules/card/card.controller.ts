@@ -22,8 +22,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { CardService } from './card.service';
-import { User } from '../user/decorators/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('cards')
 // @ApiBearerAuth()
@@ -37,8 +36,8 @@ export class CardController {
   @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: CreateCardDto, @User() user: UserEntity): Promise<number> {
-    return this.cardService.create(payload, user?.id);
+  async create(@Body() payload: CreateCardDto, @UserId() userId: number): Promise<number> {
+    return this.cardService.create(payload, userId);
   }
 
   @Get()
@@ -50,8 +49,8 @@ export class CardController {
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetManyCardsRespDto> {
-    const authorId = query.byUser ? user?.id : undefined;
+  async findMany(@Query() query: GetManyCardsDto, @UserId() userId: number): Promise<GetManyCardsRespDto> {
+    const authorId = query.byUser ? userId : undefined;
     const data = await this.cardService.findMany({ ...query, authorId });
 
     return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
@@ -66,8 +65,8 @@ export class CardController {
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
   @ApiOkResponse({ description: 'Successful request', type: GetCardListRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getList(@Query() query: GetManyCardsDto, @User() user: UserEntity): Promise<GetCardListRespDto> {
-    const authorId = query.byUser ? user?.id : undefined;
+  async getList(@Query() query: GetManyCardsDto, @UserId() userId: number): Promise<GetCardListRespDto> {
+    const authorId = query.byUser ? userId : undefined;
     const data = await this.cardService.getList({ ...query, authorId });
 
     return plainToInstance(GetCardListRespDto, data, { enableImplicitConversion: true });

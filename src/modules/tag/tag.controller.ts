@@ -14,8 +14,7 @@ import {
 import { GetManyTagsDto, GetManyTagsRespDto, TagDto, TagRespDto } from '@/modules/tag/tag.dto';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { TagService } from './tag.service';
-import { User } from '../user/decorators/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('tags')
 // @ApiBearerAuth()
@@ -30,8 +29,8 @@ export class TagController {
   @ApiCreatedResponse({ description: 'The new tag has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: TagDto, @User() user: UserEntity): Promise<number> {
-    return this.tagService.create(payload.name, user?.id);
+  async create(@Body() payload: TagDto, @UserId() userId: number): Promise<number> {
+    return this.tagService.create(payload.name, userId);
   }
 
   @Get()
@@ -43,8 +42,8 @@ export class TagController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyTagsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyTagsDto, @User() user: UserEntity): Promise<GetManyTagsRespDto> {
-    const authorId = query.byUser ? user.id : undefined;
+  async findMany(@Query() query: GetManyTagsDto, @UserId() userId: number): Promise<GetManyTagsRespDto> {
+    const authorId = query.byUser ? userId : undefined;
 
     return this.tagService.findMany({ ...query, authorId });
   }

@@ -13,8 +13,7 @@ import { CCBK_ERR_TO_HTTP, CCBK_ERROR_CODES } from '@/filters/errors/cuecards-er
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CardStatisticsService } from '@/modules/card-statistics/card-statistics.service';
 import { UpdateStatsDto } from '@/modules/card-statistics/card-statistics.dto';
-import { User } from '../user/decorators/user.decorator';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('card-statistics')
 // @ApiBearerAuth()
@@ -34,12 +33,12 @@ export class CardStatsController {
   async updateCardStatistics(
     @Param('cardId', ParseIntPipe) cardId: number,
     @Body() payload: UpdateStatsDto,
-    @User() user: UserEntity,
+    @UserId() userId: number,
   ): Promise<void> {
-    if (!user?.id) {
+    if (!userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'user is not authorised');
     }
 
-    return this.cardStatsService.updateCardStatistics(cardId, user.id, payload);
+    return this.cardStatsService.updateCardStatistics(cardId, userId, payload);
   }
 }
