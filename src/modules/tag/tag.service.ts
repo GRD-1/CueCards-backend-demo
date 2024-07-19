@@ -31,11 +31,22 @@ export class TagService {
     return this.tagRepo.findOneById(tagId);
   }
 
-  async updateOneById(tagId: number, payload: TagInterface): Promise<number> {
+  async updateOneById(tagId: number, payload: TagInterface, userId: number): Promise<number> {
+    await this.checkEditingRights(tagId, userId);
+
     return this.tagRepo.updateOneById(tagId, payload);
   }
 
-  async delete(tagId: number): Promise<number> {
+  async delete(tagId: number, userId: number): Promise<number> {
+    await this.checkEditingRights(tagId, userId);
+
     return this.tagRepo.delete(tagId);
+  }
+
+  async checkEditingRights(tagId: number, userId: number): Promise<void> {
+    const tag = await this.tagRepo.findOneById(tagId);
+    if (tag.authorId !== userId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
+    }
   }
 }

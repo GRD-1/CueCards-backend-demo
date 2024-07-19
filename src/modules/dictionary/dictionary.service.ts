@@ -37,27 +37,38 @@ export class DictionaryService {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
-  async updateOneById(dictionaryId: number, payload: Partial<DictionaryAndTagsInterface>): Promise<number> {
+  async updateOneById(dictId: number, payload: Partial<DictionaryAndTagsInterface>, userId: number): Promise<number> {
     const { tags: newTags, ...dictionaryData } = payload;
     let tagIdToDeleteArr: number[];
     let newTagsArr: DictionaryTagInterface[];
-    let args: UpdateDictionaryInterface = { dictionaryId, dictionaryData };
+    let args: UpdateDictionaryInterface = { dictionaryId: dictId, dictionaryData };
+
+    await this.checkEditingRights(dictId, userId);
 
     if (newTags) {
-      const oldTags = await this.dictionaryRepo.getDictionaryTags(dictionaryId);
+      const oldTags = await this.dictionaryRepo.getDictionaryTags(dictId);
       const oldTagIdArr = oldTags.map((item) => item.tagId);
       const newTagIdSet = new Set(newTags);
       const uniqueInNewTags = newTags.filter((item) => !oldTagIdArr.includes(item));
 
       tagIdToDeleteArr = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
-      newTagsArr = uniqueInNewTags.map((tagId) => ({ dictionaryId, tagId }));
-      args = { dictionaryId, dictionaryData, tagIdToDeleteArr, newTagsArr };
+      newTagsArr = uniqueInNewTags.map((tagId) => ({ dictionaryId: dictId, tagId }));
+      args = { dictionaryId: dictId, dictionaryData, tagIdToDeleteArr, newTagsArr };
     }
 
     return this.dictionaryRepo.updateOneById(args);
   }
 
-  async delete(dictionaryId: number): Promise<number> {
+  async delete(dictionaryId: number, userId: number): Promise<number> {
+    await this.checkEditingRights(dictionaryId, userId);
+
     return this.dictionaryRepo.delete(dictionaryId);
+  }
+
+  async checkEditingRights(dictionaryId: number, userId: number): Promise<void> {
+    const dictionary = await this.dictionaryRepo.findOneById(dictionaryId);
+    if (dictionary.authorId !== userId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
+    }
   }
 }

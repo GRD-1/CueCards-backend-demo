@@ -3,6 +3,7 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -63,8 +64,9 @@ export class TagController {
   @ApiBadRequestResponse({ description: 'Invalid tag data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async update(@Param('tagId') tagId: number, @Body() payload: TagDto): Promise<number> {
-    return this.tagService.updateOneById(tagId, payload);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async update(@Param('tagId') tagId: number, @Body() payload: TagDto, @UserId() userId: number): Promise<number> {
+    return this.tagService.updateOneById(tagId, payload, userId);
   }
 
   @Delete(':tagId/delete')
@@ -72,7 +74,8 @@ export class TagController {
   @ApiParam({ name: 'tagId', required: true, description: 'Tag id' })
   @ApiOkResponse({ description: 'The tag has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async delete(@Param('tagId') tagId: number): Promise<number> {
-    return this.tagService.delete(tagId);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async delete(@Param('tagId') tagId: number, @UserId() userId: number): Promise<number> {
+    return this.tagService.delete(tagId, userId);
   }
 }
