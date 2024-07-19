@@ -148,8 +148,8 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
-  async getTotalCount(authorId: number, byUser?: boolean): Promise<number> {
-    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions({ authorId, byUser });
+  async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
+    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 
     return this.prisma.card.count({ where: searchConditions });
   }
