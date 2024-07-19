@@ -117,7 +117,7 @@ export class CardRepo {
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
     const { page = 1, pageSize = 20 } = args;
-    const searchConditions = this.getCardSearchConditions(args);
+    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
       select: {
@@ -133,7 +133,7 @@ export class CardRepo {
 
   async getList(args: FindManyCardsInterface): Promise<GetCardListRespInterface> {
     const { page = 1, pageSize = 20, authorId } = args;
-    const searchConditions = this.getCardSearchConditions(args);
+    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
       select: {
@@ -148,13 +148,17 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
+  async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
+    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
+
+    return this.prisma.card.count({ where: searchConditions });
+  }
+
   getCardSearchConditions(args: SearchConditionsArgsType): FindManyCardsConditionsInterface {
-    const { authorId, value, partOfValue } = args;
+    const { authorId, byUser, value, partOfValue } = args;
     const searchConditions: FindManyCardsConditionsInterface = {};
 
-    if (authorId) {
-      searchConditions.authorId = authorId as number;
-    }
+    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
 
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
@@ -163,10 +167,6 @@ export class CardRepo {
     }
 
     return searchConditions;
-  }
-
-  async getTotalCount(authorId?: number): Promise<number> {
-    return this.prisma.card.count({ where: { authorId } });
   }
 
   async findOneById(id: number): Promise<CardEntity> {

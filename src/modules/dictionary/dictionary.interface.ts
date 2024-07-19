@@ -13,10 +13,13 @@ export interface DictionaryAndTagsInterface extends DictionaryInterface {
 export interface FindManyDictInterface {
   page?: number;
   pageSize?: number;
-  authorId?: number;
+  byUser?: boolean;
+  authorId: number;
   name?: string;
   partOfName?: string;
 }
+
+export type SearchConditionsArgsType = Omit<FindManyDictInterface, 'page' | 'pageSize'>;
 
 export interface FindManyDictRespInterface {
   page: number;
@@ -42,6 +45,6 @@ export interface UpdateDictionaryInterface {
 }
 
 export interface FindManyDictConditionsInterface {
-  authorId?: number;
+  authorId?: number | { in: number[] };
   name?: { contains: string } | string;
 }

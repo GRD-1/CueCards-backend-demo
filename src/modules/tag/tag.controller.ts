@@ -42,9 +42,7 @@ export class TagController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyTagsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyTagsDto, @UserId() userId: number): Promise<GetManyTagsRespDto> {
-    const authorId = query.byUser ? userId : undefined;
-
+  async findMany(@Query() query: GetManyTagsDto, @UserId() authorId: number): Promise<GetManyTagsRespDto> {
     return this.tagService.findMany({ ...query, authorId });
   }
 
