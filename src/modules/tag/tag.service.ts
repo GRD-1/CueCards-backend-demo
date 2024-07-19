@@ -21,7 +21,7 @@ export class TagService {
   async findMany(args: FindManyTagsInterface): Promise<FindManyTagsFullRespInterface> {
     const [{ page, pageSize, tags }, totalRecords] = await Promise.all([
       this.tagRepo.findMany(args),
-      this.tagRepo.getTotalCount(args.authorId),
+      this.tagRepo.getTotalCount(args),
     ]);
 
     return { page, pageSize, records: tags.length, totalRecords, tags };

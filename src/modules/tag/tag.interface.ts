@@ -7,10 +7,13 @@ export interface TagInterface {
 export interface FindManyTagsInterface {
   page?: number;
   pageSize?: number;
-  authorId?: number;
+  byUser?: boolean;
+  authorId: number;
   name?: string;
   partOfName?: string;
 }
+
+export type SearchConditionsArgsType = Omit<FindManyTagsInterface, 'page' | 'pageSize'>;
 
 export interface FindManyTagsRespInterface {
   page: number;
@@ -24,6 +27,6 @@ export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface
 }
 
 export interface FindManyTagsConditionsInterface {
-  authorId?: number;
+  authorId?: number | { in: number[] };
   name?: { contains: string } | string;
 }

@@ -4,6 +4,7 @@ import {
   FindManyTagsConditionsInterface,
   FindManyTagsInterface,
   FindManyTagsRespInterface,
+  SearchConditionsArgsType,
   TagInterface,
 } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
@@ -30,23 +31,12 @@ export class TagRepo {
   }
 
   async findMany(args: FindManyTagsInterface): Promise<FindManyTagsRespInterface> {
-    const { page = 1, pageSize = 20, authorId, name, partOfName } = args;
-
-    const whereConditions: FindManyTagsConditionsInterface = {};
-
-    if (authorId) {
-      whereConditions.authorId = authorId as number;
-    }
-
-    if (partOfName) {
-      whereConditions.name = { contains: partOfName };
-    } else if (name) {
-      whereConditions.name = name;
-    }
+    const { page = 1, pageSize = 20 } = args;
+    const searchConditions: FindManyTagsConditionsInterface = this.getTagSearchConditions(args);
 
     const tags = await this.prisma.tag.findMany({
       select: TAG_SELECT_OPTIONS,
-      where: whereConditions,
+      where: searchConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -54,8 +44,25 @@ export class TagRepo {
     return { page, pageSize, tags };
   }
 
-  async getTotalCount(authorId?: number): Promise<number> {
-    return this.prisma.tag.count({ where: { authorId } });
+  async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
+    const searchConditions: FindManyTagsConditionsInterface = this.getTagSearchConditions(args);
+
+    return this.prisma.tag.count({ where: searchConditions });
+  }
+
+  getTagSearchConditions(args: SearchConditionsArgsType): FindManyTagsConditionsInterface {
+    const { authorId, byUser, name, partOfName } = args;
+    const searchConditions: FindManyTagsConditionsInterface = {};
+
+    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+
+    if (partOfName) {
+      searchConditions.name = { contains: partOfName };
+    } else if (name) {
+      searchConditions.name = name;
+    }
+
+    return searchConditions;
   }
 
   async findOneById(id: number): Promise<TagEntity> {
