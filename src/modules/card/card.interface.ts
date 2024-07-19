@@ -1,4 +1,4 @@
-import { CardEntity } from '@/modules/card/card.entity';
+import { CardEntity, CardListItemEntity } from '@/modules/card/card.entity';
 
 export interface CardInterface {
   id?: number;
@@ -33,7 +33,10 @@ export interface FindManyCardsInterface {
   authorId?: number;
   value?: string;
   partOfValue?: string;
+  getList?: boolean;
 }
+
+export type SearchConditionsArgsType = Omit<FindManyCardsInterface, 'page' | 'pageSize'>;
 
 export interface FindManyCardsRespInterface {
   page: number;
@@ -61,4 +64,15 @@ export interface UpdateCardInterface {
 export interface FindManyCardsConditionsInterface {
   authorId?: number;
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
+}
+
+export interface GetCardListRespInterface {
+  page: number;
+  pageSize: number;
+  cards: CardListItemEntity[];
+}
+
+export interface GetCardListFullRespInterface extends GetCardListRespInterface {
+  records: number;
+  totalRecords: number;
 }

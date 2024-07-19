@@ -7,6 +7,8 @@ import {
   FindManyCardsConditionsInterface,
   FindManyCardsInterface,
   FindManyCardsRespInterface,
+  GetCardListRespInterface,
+  SearchConditionsArgsType,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
@@ -34,6 +36,23 @@ const CARD_SELECT_OPTIONS = {
   bsSynonyms: true,
   bsAudio: true,
   bsHint: true,
+  tags: {
+    select: {
+      tag: {
+        select: {
+          id: true,
+          authorId: true,
+          name: true,
+        },
+      },
+    },
+  },
+};
+
+const CARD_LIST_SELECT_OPTIONS = {
+  id: true,
+  fsValue: true,
+  bsValue: true,
   tags: {
     select: {
       tag: {
@@ -97,27 +116,53 @@ export class CardRepo {
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
-    const { page = 1, pageSize = 20, authorId, value, partOfValue } = args;
-    const whereConditions: FindManyCardsConditionsInterface = {};
-
-    if (authorId) {
-      whereConditions.authorId = authorId as number;
-    }
-
-    if (partOfValue) {
-      whereConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
-    } else if (value) {
-      whereConditions.OR = [{ fsValue: value }, { bsValue: value }];
-    }
+    const { page = 1, pageSize = 20 } = args;
+    const searchConditions = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
-      select: CARD_SELECT_OPTIONS,
-      where: whereConditions,
+      select: {
+        ...CARD_SELECT_OPTIONS,
+      },
+      where: searchConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     return { page, pageSize, cards };
+  }
+
+  async getList(args: FindManyCardsInterface): Promise<GetCardListRespInterface> {
+    const { page = 1, pageSize = 20, authorId } = args;
+    const searchConditions = this.getCardSearchConditions(args);
+
+    const cards = await this.prisma.card.findMany({
+      select: {
+        ...CARD_LIST_SELECT_OPTIONS,
+        statistics: { where: { authorId } },
+      },
+      where: searchConditions,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    return { page, pageSize, cards };
+  }
+
+  getCardSearchConditions(args: SearchConditionsArgsType): FindManyCardsConditionsInterface {
+    const { authorId, value, partOfValue } = args;
+    const searchConditions: FindManyCardsConditionsInterface = {};
+
+    if (authorId) {
+      searchConditions.authorId = authorId as number;
+    }
+
+    if (partOfValue) {
+      searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
+    } else if (value) {
+      searchConditions.OR = [{ fsValue: value }, { bsValue: value }];
+    }
+
+    return searchConditions;
   }
 
   async getTotalCount(authorId?: number): Promise<number> {
