@@ -30,10 +30,10 @@ export interface CardAndTagsInterface extends CardInterface {
 export interface FindManyCardsInterface {
   page?: number;
   pageSize?: number;
-  authorId?: number;
+  byUser?: boolean;
+  authorId: number;
   value?: string;
   partOfValue?: string;
-  getList?: boolean;
 }
 
 export type SearchConditionsArgsType = Omit<FindManyCardsInterface, 'page' | 'pageSize'>;
@@ -62,7 +62,7 @@ export interface UpdateCardInterface {
 }
 
 export interface FindManyCardsConditionsInterface {
-  authorId?: number;
+  authorId?: number | { in: number[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
 }
 

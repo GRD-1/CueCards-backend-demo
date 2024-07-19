@@ -26,18 +26,20 @@ export class CardService {
   }
 
   async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+    const { authorId, byUser } = args;
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
       this.cardRepo.findMany(args),
-      this.cardRepo.getTotalCount(args.authorId),
+      this.cardRepo.getTotalCount(authorId, byUser),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
   async getList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+    const { authorId, byUser } = args;
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
       this.cardRepo.getList(args),
-      this.cardRepo.getTotalCount(args.authorId),
+      this.cardRepo.getTotalCount(authorId, byUser),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
