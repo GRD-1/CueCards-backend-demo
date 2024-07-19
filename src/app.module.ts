@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { PrismaModule } from '@/modules/prisma/prisma.module';
 import { TagModule } from '@/modules/tag/tag.module';
+import { CardStatisticsModule } from '@/modules/card-statistics/card-statistics.module';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
 import { TranslatorModule } from './modules/translator/translator.module';
@@ -17,6 +18,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     PrismaModule,
     TranslatorModule,
     CardModule,
+    CardStatisticsModule,
     DictionaryModule,
     TrainingListModule,
     TagModule,
