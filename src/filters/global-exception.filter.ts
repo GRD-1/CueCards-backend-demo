@@ -45,6 +45,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       default:
         this.logger.error(exception, 'Unknown exception');
+        this.logger.error(exception.stack);
         break;
     }
 

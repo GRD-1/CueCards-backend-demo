@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { TagRespDto } from '@/modules/tag/tag.dto';
+import { CardStatsDto } from '@/modules/card-statistics/card-statistics.dto';
 
 export class CardDto {
   @ApiProperty({ description: 'user id', nullable: true, example: 1 })
@@ -152,6 +153,55 @@ export class GetManyCardsRespDto {
   @ValidateNested({ each: true })
   @Type(() => CardRespDto)
     cards: CardRespDto[];
+}
+
+export class CardListItemDto {
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
+
+  @ApiProperty({ description: 'front side value', nullable: false, example: 'text text text' })
+  @IsString()
+    fsValue: string;
+
+  @ApiProperty({ description: 'back side value', nullable: false, example: 'text' })
+  @IsString()
+    bsValue: string;
+
+  @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
+  @IsArray()
+  @Type(() => TagRespDto)
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
+    tags: TagRespDto[];
+
+  @ApiProperty({ description: 'a card statistics', nullable: true, type: CardStatsDto })
+  @IsArray()
+  @Type(() => CardStatsDto)
+  @Transform(({ value }) => (value[0] ? value[0] : {}), { toClassOnly: true })
+    statistics: CardStatsDto;
+}
+
+export class GetCardListRespDto {
+  @ApiProperty({ description: 'page number', nullable: false })
+  @IsNumber()
+    page: number;
+
+  @ApiProperty({ description: 'number of records per page', nullable: false })
+  @IsNumber()
+    pageSize: number;
+
+  @ApiProperty({ description: 'number of records in the response', nullable: false })
+  @IsNumber()
+    records: number;
+
+  @ApiProperty({ description: 'the total number of records', nullable: false })
+  @IsNumber()
+    totalRecords: number;
+
+  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardListItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CardListItemDto)
+    cards: CardListItemDto[];
 }
 
 export class UpdateCardDto extends PartialType(CreateCardDto) {}

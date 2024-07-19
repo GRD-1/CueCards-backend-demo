@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id           Int          @id @default(autoincrement())
-  email        String       @unique @db.VarChar(100)
-  nickname     String?      @db.VarChar
-  avatar       String?      @db.VarChar
-  password     String       @db.VarChar
-  createdAt    DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime     @default(now()) @updatedAt @db.Timestamp(6)
-  deleteMark   Boolean      @default(false)
-  cards        Card[]       @relation("AuthorRelation")
-  dictionaries Dictionary[] @relation("AuthorRelation")
-  tags         Tag[]        @relation("AuthorRelation")
+  id             Int              @id @default(autoincrement())
+  email          String           @unique @db.VarChar(100)
+  nickname       String?          @db.VarChar
+  avatar         String?          @db.VarChar
+  password       String           @db.VarChar
+  createdAt      DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark     Boolean          @default(false)
+  cards          Card[]           @relation("AuthorRelation")
+  dictionaries   Dictionary[]     @relation("AuthorRelation")
+  tags           Tag[]            @relation("AuthorRelation")
+  cardStatistics CardStatistics[] @relation("AuthorRelation")
 
   @@map("users")
 }
@@ -37,33 +38,34 @@ model Language {
 }
 
 model Card {
-  id                Int       @id @default(autoincrement())
+  id                Int              @id @default(autoincrement())
   authorId          Int?
   fsLanguage        String
-  fsValue           String    @unique @db.VarChar
-  fsDescription     String?   @default("") @db.VarChar
+  fsValue           String           @unique @db.VarChar
+  fsDescription     String?          @default("") @db.VarChar
   fsMeaningVariants String[]
   fsWrongMeanings   String[]
-  fsTranscription   String?   @db.VarChar
+  fsTranscription   String?          @db.VarChar
   fsSynonyms        String[]
-  fsAudio           String?   @db.VarChar
-  fsHint            String?   @db.VarChar
+  fsAudio           String?          @db.VarChar
+  fsHint            String?          @db.VarChar
   bsLanguage        String
-  bsValue           String    @unique @db.VarChar
-  bsDescription     String?   @default("") @db.VarChar
+  bsValue           String           @unique @db.VarChar
+  bsDescription     String?          @default("") @db.VarChar
   bsMeaningVariants String[]
   bsWrongMeanings   String[]
-  bsTranscription   String?   @db.VarChar
+  bsTranscription   String?          @db.VarChar
   bsSynonyms        String[]
-  bsAudio           String?   @db.VarChar
-  bsHint            String?   @db.VarChar
-  createdAt         DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime  @default(now()) @updatedAt @db.Timestamp(6)
-  deleteMark        Boolean   @default(false)
-  users             User?     @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  fsLang            Language? @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
-  bsLang            Language? @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
+  bsAudio           String?          @db.VarChar
+  bsHint            String?          @db.VarChar
+  createdAt         DateTime         @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime         @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark        Boolean          @default(false)
+  users             User?            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  fsLang            Language?        @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
+  bsLang            Language?        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
   tags              CardTag[]
+  statistics        CardStatistics[]
 
   @@map("cards")
 }
@@ -113,4 +115,18 @@ model DictionaryTag {
 
   @@id([dictionaryId, tagId])
   @@map("dictionary_tags")
+}
+
+model CardStatistics {
+  cardId           Int
+  authorId         Int
+  fsTotalAnswers   Int
+  fsCorrectAnswers Int
+  bsTotalAnswers   Int
+  bsCorrectAnswers Int
+  card             Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([cardId, authorId], map: "card_user_unique_constraint")
+  @@map("card_statistics")
 }
