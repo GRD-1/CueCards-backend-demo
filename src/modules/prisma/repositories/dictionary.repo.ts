@@ -7,6 +7,7 @@ import {
   FindManyDictConditionsInterface,
   FindManyDictInterface,
   FindManyDictRespInterface,
+  SearchConditionsArgsType,
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
@@ -80,22 +81,12 @@ export class DictionaryRepo {
   }
 
   async findMany(args: FindManyDictInterface): Promise<FindManyDictRespInterface> {
-    const { page = 1, pageSize = 20, authorId, name, partOfName } = args;
-    const whereConditions: FindManyDictConditionsInterface = {};
-
-    if (authorId) {
-      whereConditions.authorId = authorId as number;
-    }
-
-    if (partOfName) {
-      whereConditions.name = { contains: partOfName };
-    } else if (name) {
-      whereConditions.name = name;
-    }
+    const { page = 1, pageSize = 20 } = args;
+    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
 
     const dictionaries = await this.prisma.dictionary.findMany({
       select: DICTIONARY_SELECT_OPTIONS,
-      where: whereConditions,
+      where: searchConditions,
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -103,8 +94,25 @@ export class DictionaryRepo {
     return { page, pageSize, dictionaries };
   }
 
-  async getTotalCount(authorId?: number): Promise<number> {
-    return this.prisma.dictionary.count({ where: { authorId } });
+  async getTotalCount(authorId: number, byUser?: boolean): Promise<number> {
+    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions({ authorId, byUser });
+
+    return this.prisma.dictionary.count({ where: searchConditions });
+  }
+
+  getDictSearchConditions(args: SearchConditionsArgsType): FindManyDictConditionsInterface {
+    const { authorId, byUser, name, partOfName } = args;
+    const searchConditions: FindManyDictConditionsInterface = {};
+
+    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+
+    if (partOfName) {
+      searchConditions.name = { contains: partOfName };
+    } else if (name) {
+      searchConditions.name = name;
+    }
+
+    return searchConditions;
   }
 
   async findOneById(id: number): Promise<DictionaryEntity> {
