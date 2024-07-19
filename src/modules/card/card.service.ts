@@ -47,11 +47,13 @@ export class CardService {
     return this.cardRepo.findOneById(cardId);
   }
 
-  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>): Promise<number> {
+  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>, userId: number): Promise<number> {
     const { tags: newTags, ...cardData } = payload;
     let tagIdToDeleteArr: number[];
     let newTagsArr: CardTagInterface[];
     let args: UpdateCardInterface = { cardId, cardData };
+
+    await this.checkEditingRights(cardId, userId);
 
     if (newTags) {
       const oldTags = await this.cardRepo.getCardTags(cardId);
@@ -67,7 +69,16 @@ export class CardService {
     return this.cardRepo.updateOneById(args);
   }
 
-  async delete(cardId: number): Promise<number> {
+  async delete(cardId: number, userId: number): Promise<number> {
+    await this.checkEditingRights(cardId, userId);
+
     return this.cardRepo.delete(cardId);
+  }
+
+  async checkEditingRights(cardId: number, userId: number): Promise<void> {
+    const card = await this.cardRepo.findOneById(cardId);
+    if (card.authorId !== userId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
+    }
   }
 }

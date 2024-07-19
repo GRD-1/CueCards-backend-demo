@@ -3,6 +3,7 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -89,8 +90,13 @@ export class CardController {
   @ApiBadRequestResponse({ description: 'Invalid card data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async update(@Param('cardId', ParseIntPipe) cardId: number, @Body() payload: UpdateCardDto): Promise<number> {
-    return this.cardService.updateOneById(cardId, payload);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async update(
+    @Param('cardId', ParseIntPipe) cardId: number,
+    @Body() payload: UpdateCardDto,
+    @UserId() userId: number,
+  ): Promise<number> {
+    return this.cardService.updateOneById(cardId, payload, userId);
   }
 
   @Delete(':cardId/delete')
@@ -98,7 +104,8 @@ export class CardController {
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async delete(@Param('cardId', ParseIntPipe) cardId: number): Promise<number> {
-    return this.cardService.delete(cardId);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async delete(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+    return this.cardService.delete(cardId, userId);
   }
 }

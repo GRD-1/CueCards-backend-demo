@@ -3,6 +3,7 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -71,8 +72,13 @@ export class DictionaryController {
   @ApiBadRequestResponse({ description: 'Invalid dictionary data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async update(@Param('dictionaryId', ParseIntPipe) id: number, @Body() payload: UpdateDictionaryDto): Promise<number> {
-    return this.dictionaryService.updateOneById(id, payload);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async update(
+    @Param('dictionaryId', ParseIntPipe) id: number,
+    @Body() payload: UpdateDictionaryDto,
+    @UserId() userId: number,
+  ): Promise<number> {
+    return this.dictionaryService.updateOneById(id, payload, userId);
   }
 
   @Delete(':dictionaryId/delete')
@@ -80,7 +86,8 @@ export class DictionaryController {
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
   @ApiOkResponse({ description: 'The dictionary has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async delete(@Param('dictionaryId', ParseIntPipe) id: number): Promise<number> {
-    return this.dictionaryService.delete(id);
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  async delete(@Param('dictionaryId', ParseIntPipe) dictionaryId: number, @UserId() userId: number): Promise<number> {
+    return this.dictionaryService.delete(dictionaryId, userId);
   }
 }
