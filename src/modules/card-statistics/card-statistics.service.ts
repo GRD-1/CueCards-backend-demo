@@ -6,7 +6,7 @@ import { UpdateCardStatsInterface } from '@/modules/card-statistics/card-statist
 export class CardStatisticsService {
   constructor(private readonly cardStatsRepo: CardStatisticsRepo) {}
 
-  async updateCardStatistics(cardId: number, authorId: number, payload: UpdateCardStatsInterface): Promise<void> {
-    return this.cardStatsRepo.updateCardStatistics({ cardId, authorId, ...payload });
+  async updateCardStatistics(cardId: number, userId: number, payload: UpdateCardStatsInterface): Promise<void> {
+    return this.cardStatsRepo.updateCardStatistics({ cardId, userId, ...payload });
   }
 }

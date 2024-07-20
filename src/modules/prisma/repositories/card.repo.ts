@@ -7,7 +7,7 @@ import {
   FindManyCardsConditionsInterface,
   FindManyCardsInterface,
   FindManyCardsRespInterface,
-  GetCardListRespInterface,
+  GetSettingsRespInterface,
   SearchConditionsArgsType,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
@@ -49,8 +49,9 @@ const CARD_SELECT_OPTIONS = {
   },
 };
 
-const CARD_LIST_SELECT_OPTIONS = {
+const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
   id: true,
+  authorId: true,
   fsValue: true,
   bsValue: true,
   tags: {
@@ -131,14 +132,15 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
-  async getList(args: FindManyCardsInterface): Promise<GetCardListRespInterface> {
+  async getWithSettings(args: FindManyCardsInterface): Promise<GetSettingsRespInterface> {
     const { page = 1, pageSize = 20, authorId } = args;
     const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
       select: {
-        ...CARD_LIST_SELECT_OPTIONS,
-        statistics: { where: { authorId } },
+        ...CARD_WITH_SETTINGS_SELECT_OPTIONS,
+        statistics: { where: { userId: authorId } },
+        cardSettings: { select: { hidden: true } },
       },
       where: searchConditions,
       skip: (page - 1) * pageSize,
@@ -155,10 +157,24 @@ export class CardRepo {
   }
 
   getCardSearchConditions(args: SearchConditionsArgsType): FindManyCardsConditionsInterface {
-    const { authorId, byUser, value, partOfValue } = args;
+    const { authorId, byUser, value, partOfValue, withoutHidden } = args;
     const searchConditions: FindManyCardsConditionsInterface = {};
 
     searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+
+    if (byUser && withoutHidden) {
+      searchConditions.cardSettings = {
+        none: {
+          userId: authorId,
+        },
+      };
+    } else if (withoutHidden) {
+      searchConditions.cardSettings = {
+        none: {
+          userId: { in: [authorId, 0] },
+        },
+      };
+    }
 
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];

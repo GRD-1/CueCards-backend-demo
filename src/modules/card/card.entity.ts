@@ -30,7 +30,7 @@ class CardTags {
   tag: TagEntity;
 }
 
-export class CardListItemEntity {
+export class CardWithSettingsEntity {
   id: number;
   fsValue: string;
   bsValue: string;

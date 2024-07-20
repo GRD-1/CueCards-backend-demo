@@ -7,7 +7,7 @@ export class CardStatisticsRepo {
   constructor(private readonly prisma: PrismaService) {}
 
   async updateCardStatistics(args: UpdateCardStatsRepoInterface): Promise<void> {
-    const { cardId, authorId, cardSide, isAnswerCorrect } = args;
+    const { cardId, userId, cardSide, isAnswerCorrect } = args;
     let fieldOne: string;
     let fieldTwo: string;
 
@@ -20,14 +20,14 @@ export class CardStatisticsRepo {
     }
 
     await this.prisma.cardStatistics.upsert({
-      where: { cardId_authorId: { cardId, authorId } },
+      where: { cardId_userId: { cardId, userId } },
       update: {
         [fieldOne]: { increment: 1 },
         [fieldTwo]: isAnswerCorrect ? { increment: 1 } : undefined,
       },
       create: {
         cardId,
-        authorId,
+        userId,
         fsTotalAnswers: fieldOne === 'fsTotalAnswers' ? 1 : 0,
         fsCorrectAnswers: fieldTwo === 'fsCorrectAnswers' ? 1 : 0,
         bsTotalAnswers: fieldOne === 'bsTotalAnswers' ? 1 : 0,

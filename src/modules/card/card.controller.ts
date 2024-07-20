@@ -15,7 +15,7 @@ import {
 import {
   CardRespDto,
   CreateCardDto,
-  GetCardListRespDto,
+  GetWithSettingsRespDto,
   GetManyCardsDto,
   GetManyCardsRespDto,
   UpdateCardDto,
@@ -56,19 +56,22 @@ export class CardController {
     return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get('list')
+  @Get('training-settings')
   @ApiOperation({ summary: 'Get a card list according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
   @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
-  @ApiOkResponse({ description: 'Successful request', type: GetCardListRespDto })
+  @ApiOkResponse({ description: 'Successful request', type: GetWithSettingsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getList(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetCardListRespDto> {
-    const data = await this.cardService.getList({ ...query, authorId });
+  async getWithSettings(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetWithSettingsRespDto> {
+    const data = await this.cardService.getWithSettings({ ...query, authorId });
 
-    return plainToInstance(GetCardListRespDto, data, { enableImplicitConversion: true });
+    const transformedData = plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
+    console.log('\nTransformed Data:', JSON.stringify(transformedData, null, 2));
+
+    return transformedData;
   }
 
   @Get(':cardId/get-one')

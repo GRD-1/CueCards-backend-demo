@@ -1,4 +1,14 @@
-import { IsArray, IsBoolean, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -155,7 +165,7 @@ export class GetManyCardsRespDto {
     cards: CardRespDto[];
 }
 
-export class CardListItemDto {
+export class CardWithSettingsDto {
   @ApiProperty({ description: 'card id', nullable: true })
     id: number;
 
@@ -178,9 +188,17 @@ export class CardListItemDto {
   @Type(() => CardStatsDto)
   @Transform(({ value }) => (value[0] ? value[0] : {}), { toClassOnly: true })
     statistics: CardStatsDto;
+
+  @IsBoolean()
+  @Transform(({ obj }) => (obj.cardSettings && obj.cardSettings[0] ? obj.cardSettings[0].hidden : false))
+    hidden: boolean;
+
+  @IsString()
+  @Transform(() => 'BARABULKA', { toClassOnly: true })
+    cardSettings: string;
 }
 
-export class GetCardListRespDto {
+export class GetWithSettingsRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -197,11 +215,11 @@ export class GetCardListRespDto {
   @IsNumber()
     totalRecords: number;
 
-  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardListItemDto] })
+  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardWithSettingsDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CardListItemDto)
-    cards: CardListItemDto[];
+  @Type(() => CardWithSettingsDto)
+    cards: CardWithSettingsDto[];
 }
 
 export class UpdateCardDto extends PartialType(CreateCardDto) {}

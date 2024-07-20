@@ -5,7 +5,7 @@ import {
   CardTagInterface,
   FindManyCardsFullRespInterface,
   FindManyCardsInterface,
-  GetCardListFullRespInterface,
+  GetSettingsFullRespInterface,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
@@ -25,7 +25,7 @@ export class CardService {
     return this.cardRepo.create(payload, userId);
   }
 
-  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
       this.cardRepo.findMany(args),
       this.cardRepo.getTotalCount(args),
@@ -34,10 +34,19 @@ export class CardService {
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async getList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+  async getWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getList(args),
+      this.cardRepo.getWithSettings(args),
       this.cardRepo.getTotalCount(args),
+    ]);
+
+    return { page, pageSize, records: cards.length, totalRecords, cards };
+  }
+
+  async getTrainingList(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
+    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+      this.cardRepo.getWithSettings({ ...args, withoutHidden: true }),
+      this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
