@@ -1,8 +1,6 @@
 import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
 
 export interface DictionaryInterface {
-  id?: number;
-  authorId: number | null;
   name: string;
 }
 

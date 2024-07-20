@@ -136,7 +136,7 @@ export class DictionaryRepo {
     let updatedDictionary: Dictionary;
 
     if (tagIdToDeleteArr || newTagsArr) {
-      await this.prisma
+      updatedDictionary = await this.prisma
         .$transaction(async (prisma) => {
           await prisma.dictionary.update({
             where: { id: dictionaryId },
@@ -185,7 +185,7 @@ export class DictionaryRepo {
       });
     }
 
-    return dictionaryId;
+    return updatedDictionary.id;
   }
 
   async delete(dictionaryId: number): Promise<number> {

@@ -1,8 +1,6 @@
 import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
 
 export interface CardInterface {
-  id?: number;
-  authorId: number | null;
   fsLanguage: string;
   fsValue: string;
   fsDescription: string | null;
