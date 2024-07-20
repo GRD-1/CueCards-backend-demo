@@ -139,7 +139,7 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
-  async getWithSettings(args: FindManyCardsInterface): Promise<GetSettingsRespInterface> {
+  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsRespInterface> {
     const { page = 1, pageSize = 20, authorId } = args;
     const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 

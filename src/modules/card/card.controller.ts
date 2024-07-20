@@ -57,7 +57,7 @@ export class CardController {
   }
 
   @Get('training-settings')
-  @ApiOperation({ summary: 'Get a card list according to the conditions' })
+  @ApiOperation({ summary: 'Get a card list with the settings: parameter "cardIsHidden", card statistics e t.c.' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
@@ -65,10 +65,28 @@ export class CardController {
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
   @ApiOkResponse({ description: 'Successful request', type: GetWithSettingsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getWithSettings(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetWithSettingsRespDto> {
-    const data = await this.cardService.getWithSettings({ ...query, authorId });
+  async getCardListWithSettings(
+    @Query() query: GetManyCardsDto,
+    @UserId() authorId: number,
+  ): Promise<GetWithSettingsRespDto> {
+    const data = await this.cardService.getCardListWithSettings({ ...query, authorId });
 
     return plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
+  }
+
+  @Get('training-list')
+  @ApiOperation({ summary: 'Get a card list according to the conditions' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
+  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
+  @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async getTrainingList(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetManyCardsRespDto> {
+    const data = await this.cardService.getTrainingList({ ...query, authorId });
+
+    return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
   }
 
   @Get(':cardId/get-one')

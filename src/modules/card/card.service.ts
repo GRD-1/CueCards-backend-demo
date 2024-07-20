@@ -34,18 +34,18 @@ export class CardService {
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async getWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
+  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getWithSettings(args),
+      this.cardRepo.getCardListWithSettings(args),
       this.cardRepo.getTotalCount(args),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async getTrainingList(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
+  async getTrainingList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getWithSettings({ ...args, withoutHidden: true }),
+      this.cardRepo.findMany({ ...args, withoutHidden: true }),
       this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
     ]);
 
