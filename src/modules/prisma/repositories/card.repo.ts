@@ -215,9 +215,9 @@ export class CardRepo {
     let updatedCard: Card;
 
     if (tagIdToDeleteArr || newTagsArr) {
-      await this.prisma
+      updatedCard = await this.prisma
         .$transaction(async (prisma) => {
-          await prisma.card.update({
+          updatedCard = await prisma.card.update({
             where: { id: cardId },
             data: {
               ...cardData,
@@ -264,7 +264,7 @@ export class CardRepo {
       });
     }
 
-    return cardId;
+    return updatedCard.id;
   }
 
   async delete(cardId: number): Promise<number> {
