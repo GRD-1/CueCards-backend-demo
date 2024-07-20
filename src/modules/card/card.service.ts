@@ -5,7 +5,7 @@ import {
   CardTagInterface,
   FindManyCardsFullRespInterface,
   FindManyCardsInterface,
-  GetCardListFullRespInterface,
+  GetSettingsFullRespInterface,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
 import { CardEntity } from '@/modules/card/card.entity';
@@ -25,7 +25,7 @@ export class CardService {
     return this.cardRepo.create(payload, userId);
   }
 
-  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
       this.cardRepo.findMany(args),
       this.cardRepo.getTotalCount(args),
@@ -34,10 +34,19 @@ export class CardService {
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async getList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface | GetCardListFullRespInterface> {
+  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getList(args),
+      this.cardRepo.getCardListWithSettings(args),
       this.cardRepo.getTotalCount(args),
+    ]);
+
+    return { page, pageSize, records: cards.length, totalRecords, cards };
+  }
+
+  async getTrainingList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+      this.cardRepo.findMany({ ...args, withoutHidden: true }),
+      this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
@@ -80,5 +89,13 @@ export class CardService {
     if (card.authorId !== userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
     }
+  }
+
+  async hide(cardId: number, userId: number): Promise<number> {
+    return this.cardRepo.hide(cardId, userId);
+  }
+
+  async display(cardId: number, userId: number): Promise<number> {
+    return this.cardRepo.display(cardId, userId);
   }
 }

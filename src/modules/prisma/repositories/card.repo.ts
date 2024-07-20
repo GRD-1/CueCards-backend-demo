@@ -7,7 +7,7 @@ import {
   FindManyCardsConditionsInterface,
   FindManyCardsInterface,
   FindManyCardsRespInterface,
-  GetCardListRespInterface,
+  GetSettingsRespInterface,
   SearchConditionsArgsType,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
@@ -49,8 +49,9 @@ const CARD_SELECT_OPTIONS = {
   },
 };
 
-const CARD_LIST_SELECT_OPTIONS = {
+const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
   id: true,
+  authorId: true,
   fsValue: true,
   bsValue: true,
   tags: {
@@ -64,6 +65,13 @@ const CARD_LIST_SELECT_OPTIONS = {
       },
     },
   },
+};
+
+const CARD_STATISTICS_SELECT_OPTIONS = {
+  fsTotalAnswers: true,
+  fsCorrectAnswers: true,
+  bsTotalAnswers: true,
+  bsCorrectAnswers: true,
 };
 
 @Injectable()
@@ -131,14 +139,15 @@ export class CardRepo {
     return { page, pageSize, cards };
   }
 
-  async getList(args: FindManyCardsInterface): Promise<GetCardListRespInterface> {
+  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsRespInterface> {
     const { page = 1, pageSize = 20, authorId } = args;
     const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
       select: {
-        ...CARD_LIST_SELECT_OPTIONS,
-        statistics: { where: { authorId } },
+        ...CARD_WITH_SETTINGS_SELECT_OPTIONS,
+        statistics: { select: CARD_STATISTICS_SELECT_OPTIONS, where: { userId: authorId } },
+        cardIsHidden: true,
       },
       where: searchConditions,
       skip: (page - 1) * pageSize,
@@ -155,10 +164,24 @@ export class CardRepo {
   }
 
   getCardSearchConditions(args: SearchConditionsArgsType): FindManyCardsConditionsInterface {
-    const { authorId, byUser, value, partOfValue } = args;
+    const { authorId, byUser, value, partOfValue, withoutHidden } = args;
     const searchConditions: FindManyCardsConditionsInterface = {};
 
     searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+
+    if (byUser && withoutHidden) {
+      searchConditions.cardIsHidden = {
+        none: {
+          userId: authorId,
+        },
+      };
+    } else if (withoutHidden) {
+      searchConditions.cardIsHidden = {
+        none: {
+          userId: { in: [authorId, 0] },
+        },
+      };
+    }
 
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
@@ -256,5 +279,54 @@ export class CardRepo {
     return this.prisma.cardTag.findMany({
       where: { cardId },
     });
+  }
+
+  async hide(cardId: number, userId: number): Promise<number> {
+    const deletedCard = await this.prisma.cardIsHidden
+      .upsert({
+        where: {
+          cardId_userId: {
+            cardId,
+            userId,
+          },
+        },
+        create: {
+          cardId,
+          userId,
+        },
+        update: {},
+      })
+      .catch((err) => {
+        if (err.code === 'P2003') {
+          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+        }
+        throw err;
+      });
+
+    return deletedCard.cardId;
+  }
+
+  async display(cardId: number, userId: number): Promise<number> {
+    const deletedCard = await this.prisma.cardIsHidden
+      .delete({
+        where: {
+          cardId_userId: {
+            cardId,
+            userId,
+          },
+        },
+      })
+      .catch((err) => {
+        if (err.code === 'P2025') {
+          throw new CueCardsError(
+            CCBK_ERROR_CODES.RECORD_NOT_FOUND,
+            "The card already displayed or doesn't exist!",
+            err,
+          );
+        }
+        throw err;
+      });
+
+    return deletedCard.cardId;
   }
 }

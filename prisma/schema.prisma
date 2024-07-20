@@ -19,7 +19,8 @@ model User {
   cards          Card[]           @relation("AuthorRelation")
   dictionaries   Dictionary[]     @relation("AuthorRelation")
   tags           Tag[]            @relation("AuthorRelation")
-  cardStatistics CardStatistics[] @relation("AuthorRelation")
+  cardStatistics CardStatistics[] @relation("UserRelation")
+  cardIsHidden   CardIsHidden[]   @relation("UserRelation")
 
   @@map("users")
 }
@@ -66,6 +67,7 @@ model Card {
   bsLang            Language?        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
   tags              CardTag[]
   statistics        CardStatistics[]
+  cardIsHidden      CardIsHidden[]
 
   @@map("cards")
 }
@@ -119,14 +121,24 @@ model DictionaryTag {
 
 model CardStatistics {
   cardId           Int
-  authorId         Int
+  userId           Int
   fsTotalAnswers   Int
   fsCorrectAnswers Int
   bsTotalAnswers   Int
   bsCorrectAnswers Int
   card             Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users            User @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@id([cardId, authorId], map: "card_user_unique_constraint")
+  @@id([cardId, userId], map: "card_user_unique_constraint")
   @@map("card_statistics")
+}
+
+model CardIsHidden {
+  cardId Int
+  userId Int
+  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users  User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([cardId, userId], map: "card_user_constraint")
+  @@map("card_is_hidden")
 }

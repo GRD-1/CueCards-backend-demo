@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -15,7 +15,7 @@ import {
 import {
   CardRespDto,
   CreateCardDto,
-  GetCardListRespDto,
+  GetWithSettingsRespDto,
   GetManyCardsDto,
   GetManyCardsRespDto,
   UpdateCardDto,
@@ -56,19 +56,37 @@ export class CardController {
     return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get('list')
+  @Get('training-settings')
+  @ApiOperation({ summary: 'Get a card list with the settings: parameter "cardIsHidden", card statistics e t.c.' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
+  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
+  @ApiOkResponse({ description: 'Successful request', type: GetWithSettingsRespDto })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async getCardListWithSettings(
+    @Query() query: GetManyCardsDto,
+    @UserId() authorId: number,
+  ): Promise<GetWithSettingsRespDto> {
+    const data = await this.cardService.getCardListWithSettings({ ...query, authorId });
+
+    return plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
+  }
+
+  @Get('training-list')
   @ApiOperation({ summary: 'Get a card list according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
   @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
-  @ApiOkResponse({ description: 'Successful request', type: GetCardListRespDto })
+  @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getList(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetCardListRespDto> {
-    const data = await this.cardService.getList({ ...query, authorId });
+  async getTrainingList(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetManyCardsRespDto> {
+    const data = await this.cardService.getTrainingList({ ...query, authorId });
 
-    return plainToInstance(GetCardListRespDto, data, { enableImplicitConversion: true });
+    return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
   }
 
   @Get(':cardId/get-one')
@@ -107,5 +125,23 @@ export class CardController {
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async delete(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
     return this.cardService.delete(cardId, userId);
+  }
+
+  @Post(':cardId/hide')
+  @ApiOperation({ summary: 'Hide a card from the training list' })
+  @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
+  @ApiOkResponse({ description: 'The card has been hidden. The id:', schema: { example: 123 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async hide(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+    return this.cardService.hide(cardId, userId);
+  }
+
+  @Post(':cardId/display')
+  @ApiOperation({ summary: 'Display a card in the training list' })
+  @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
+  @ApiOkResponse({ description: 'The card is now displayed in the training list. The id:', schema: { example: 123 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async show(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+    return this.cardService.display(cardId, userId);
   }
 }

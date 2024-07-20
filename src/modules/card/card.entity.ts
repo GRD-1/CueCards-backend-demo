@@ -1,5 +1,5 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
-import { CardStatistics } from '@prisma/client';
+import { CardStatisticsEntity } from '@/modules/card-statistics/card-statistics.entity';
 
 export class CardEntity {
   id: number;
@@ -23,17 +23,22 @@ export class CardEntity {
   bsAudio: string | null;
   bsHint: string | null;
   tags: CardTags[];
-  statistics?: CardStatistics[];
 }
 
 class CardTags {
   tag: TagEntity;
 }
 
-export class CardListItemEntity {
+class HiddenCards {
+  cardId: number;
+  userId: number;
+}
+
+export class CardWithSettingsEntity {
   id: number;
   fsValue: string;
   bsValue: string;
   tags: CardTags[];
-  statistics?: CardStatistics[];
+  statistics?: CardStatisticsEntity[];
+  cardIsHidden: HiddenCards[];
 }

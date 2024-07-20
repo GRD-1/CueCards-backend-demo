@@ -1,4 +1,4 @@
-import { CardEntity, CardListItemEntity } from '@/modules/card/card.entity';
+import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
 
 export interface CardInterface {
   id?: number;
@@ -34,6 +34,7 @@ export interface FindManyCardsInterface {
   authorId: number;
   value?: string;
   partOfValue?: string;
+  withoutHidden?: boolean;
 }
 
 export type SearchConditionsArgsType = Omit<FindManyCardsInterface, 'page' | 'pageSize'>;
@@ -64,15 +65,20 @@ export interface UpdateCardInterface {
 export interface FindManyCardsConditionsInterface {
   authorId?: number | { in: number[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
+  cardIsHidden?: {
+    none: {
+      userId: number | { in: number[] };
+    };
+  };
 }
 
-export interface GetCardListRespInterface {
+export interface GetSettingsRespInterface {
   page: number;
   pageSize: number;
-  cards: CardListItemEntity[];
+  cards: CardWithSettingsEntity[];
 }
 
-export interface GetCardListFullRespInterface extends GetCardListRespInterface {
+export interface GetSettingsFullRespInterface extends GetSettingsRespInterface {
   records: number;
   totalRecords: number;
 }
