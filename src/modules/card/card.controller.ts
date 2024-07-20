@@ -68,10 +68,7 @@ export class CardController {
   async getWithSettings(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetWithSettingsRespDto> {
     const data = await this.cardService.getWithSettings({ ...query, authorId });
 
-    const transformedData = plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
-    console.log('\nTransformed Data:', JSON.stringify(transformedData, null, 2));
-
-    return transformedData;
+    return plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
   }
 
   @Get(':cardId/get-one')

@@ -65,7 +65,7 @@ export interface UpdateCardInterface {
 export interface FindManyCardsConditionsInterface {
   authorId?: number | { in: number[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
-  cardSettings?: {
+  cardIsHidden?: {
     none: {
       userId: number | { in: number[] };
     };

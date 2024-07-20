@@ -67,6 +67,13 @@ const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
   },
 };
 
+const CARD_STATISTICS_SELECT_OPTIONS = {
+  fsTotalAnswers: true,
+  fsCorrectAnswers: true,
+  bsTotalAnswers: true,
+  bsCorrectAnswers: true,
+};
+
 @Injectable()
 export class CardRepo {
   constructor(private readonly prisma: PrismaService) {}
@@ -139,8 +146,8 @@ export class CardRepo {
     const cards = await this.prisma.card.findMany({
       select: {
         ...CARD_WITH_SETTINGS_SELECT_OPTIONS,
-        statistics: { where: { userId: authorId } },
-        cardSettings: { select: { hidden: true } },
+        statistics: { select: CARD_STATISTICS_SELECT_OPTIONS, where: { userId: authorId } },
+        cardIsHidden: true,
       },
       where: searchConditions,
       skip: (page - 1) * pageSize,
@@ -163,13 +170,13 @@ export class CardRepo {
     searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
 
     if (byUser && withoutHidden) {
-      searchConditions.cardSettings = {
+      searchConditions.cardIsHidden = {
         none: {
           userId: authorId,
         },
       };
     } else if (withoutHidden) {
-      searchConditions.cardSettings = {
+      searchConditions.cardIsHidden = {
         none: {
           userId: { in: [authorId, 0] },
         },

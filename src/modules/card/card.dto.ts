@@ -166,8 +166,13 @@ export class GetManyCardsRespDto {
 }
 
 export class CardWithSettingsDto {
-  @ApiProperty({ description: 'card id', nullable: true })
+  @ApiProperty({ description: 'card id', nullable: false })
+  @IsInt()
     id: number;
+
+  @ApiProperty({ description: 'author id', nullable: false })
+  @IsInt()
+    authorId: number;
 
   @ApiProperty({ description: 'front side value', nullable: false, example: 'text text text' })
   @IsString()
@@ -177,25 +182,23 @@ export class CardWithSettingsDto {
   @IsString()
     bsValue: string;
 
-  @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
+  @ApiProperty({ description: 'array of tags', nullable: false, type: [TagRespDto] })
   @IsArray()
   @Type(() => TagRespDto)
   @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
     tags: TagRespDto[];
 
-  @ApiProperty({ description: 'a card statistics', nullable: true, type: CardStatsDto })
+  @ApiProperty({ description: 'the card statistics', nullable: true, type: CardStatsDto })
   @IsArray()
   @Type(() => CardStatsDto)
   @Transform(({ value }) => (value[0] ? value[0] : {}), { toClassOnly: true })
     statistics: CardStatsDto;
 
-  @IsBoolean()
-  @Transform(({ obj }) => (obj.cardSettings && obj.cardSettings[0] ? obj.cardSettings[0].hidden : false))
-    hidden: boolean;
-
-  @IsString()
-  @Transform(() => 'BARABULKA', { toClassOnly: true })
-    cardSettings: string;
+  @ApiProperty({ description: 'is the card hidden in the training list', nullable: true, type: Boolean })
+  @IsArray()
+  @Type(() => Boolean)
+  @Transform(({ value }) => (!!value[0]))
+    cardIsHidden: boolean;
 }
 
 export class GetWithSettingsRespDto {
