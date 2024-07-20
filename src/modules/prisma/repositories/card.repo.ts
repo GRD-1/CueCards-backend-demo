@@ -280,4 +280,53 @@ export class CardRepo {
       where: { cardId },
     });
   }
+
+  async hide(cardId: number, userId: number): Promise<number> {
+    const deletedCard = await this.prisma.cardIsHidden
+      .upsert({
+        where: {
+          cardId_userId: {
+            cardId,
+            userId,
+          },
+        },
+        create: {
+          cardId,
+          userId,
+        },
+        update: {},
+      })
+      .catch((err) => {
+        if (err.code === 'P2003') {
+          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+        }
+        throw err;
+      });
+
+    return deletedCard.cardId;
+  }
+
+  async display(cardId: number, userId: number): Promise<number> {
+    const deletedCard = await this.prisma.cardIsHidden
+      .delete({
+        where: {
+          cardId_userId: {
+            cardId,
+            userId,
+          },
+        },
+      })
+      .catch((err) => {
+        if (err.code === 'P2025') {
+          throw new CueCardsError(
+            CCBK_ERROR_CODES.RECORD_NOT_FOUND,
+            "The card already displayed or doesn't exist!",
+            err,
+          );
+        }
+        throw err;
+      });
+
+    return deletedCard.cardId;
+  }
 }

@@ -90,4 +90,12 @@ export class CardService {
       throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
     }
   }
+
+  async hide(cardId: number, userId: number): Promise<number> {
+    return this.cardRepo.hide(cardId, userId);
+  }
+
+  async display(cardId: number, userId: number): Promise<number> {
+    return this.cardRepo.display(cardId, userId);
+  }
 }

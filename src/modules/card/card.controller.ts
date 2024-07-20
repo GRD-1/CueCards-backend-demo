@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -125,5 +125,23 @@ export class CardController {
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async delete(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
     return this.cardService.delete(cardId, userId);
+  }
+
+  @Post(':cardId/hide')
+  @ApiOperation({ summary: 'Hide a card from the training list' })
+  @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
+  @ApiOkResponse({ description: 'The card has been hidden. The id:', schema: { example: 123 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async hide(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+    return this.cardService.hide(cardId, userId);
+  }
+
+  @Post(':cardId/display')
+  @ApiOperation({ summary: 'Display a card in the training list' })
+  @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
+  @ApiOkResponse({ description: 'The card is now displayed in the training list. The id:', schema: { example: 123 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async show(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+    return this.cardService.display(cardId, userId);
   }
 }
