@@ -26,7 +26,7 @@ export class TagController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create a new tag' })
-  @ApiBody({ type: String, examples: { example1: { value: { name: 'tag1' } } } })
+  @ApiBody({ type: TagDto })
   @ApiCreatedResponse({ description: 'The new tag has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })

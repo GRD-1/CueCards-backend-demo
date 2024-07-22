@@ -31,6 +31,7 @@ export class DictionaryController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create a new dictionary' })
+  @ApiBody({ type: CreateDictionaryDto })
   @ApiCreatedResponse({ description: 'The new dictionary has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
