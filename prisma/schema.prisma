@@ -22,6 +22,7 @@ model User {
   cardStatistics CardStatistics[] @relation("UserRelation")
   cardIsHidden   CardIsHidden[]   @relation("UserRelation")
   settings       Settings[]       @relation("UserRelation")
+  statistics     Statistics[]     @relation("UserRelation")
 
   @@map("users")
 }
@@ -84,6 +85,7 @@ model Dictionary {
   deleteMark Boolean         @default(false)
   users      User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   tags       DictionaryTag[]
+  statistics Statistics[]    @relation("DictionaryRelation")
 
   @@map("dictionaries")
 }
@@ -163,4 +165,22 @@ model Settings {
 
   @@index([userId], map: "SettingsUserId")
   @@map("settings")
+}
+
+model Statistics {
+  id             Int        @id @default(autoincrement())
+  userId         Int        @db.Integer
+  dictionaryId   Int
+  totalAnswers   Int
+  correctAnswers Int
+  trainingTime   Int
+  hintsCount     Int        @default(0)
+  createdAt      DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime   @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark     Boolean    @default(false)
+  users          User       @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  dictionaries   Dictionary @relation("DictionaryRelation", fields: [dictionaryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, dictionaryId, createdAt])
+  @@map("statistics")
 }
