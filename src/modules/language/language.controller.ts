@@ -3,7 +3,6 @@ import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -19,7 +18,6 @@ import {
   LanguageDto,
   LanguageRespDto,
 } from '@/modules/language/language.dto';
-import { UserId } from '@/modules/user/decorators/user-id.decorator';
 import { LanguageService } from './language.service';
 
 @ApiTags('languages')
@@ -31,7 +29,7 @@ export class LanguageController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create a new language' })
-  @ApiBody({ type: String, examples: { example1: { value: { name: 'italian', acronym: 'it' } } } })
+  @ApiBody({ type: LanguageDto })
   @ApiCreatedResponse({ description: 'The new language has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })

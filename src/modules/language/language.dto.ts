@@ -3,12 +3,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class LanguageDto {
-  @ApiProperty({ description: 'language name', nullable: false })
+  @ApiProperty({ description: 'language name', nullable: false, example: 'italian' })
   @IsString()
   @IsNotEmpty()
     name: string;
 
-  @ApiProperty({ description: 'language name', nullable: false })
+  @ApiProperty({ description: 'language name', nullable: false, example: 'it' })
   @IsString()
   @IsNotEmpty()
     acronym: string;

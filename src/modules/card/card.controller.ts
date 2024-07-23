@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -15,9 +15,9 @@ import {
 import {
   CardRespDto,
   CreateCardDto,
-  GetWithSettingsRespDto,
   GetManyCardsDto,
   GetManyCardsRespDto,
+  GetWithSettingsRespDto,
   UpdateCardDto,
 } from '@/modules/card/card.dto';
 import { plainToInstance } from 'class-transformer';
@@ -34,6 +34,7 @@ export class CardController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create a new card' })
+  @ApiBody({ type: CreateCardDto })
   @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
