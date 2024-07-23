@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
+import { CARD_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/card.select-options';
 import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
@@ -115,11 +116,33 @@ export class DictionaryRepo {
     return searchConditions;
   }
 
-  async findOneById(id: number): Promise<DictionaryEntity> {
-    return this.prisma.dictionary.findUniqueOrThrow({
-      select: DICTIONARY_SELECT_OPTIONS,
+  async findOneById(id: number): Promise<any> {
+    const data = await this.prisma.dictionary.findUniqueOrThrow({
       where: { id },
+      select: {
+        id: true,
+        authorId: true,
+        name: true,
+        tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                authorId: true,
+                name: true,
+                CardTag: {
+                  select: {
+                    card: { select: CARD_SELECT_OPTIONS },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
+
+    return { ...data, cards: [] };
   }
 
   async getIdByName(name: string): Promise<number | null> {

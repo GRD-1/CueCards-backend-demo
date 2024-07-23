@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
+  CARD_WITH_TAGS_SELECT_OPTIONS,
+  CARD_WITH_SETTINGS_SELECT_OPTIONS,
+  CARD_STATISTICS_SELECT_OPTIONS,
+} from '@/modules/prisma/repositories/select-options/card.select-options';
+import {
   CardAndTagsInterface,
   CardTagInterface,
   FindManyCardsConditionsInterface,
@@ -14,65 +19,6 @@ import {
 import { CardEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-
-const CARD_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  fsLanguage: true,
-  fsValue: true,
-  fsDescription: true,
-  fsMeaningVariants: true,
-  fsWrongMeanings: true,
-  fsTranscription: true,
-  fsSynonyms: true,
-  fsAudio: true,
-  fsHint: true,
-  bsLanguage: true,
-  bsValue: true,
-  bsDescription: true,
-  bsMeaningVariants: true,
-  bsWrongMeanings: true,
-  bsTranscription: true,
-  bsSynonyms: true,
-  bsAudio: true,
-  bsHint: true,
-  tags: {
-    select: {
-      tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
-      },
-    },
-  },
-};
-
-const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  fsValue: true,
-  bsValue: true,
-  tags: {
-    select: {
-      tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
-      },
-    },
-  },
-};
-
-const CARD_STATISTICS_SELECT_OPTIONS = {
-  fsTotalAnswers: true,
-  fsCorrectAnswers: true,
-  bsTotalAnswers: true,
-  bsCorrectAnswers: true,
-};
 
 @Injectable()
 export class CardRepo {
@@ -129,7 +75,7 @@ export class CardRepo {
 
     const cards = await this.prisma.card.findMany({
       select: {
-        ...CARD_SELECT_OPTIONS,
+        ...CARD_WITH_TAGS_SELECT_OPTIONS,
       },
       where: searchConditions,
       skip: (page - 1) * pageSize,
@@ -194,7 +140,7 @@ export class CardRepo {
 
   async findOneById(id: number): Promise<CardEntity> {
     return this.prisma.card.findUniqueOrThrow({
-      select: CARD_SELECT_OPTIONS,
+      select: CARD_WITH_TAGS_SELECT_OPTIONS,
       where: { id },
     });
   }

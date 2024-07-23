@@ -103,14 +103,14 @@ export class CreateCardDto extends CardDto {
 }
 
 export class CardRespDto extends CardDto {
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
+  
   @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
   @IsArray()
   @Type(() => TagRespDto)
   @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
     tags: TagRespDto[];
-
-  @ApiProperty({ description: 'card id', nullable: true })
-    id: number;
 }
 
 export class GetManyCardsDto {

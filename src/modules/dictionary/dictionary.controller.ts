@@ -20,7 +20,7 @@ import {
   GetManyDictRespDto,
   UpdateDictionaryDto,
 } from '@/modules/dictionary/dictionary.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { DictionaryService } from './dictionary.service';
 
@@ -60,7 +60,8 @@ export class DictionaryController {
   @ApiOkResponse({ description: 'The dictionary has been found', type: DictionaryRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async findOneById(@Param('dictionaryId', ParseIntPipe) id: number): Promise<DictionaryRespDto> {
-    const data = this.dictionaryService.findOneById(id);
+    const data = await this.dictionaryService.findOneById(id);
+    console.log('\ncontroller raw data:', data.tags, '\n');
 
     return plainToInstance(DictionaryRespDto, data, { enableImplicitConversion: true });
   }

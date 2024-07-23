@@ -33,7 +33,7 @@ export class DictionaryService {
     return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries };
   }
 
-  async findOneById(dictionaryId: number): Promise<DictionaryEntity> {
+  async findOneById(dictionaryId: number): Promise<any> {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
