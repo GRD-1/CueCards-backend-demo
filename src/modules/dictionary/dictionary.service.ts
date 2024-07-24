@@ -37,16 +37,29 @@ export class DictionaryService {
   async getListWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
     let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
 
-    const [{ page, pageSize, dictionaries }, totalRecords] = await Promise.all([
-      this.dictionaryRepo.getList(args),
-      this.dictionaryRepo.getTotalCount(args),
-    ]);
+    const list = await this.getList(args);
 
-    if (dictionaries.length) {
-      firstDictionary = await this.findOneById(dictionaries[0].id);
+    if (list.dictionaries.length) {
+      firstDictionary = await this.findOneById(list.dictionaries[0].id);
     }
 
-    return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries, firstDictionary };
+    return { ...list, firstDictionary };
+  }
+
+  async getCustomizedDictionary(dictionaryId: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    return this.dictionaryRepo.getCustomizedDictionary(dictionaryId, userId);
+  }
+
+  async getCustomizedWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
+    let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
+
+    const list = await this.getList(args);
+
+    if (list.dictionaries.length) {
+      firstDictionary = await this.getCustomizedDictionary(list.dictionaries[0].id, args.userId);
+    }
+
+    return { ...list, firstDictionary };
   }
 
   async findOneById(dictionaryId: number): Promise<DictionaryWithTagsAndCardsEntity> {

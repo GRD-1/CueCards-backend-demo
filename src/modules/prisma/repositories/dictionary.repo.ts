@@ -101,10 +101,10 @@ export class DictionaryRepo {
   }
 
   getDictSearchConditions(args: SearchConditionsArgsType): FindManyDictConditionsInterface {
-    const { authorId, byUser, name, partOfName } = args;
+    const { userId, byUser, name, partOfName } = args;
     const searchConditions: FindManyDictConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+    searchConditions.authorId = byUser ? userId : { in: [userId, 0] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };
@@ -139,6 +139,35 @@ export class DictionaryRepo {
           LEFT JOIN cards c ON c.id = ct."cardId"
           LEFT JOIN tags t ON t.id = dt."tagId"
           WHERE d.id = ${id}
+          GROUP BY d.id, d."authorId", d.name;
+    `;
+  }
+
+  async getCustomizedDictionary(id: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    await this.prisma.dictionary.findUniqueOrThrow({
+      where: { id },
+    });
+
+    return this.prisma.$queryRaw`
+ SELECT
+            d.id,
+            d."authorId",
+            d.name,
+            COALESCE(
+              json_agg(DISTINCT row_to_json(c)::jsonb)
+              FILTER (WHERE c.id IS NOT NULL), '[]'
+            ) AS cards,
+            COALESCE(
+              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS tags
+          FROM dictionaries d
+          LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
+          LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
+          LEFT JOIN cards c ON c.id = ct."cardId"
+          LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = ${userId}
+          LEFT JOIN tags t ON t.id = dt."tagId"
+          WHERE d.id = ${id} AND ch."cardId" IS NULL
           GROUP BY d.id, d."authorId", d.name;
     `;
   }

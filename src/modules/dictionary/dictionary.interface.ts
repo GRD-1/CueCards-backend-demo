@@ -15,7 +15,7 @@ export interface GetDictListInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  authorId: number;
+  userId: number;
   name?: string;
   partOfName?: string;
 }
