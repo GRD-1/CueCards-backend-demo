@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { TagRespDto } from '@/modules/tag/tag.dto';
-import { CardDto, CardRespDto } from '@/modules/card/card.dto';
+import { CardDto } from '@/modules/card/card.dto';
 
 export class DictionaryDto {
   @ApiProperty({ description: 'user id', nullable: true })
@@ -25,13 +25,6 @@ export class DictionaryRespDto extends DictionaryDto {
   @ApiProperty({ description: 'dictionary id', nullable: true })
     id: number;
 
-  @ApiProperty({ description: 'Array of tags', type: [TagRespDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TagRespDto)
-  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
-    tags: TagRespDto[];
-
   @ApiProperty({ description: 'Array of cards', type: [CardDto], nullable: true })
   @IsArray()
   @ValidateNested({ each: true })
@@ -39,7 +32,35 @@ export class DictionaryRespDto extends DictionaryDto {
     cards: CardDto[];
 }
 
-export class GetManyDictionariesDto {
+export class DictionaryRespWithTransform extends DictionaryRespDto {
+  @ApiProperty({ description: 'Array of tags', type: [TagRespDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagRespDto)
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
+    tags: TagRespDto[];
+}
+
+export class DictionaryRespWithoutTransform extends DictionaryRespDto {
+  @ApiProperty({ description: 'Array of tags', type: [TagRespDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagRespDto)
+    tags: TagRespDto[];
+}
+export class DictionaryWithoutCardsRespDto extends DictionaryDto {
+  @ApiProperty({ description: 'dictionary id', nullable: true })
+    id: number;
+
+  @ApiProperty({ description: 'Array of tags', type: [TagRespDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TagRespDto)
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
+    tags: TagRespDto[];
+}
+
+export class GetListDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()
@@ -65,7 +86,7 @@ export class GetManyDictionariesDto {
     partOfName?: string;
 }
 
-export class GetManyDictRespDto {
+export class GetListRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -82,11 +103,17 @@ export class GetManyDictRespDto {
   @IsNumber()
     totalRecords: number;
 
-  @ApiProperty({ description: 'an array of dictionaries', nullable: false, type: [DictionaryRespDto] })
+  @ApiProperty({ description: 'an array of dictionaries', nullable: false, type: [DictionaryWithoutCardsRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => DictionaryRespDto)
-    dictionaries: DictionaryRespDto[];
+  @Type(() => DictionaryWithoutCardsRespDto)
+    dictionaries: DictionaryWithoutCardsRespDto[];
+}
+
+export class GetListWithFirstRespDto extends GetListRespDto {
+  @ApiProperty({ description: 'the first dictionary in a list', nullable: false, type: DictionaryRespWithoutTransform })
+  @Type(() => DictionaryRespWithoutTransform)
+    firstDictionary: DictionaryRespWithoutTransform;
 }
 
 export class UpdateDictionaryDto extends PartialType(CreateDictionaryDto) {}

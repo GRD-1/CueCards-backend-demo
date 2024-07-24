@@ -1,4 +1,7 @@
-import { DictionaryWithTagsEntity, DictionaryWithTagsPrismaEntity } from '@/modules/dictionary/dictionary.entity';
+import {
+  DictionaryWithTagsAndCardsEntity,
+  DictionaryWithTagsPrismaEntity,
+} from '@/modules/dictionary/dictionary.entity';
 
 export interface DictionaryInterface {
   name: string;
@@ -28,6 +31,10 @@ export interface GetDictListRespInterface {
 export interface GetDictListFullRespInterface extends GetDictListRespInterface {
   records: number;
   totalRecords: number;
+}
+
+export interface GetListWithFirstRespInterface extends GetDictListFullRespInterface {
+  firstDictionary: DictionaryWithTagsAndCardsEntity | null;
 }
 
 export interface DictionaryTagInterface {

@@ -4,6 +4,7 @@ import {
   DictionaryTagInterface,
   GetDictListFullRespInterface,
   GetDictListInterface,
+  GetListWithFirstRespInterface,
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryRepo } from '@/modules/prisma/repositories/dictionary.repo';
@@ -31,6 +32,21 @@ export class DictionaryService {
     ]);
 
     return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries };
+  }
+
+  async getListWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
+    let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
+
+    const [{ page, pageSize, dictionaries }, totalRecords] = await Promise.all([
+      this.dictionaryRepo.getList(args),
+      this.dictionaryRepo.getTotalCount(args),
+    ]);
+
+    if (dictionaries.length) {
+      firstDictionary = await this.findOneById(dictionaries[0].id);
+    }
+
+    return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries, firstDictionary };
   }
 
   async findOneById(dictionaryId: number): Promise<DictionaryWithTagsAndCardsEntity> {
