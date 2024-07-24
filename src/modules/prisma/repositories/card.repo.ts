@@ -140,7 +140,6 @@ export class CardRepo {
 
   async findOneById(id: number): Promise<CardEntity> {
     return this.prisma.card.findUniqueOrThrow({
-      select: CARD_WITH_TAGS_SELECT_OPTIONS,
       where: { id },
     });
   }

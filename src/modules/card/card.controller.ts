@@ -14,6 +14,7 @@ import {
 } from '@nestjs/swagger';
 import {
   CardRespDto,
+  CardWithTagsRespDto,
   CreateCardDto,
   GetManyCardsDto,
   GetManyCardsRespDto,
@@ -93,12 +94,12 @@ export class CardController {
   @Get(':cardId/get-one')
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
-  @ApiOkResponse({ description: 'The card has been found', type: CardRespDto })
+  @ApiOkResponse({ description: 'The card has been found', type: CardWithTagsRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardRespDto> {
+  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardWithTagsRespDto> {
     const data = await this.cardService.findOneById(cardId);
 
-    return plainToInstance(CardRespDto, data, { enableImplicitConversion: true });
+    return plainToInstance(CardWithTagsRespDto, data, { enableImplicitConversion: true });
   }
 
   @Patch(':cardId/update')

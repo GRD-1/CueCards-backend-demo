@@ -1,6 +1,6 @@
 import {
   IsArray,
-  IsBoolean,
+  IsBoolean, IsDate,
   IsInt,
   IsNumber,
   IsOptional,
@@ -105,7 +105,21 @@ export class CreateCardDto extends CardDto {
 export class CardRespDto extends CardDto {
   @ApiProperty({ description: 'card id', nullable: true })
     id: number;
-  
+
+  @ApiProperty({ description: 'the date when the card were created', nullable: false, type: Date })
+  @IsDate()
+    createdAt: Date;
+
+  @ApiProperty({ description: 'the date when the card were updated', nullable: false, type: Date })
+  @IsDate()
+    updatedAt: Date;
+
+  @ApiProperty({ description: 'the mark that the card will be deleted', nullable: false, type: Boolean })
+  @IsBoolean()
+    deleteMark: boolean;
+}
+
+export class CardWithTagsRespDto extends CardRespDto {
   @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
   @IsArray()
   @Type(() => TagRespDto)

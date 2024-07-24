@@ -22,6 +22,12 @@ export class CardEntity {
   bsSynonyms: string[];
   bsAudio: string | null;
   bsHint: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deleteMark: boolean;
+}
+
+export class CardWithTagsEntity extends CardEntity {
   tags: CardTags[];
 }
 

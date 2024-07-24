@@ -42,6 +42,9 @@ export const CARD_WITH_TAGS_SELECT_OPTIONS = {
   bsSynonyms: true,
   bsAudio: true,
   bsHint: true,
+  createdAt: true,
+  updatedAt: true,
+  deleteMark: true,
   tags: {
     select: {
       tag: {
