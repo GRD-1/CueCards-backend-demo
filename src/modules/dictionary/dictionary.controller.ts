@@ -39,8 +39,8 @@ export class DictionaryController {
     return this.dictionaryService.create(payload, userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get dictionaries according to the conditions' })
+  @Get('list')
+  @ApiOperation({ summary: 'Get a dictionary list according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })
@@ -48,8 +48,8 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyDictRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyDictionariesDto, @UserId() authorId: number): Promise<GetManyDictRespDto> {
-    const data = await this.dictionaryService.findMany({ ...query, authorId });
+  async getList(@Query() query: GetManyDictionariesDto, @UserId() authorId: number): Promise<GetManyDictRespDto> {
+    const data = await this.dictionaryService.getList({ ...query, authorId });
 
     return plainToInstance(GetManyDictRespDto, data, { enableImplicitConversion: true });
   }
@@ -60,10 +60,7 @@ export class DictionaryController {
   @ApiOkResponse({ description: 'The dictionary has been found', type: DictionaryRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async findOneById(@Param('dictionaryId', ParseIntPipe) id: number): Promise<DictionaryRespDto> {
-    const data = await this.dictionaryService.findOneById(id);
-    console.log('\ncontroller raw data:', data.tags, '\n');
-
-    return plainToInstance(DictionaryRespDto, data, { enableImplicitConversion: true });
+    return this.dictionaryService.findOneById(id);
   }
 
   @Patch(':dictionaryId/update')

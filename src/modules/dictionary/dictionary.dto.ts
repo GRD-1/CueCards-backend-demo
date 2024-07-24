@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { TagRespDto } from '@/modules/tag/tag.dto';
-import { CardRespDto } from '@/modules/card/card.dto';
+import { CardDto, CardRespDto } from '@/modules/card/card.dto';
 
 export class DictionaryDto {
   @ApiProperty({ description: 'user id', nullable: true })
@@ -25,26 +25,18 @@ export class DictionaryRespDto extends DictionaryDto {
   @ApiProperty({ description: 'dictionary id', nullable: true })
     id: number;
 
-  @ApiProperty({ description: 'Array of Tags', type: [TagRespDto] })
+  @ApiProperty({ description: 'Array of tags', type: [TagRespDto] })
   @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => TagRespDto)
-  @Transform(({ value }) => value.map(item => {
-    const { CardTag, ...tagFields } = item.tag;
-
-    return tagFields;
-  }))
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
     tags: TagRespDto[];
 
-  @ApiProperty({ description: 'Array of Cards', type: [CardRespDto], nullable: true })
+  @ApiProperty({ description: 'Array of cards', type: [CardDto], nullable: true })
   @IsArray()
-  @Type(() => CardRespDto)
-  @Transform(({ obj }) => obj.tags.reduce((acc, item) => {
-    const cards = item.tag.CardTag.map(entry => entry.card.id);
-    acc.push(...cards);
-
-    return acc;
-  }, []))
-    cards: CardRespDto[];
+  @ValidateNested({ each: true })
+  @Type(() => CardDto)
+    cards: CardDto[];
 }
 
 export class GetManyDictionariesDto {

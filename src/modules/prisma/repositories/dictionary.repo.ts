@@ -1,17 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
-import { CARD_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/card.select-options';
 import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
   FindManyDictConditionsInterface,
-  FindManyDictInterface,
-  FindManyDictRespInterface,
+  GetDictListInterface,
+  GetDictListRespInterface,
   SearchConditionsArgsType,
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
-import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import { DictionaryWithTagsAndCardsEntity } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
@@ -81,7 +80,7 @@ export class DictionaryRepo {
     return newDictionary.id;
   }
 
-  async findMany(args: FindManyDictInterface): Promise<FindManyDictRespInterface> {
+  async getList(args: GetDictListInterface): Promise<GetDictListRespInterface> {
     const { page = 1, pageSize = 20 } = args;
     const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
 
@@ -116,33 +115,32 @@ export class DictionaryRepo {
     return searchConditions;
   }
 
-  async findOneById(id: number): Promise<any> {
-    const data = await this.prisma.dictionary.findUniqueOrThrow({
+  async findOneById(id: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    await this.prisma.dictionary.findUniqueOrThrow({
       where: { id },
-      select: {
-        id: true,
-        authorId: true,
-        name: true,
-        tags: {
-          select: {
-            tag: {
-              select: {
-                id: true,
-                authorId: true,
-                name: true,
-                CardTag: {
-                  select: {
-                    card: { select: CARD_SELECT_OPTIONS },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
     });
 
-    return { ...data, cards: [] };
+    return this.prisma.$queryRaw`
+      SELECT
+            d.id,
+            d."authorId",
+            d.name,
+            COALESCE(
+              json_agg(DISTINCT row_to_json(c)::jsonb)
+              FILTER (WHERE c.id IS NOT NULL), '[]'
+            ) AS cards,
+            COALESCE(
+              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS tags
+          FROM dictionaries d
+          LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
+          LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
+          LEFT JOIN cards c ON c.id = ct."cardId"
+          LEFT JOIN tags t ON t.id = dt."tagId"
+          WHERE d.id = ${id}
+          GROUP BY d.id, d."authorId", d.name;
+    `;
   }
 
   async getIdByName(name: string): Promise<number | null> {

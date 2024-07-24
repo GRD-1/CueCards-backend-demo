@@ -1,4 +1,4 @@
-import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import { DictionaryWithTagsEntity, DictionaryWithTagsPrismaEntity } from '@/modules/dictionary/dictionary.entity';
 
 export interface DictionaryInterface {
   name: string;
@@ -8,7 +8,7 @@ export interface DictionaryAndTagsInterface extends DictionaryInterface {
   tags: number[];
 }
 
-export interface FindManyDictInterface {
+export interface GetDictListInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
@@ -17,15 +17,15 @@ export interface FindManyDictInterface {
   partOfName?: string;
 }
 
-export type SearchConditionsArgsType = Omit<FindManyDictInterface, 'page' | 'pageSize'>;
+export type SearchConditionsArgsType = Omit<GetDictListInterface, 'page' | 'pageSize'>;
 
-export interface FindManyDictRespInterface {
+export interface GetDictListRespInterface {
   page: number;
   pageSize: number;
-  dictionaries: DictionaryEntity[];
+  dictionaries: DictionaryWithTagsPrismaEntity[];
 }
 
-export interface FindManyFullRespInterface extends FindManyDictRespInterface {
+export interface GetDictListFullRespInterface extends GetDictListRespInterface {
   records: number;
   totalRecords: number;
 }
