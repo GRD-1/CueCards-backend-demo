@@ -5,12 +5,15 @@ import {
   DictionaryAndTagsInterface,
   DictionaryTagInterface,
   FindManyDictConditionsInterface,
-  FindManyDictInterface,
-  FindManyDictRespInterface,
+  GetDictListInterface,
+  GetDictListRespInterface,
   SearchConditionsArgsType,
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
-import { DictionaryEntity } from '@/modules/dictionary/dictionary.entity';
+import {
+  DictionaryWithTagsAndCardsEntity,
+  DicWithTagsAndCardSettingsEntity,
+} from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
@@ -80,7 +83,7 @@ export class DictionaryRepo {
     return newDictionary.id;
   }
 
-  async findMany(args: FindManyDictInterface): Promise<FindManyDictRespInterface> {
+  async getList(args: GetDictListInterface): Promise<GetDictListRespInterface> {
     const { page = 1, pageSize = 20 } = args;
     const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
 
@@ -101,10 +104,10 @@ export class DictionaryRepo {
   }
 
   getDictSearchConditions(args: SearchConditionsArgsType): FindManyDictConditionsInterface {
-    const { authorId, byUser, name, partOfName } = args;
+    const { userId, byUser, name, partOfName } = args;
     const searchConditions: FindManyDictConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+    searchConditions.authorId = byUser ? userId : { in: [userId, 0] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };
@@ -115,11 +118,104 @@ export class DictionaryRepo {
     return searchConditions;
   }
 
-  async findOneById(id: number): Promise<DictionaryEntity> {
-    return this.prisma.dictionary.findUniqueOrThrow({
-      select: DICTIONARY_SELECT_OPTIONS,
-      where: { id },
-    });
+  async findOneById(id: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    const data: DictionaryWithTagsAndCardsEntity[] = await this.prisma.$queryRaw`
+      SELECT
+            d.id,
+            d."authorId",
+            d.name,
+            COALESCE(
+              json_agg(DISTINCT row_to_json(c)::jsonb)
+              FILTER (WHERE c.id IS NOT NULL), '[]'
+            ) AS cards,
+            COALESCE(
+              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS tags
+          FROM dictionaries d
+          LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
+          LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
+          LEFT JOIN cards c ON c.id = ct."cardId"
+          LEFT JOIN tags t ON t.id = dt."tagId"
+          WHERE d.id = ${id}
+          GROUP BY d.id, d."authorId", d.name;
+    `;
+
+    if (!data[0]) {
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!');
+    }
+
+    return data[0];
+  }
+
+  async getCustomizedDictionary(id: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    const data: DictionaryWithTagsAndCardsEntity[] = await this.prisma.$queryRaw`
+        SELECT
+            d.id,
+            d."authorId",
+            d.name,
+            COALESCE(
+              json_agg(DISTINCT row_to_json(c)::jsonb)
+              FILTER (WHERE c.id IS NOT NULL), '[]'
+            ) AS cards,
+            COALESCE(
+              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS tags
+          FROM dictionaries d
+          LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
+          LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
+          LEFT JOIN cards c ON c.id = ct."cardId"
+          LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = ${userId}
+          LEFT JOIN tags t ON t.id = dt."tagId"
+          WHERE d.id = ${id} AND ch."cardId" IS NULL
+          GROUP BY d.id, d."authorId", d.name;
+    `;
+
+    if (!data[0]) {
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!');
+    }
+
+    return data[0];
+  }
+
+  async getDictionaryWithSettings(id: number, userId: number): Promise<DicWithTagsAndCardSettingsEntity> {
+    const data: DicWithTagsAndCardSettingsEntity[] = await this.prisma.$queryRaw`
+        SELECT
+            d.id,
+            d."authorId",
+            d.name,
+            COALESCE(
+                json_agg(DISTINCT jsonb_build_object(
+                    'id', c.id,
+                    'authorId', t."authorId",
+                    'fsValue', c."fsValue",
+                    'bsValue', c."bsValue",
+                    'statistics', cs,
+                    'cardIsHidden', ch."cardId" IS NOT NULL
+                ))
+                FILTER (WHERE c.id IS NOT NULL), '[]'
+            ) AS cards,
+            COALESCE(
+                json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+                FILTER (WHERE t.id IS NOT NULL), '[]'
+            ) AS tags
+        FROM dictionaries d
+        LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
+        LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
+        LEFT JOIN cards c ON c.id = ct."cardId"
+        LEFT JOIN tags t ON t.id = dt."tagId"
+        LEFT JOIN card_statistics cs ON cs."cardId" = c.id AND cs."userId" = ${userId}
+        LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = ${userId}
+        WHERE d.id = ${id}
+        GROUP BY d.id, d."authorId", d.name;
+    `;
+
+    if (!data[0]) {
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!');
+    }
+
+    return data[0];
   }
 
   async getIdByName(name: string): Promise<number | null> {

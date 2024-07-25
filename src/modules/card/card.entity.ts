@@ -3,7 +3,7 @@ import { CardStatisticsEntity } from '@/modules/card-statistics/card-statistics.
 
 export class CardEntity {
   id: number;
-  authorId: number | null;
+  authorId: number;
   fsLanguage: string;
   fsValue: string;
   fsDescription: string | null;
@@ -22,6 +22,22 @@ export class CardEntity {
   bsSynonyms: string[];
   bsAudio: string | null;
   bsHint: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deleteMark: boolean;
+}
+
+export class CardWitTagsEntity extends CardEntity {
+  tags: CardTags[];
+}
+
+export class CardListEntity {
+  id: number;
+  authorId: number;
+  fsLanguage: string;
+  fsValue: string;
+  bsLanguage: string;
+  bsValue: string;
   tags: CardTags[];
 }
 
@@ -29,16 +45,12 @@ class CardTags {
   tag: TagEntity;
 }
 
-class HiddenCards {
-  cardId: number;
-  userId: number;
-}
-
 export class CardWithSettingsEntity {
   id: number;
+  authorId: number;
   fsValue: string;
   bsValue: string;
-  tags: CardTags[];
-  statistics?: CardStatisticsEntity[];
-  cardIsHidden: HiddenCards[];
+  tags: TagEntity[];
+  statistics: CardStatisticsEntity;
+  cardIsHidden: boolean;
 }

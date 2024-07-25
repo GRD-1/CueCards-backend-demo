@@ -2,77 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
+  CARD_SELECT_OPTIONS,
+  CARD_LIST_SELECT_OPTIONS,
+} from '@/modules/prisma/repositories/select-options/card.select-options';
+import {
   CardAndTagsInterface,
   CardTagInterface,
-  FindManyCardsConditionsInterface,
-  FindManyCardsInterface,
-  FindManyCardsRespInterface,
-  GetSettingsRespInterface,
+  GetCardListConditionsInterface,
+  GetCardListInterface,
+  GetCardListRespInterface,
   SearchConditionsArgsType,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
-import { CardEntity } from '@/modules/card/card.entity';
+import { CardEntity, CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-
-const CARD_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  fsLanguage: true,
-  fsValue: true,
-  fsDescription: true,
-  fsMeaningVariants: true,
-  fsWrongMeanings: true,
-  fsTranscription: true,
-  fsSynonyms: true,
-  fsAudio: true,
-  fsHint: true,
-  bsLanguage: true,
-  bsValue: true,
-  bsDescription: true,
-  bsMeaningVariants: true,
-  bsWrongMeanings: true,
-  bsTranscription: true,
-  bsSynonyms: true,
-  bsAudio: true,
-  bsHint: true,
-  tags: {
-    select: {
-      tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
-      },
-    },
-  },
-};
-
-const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  fsValue: true,
-  bsValue: true,
-  tags: {
-    select: {
-      tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
-      },
-    },
-  },
-};
-
-const CARD_STATISTICS_SELECT_OPTIONS = {
-  fsTotalAnswers: true,
-  fsCorrectAnswers: true,
-  bsTotalAnswers: true,
-  bsCorrectAnswers: true,
-};
 
 @Injectable()
 export class CardRepo {
@@ -123,31 +67,13 @@ export class CardRepo {
     return newCard.id;
   }
 
-  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsRespInterface> {
+  async getList(args: GetCardListInterface): Promise<GetCardListRespInterface> {
     const { page = 1, pageSize = 20 } = args;
-    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
+    const searchConditions: GetCardListConditionsInterface = this.getCardSearchConditions(args);
 
     const cards = await this.prisma.card.findMany({
       select: {
-        ...CARD_SELECT_OPTIONS,
-      },
-      where: searchConditions,
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-
-    return { page, pageSize, cards };
-  }
-
-  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsRespInterface> {
-    const { page = 1, pageSize = 20, authorId } = args;
-    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
-
-    const cards = await this.prisma.card.findMany({
-      select: {
-        ...CARD_WITH_SETTINGS_SELECT_OPTIONS,
-        statistics: { select: CARD_STATISTICS_SELECT_OPTIONS, where: { userId: authorId } },
-        cardIsHidden: true,
+        ...CARD_LIST_SELECT_OPTIONS,
       },
       where: searchConditions,
       skip: (page - 1) * pageSize,
@@ -158,30 +84,16 @@ export class CardRepo {
   }
 
   async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
-    const searchConditions: FindManyCardsConditionsInterface = this.getCardSearchConditions(args);
+    const searchConditions: GetCardListConditionsInterface = this.getCardSearchConditions(args);
 
     return this.prisma.card.count({ where: searchConditions });
   }
 
-  getCardSearchConditions(args: SearchConditionsArgsType): FindManyCardsConditionsInterface {
-    const { authorId, byUser, value, partOfValue, withoutHidden } = args;
-    const searchConditions: FindManyCardsConditionsInterface = {};
+  getCardSearchConditions(args: SearchConditionsArgsType): GetCardListConditionsInterface {
+    const { userId, byUser, value, partOfValue } = args;
+    const searchConditions: GetCardListConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
-
-    if (byUser && withoutHidden) {
-      searchConditions.cardIsHidden = {
-        none: {
-          userId: authorId,
-        },
-      };
-    } else if (withoutHidden) {
-      searchConditions.cardIsHidden = {
-        none: {
-          userId: { in: [authorId, 0] },
-        },
-      };
-    }
+    searchConditions.authorId = byUser ? userId : { in: [userId, 0] };
 
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
@@ -192,7 +104,7 @@ export class CardRepo {
     return searchConditions;
   }
 
-  async findOneById(id: number): Promise<CardEntity> {
+  async findOneById(id: number): Promise<CardWitTagsEntity> {
     return this.prisma.card.findUniqueOrThrow({
       select: CARD_SELECT_OPTIONS,
       where: { id },

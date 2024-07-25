@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsDate,
   IsInt,
   IsNumber,
   IsOptional,
@@ -95,6 +96,36 @@ export class CardDto {
     bsHint: string | null;
 }
 
+export class CardListItemRespDto {
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
+
+  @ApiProperty({ description: 'user id', nullable: true, example: 1 })
+    authorId: number | null;
+
+  @ApiProperty({ description: 'front side language', nullable: false, example: 'en' })
+  @IsString()
+    fsLanguage: string;
+
+  @ApiProperty({ description: 'front side value', nullable: false, example: 'text text text' })
+  @IsString()
+    fsValue: string;
+
+  @ApiProperty({ description: 'back side language', nullable: false, example: 'ru' })
+  @IsString()
+    bsLanguage: string;
+
+  @ApiProperty({ description: 'back side value', nullable: false, example: 'text' })
+  @IsString()
+    bsValue: string;
+
+  @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
+  @IsArray()
+  @Type(() => TagRespDto)
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
+    tags: TagRespDto[];
+}
+
 export class CreateCardDto extends CardDto {
   @ApiProperty({ description: 'array of tags id', nullable: true, example: [1, 2, 3] })
   @IsArray()
@@ -103,17 +134,31 @@ export class CreateCardDto extends CardDto {
 }
 
 export class CardRespDto extends CardDto {
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
+
+  @ApiProperty({ description: 'the date when the card were created', nullable: false, type: Date })
+  @IsDate()
+    createdAt: Date;
+
+  @ApiProperty({ description: 'the date when the card were updated', nullable: false, type: Date })
+  @IsDate()
+    updatedAt: Date;
+
+  @ApiProperty({ description: 'the mark that the card will be deleted', nullable: false, type: Boolean })
+  @IsBoolean()
+    deleteMark: boolean;
+}
+
+export class CardWithTagsRespDto extends CardRespDto {
   @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
   @IsArray()
   @Type(() => TagRespDto)
   @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
     tags: TagRespDto[];
-
-  @ApiProperty({ description: 'card id', nullable: true })
-    id: number;
 }
 
-export class GetManyCardsDto {
+export class GetCardListDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()
@@ -140,7 +185,7 @@ export class GetManyCardsDto {
     partOfValue?: string;
 }
 
-export class GetManyCardsRespDto {
+export class GetCardListRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -157,11 +202,17 @@ export class GetManyCardsRespDto {
   @IsNumber()
     totalRecords: number;
 
-  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardRespDto] })
+  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardListItemRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CardRespDto)
-    cards: CardRespDto[];
+  @Type(() => CardListItemRespDto)
+    cards: CardListItemRespDto[];
+}
+
+export class GetCardListWithFRespDto extends GetCardListRespDto {
+  @ApiProperty({ description: 'the first card in a list', nullable: false, type: CardWithTagsRespDto })
+  @Type(() => CardWithTagsRespDto)
+    firstCard: CardWithTagsRespDto;
 }
 
 export class CardWithSettingsDto {
@@ -181,19 +232,13 @@ export class CardWithSettingsDto {
   @IsString()
     bsValue: string;
 
-  @ApiProperty({ description: 'array of tags', nullable: false, type: [TagRespDto] })
-  @IsArray()
-  @Type(() => TagRespDto)
-  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
-    tags: TagRespDto[];
-
   @ApiProperty({ description: 'the card statistics', nullable: true, type: CardStatsDto })
   @IsArray()
   @Type(() => CardStatsDto)
   @Transform(({ value }) => (value[0] ? value[0] : {}), { toClassOnly: true })
-    statistics: CardStatsDto;
+    statistics: CardStatsDto | null;
 
-  @ApiProperty({ description: 'is the card hidden in the training list', nullable: true, type: Boolean })
+  @ApiProperty({ description: 'is the card hidden in the dictionary settings', nullable: true, type: Boolean })
   @IsArray()
   @Type(() => Boolean)
   @Transform(({ value }) => (!!value[0]))
@@ -213,7 +258,7 @@ export class GetWithSettingsRespDto {
   @IsNumber()
     records: number;
 
-  @ApiProperty({ description: 'the total number of records', nullable: false })
+  @ApiProperty({ description: 'the total number of records matching this query', nullable: false })
   @IsNumber()
     totalRecords: number;
 

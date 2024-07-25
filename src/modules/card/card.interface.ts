@@ -1,4 +1,4 @@
-import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
+import { CardListEntity, CardWitTagsEntity } from '@/modules/card/card.entity';
 
 export interface CardInterface {
   fsLanguage: string;
@@ -25,27 +25,32 @@ export interface CardAndTagsInterface extends CardInterface {
   tags: number[];
 }
 
-export interface FindManyCardsInterface {
+export interface GetCardListInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  authorId: number;
+  userId: number;
   value?: string;
   partOfValue?: string;
-  withoutHidden?: boolean;
 }
 
-export type SearchConditionsArgsType = Omit<FindManyCardsInterface, 'page' | 'pageSize'>;
+export type SearchConditionsArgsType = Omit<GetCardListInterface, 'page' | 'pageSize'>;
 
-export interface FindManyCardsRespInterface {
+export interface GetCardListRespInterface {
   page: number;
   pageSize: number;
-  cards: CardEntity[];
+  cards: CardListEntity[];
 }
 
-export interface FindManyCardsFullRespInterface extends FindManyCardsRespInterface {
+export interface GetCardListFullRespInterface extends GetCardListRespInterface {
   records: number;
   totalRecords: number;
+}
+
+export interface GetListWithFirstRespInterface extends GetCardListRespInterface {
+  records: number;
+  totalRecords: number;
+  firstCard: CardWitTagsEntity | null;
 }
 
 export interface CardTagInterface {
@@ -60,23 +65,7 @@ export interface UpdateCardInterface {
   newTagsArr?: CardTagInterface[];
 }
 
-export interface FindManyCardsConditionsInterface {
+export interface GetCardListConditionsInterface {
   authorId?: number | { in: number[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
-  cardIsHidden?: {
-    none: {
-      userId: number | { in: number[] };
-    };
-  };
-}
-
-export interface GetSettingsRespInterface {
-  page: number;
-  pageSize: number;
-  cards: CardWithSettingsEntity[];
-}
-
-export interface GetSettingsFullRespInterface extends GetSettingsRespInterface {
-  records: number;
-  totalRecords: number;
 }

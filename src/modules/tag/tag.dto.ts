@@ -10,11 +10,11 @@ export class TagDto {
 }
 
 export class TagRespDto extends TagDto {
-  @ApiProperty({ description: 'user id', nullable: true, type: Number })
-    authorId?: number | null;
-
   @ApiProperty({ description: 'tag id', nullable: false, type: Number })
     id: number;
+  
+  @ApiProperty({ description: 'user id', nullable: true, type: Number })
+    authorId?: number | null;
 }
 
 export class GetManyTagsDto {

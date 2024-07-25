@@ -3,12 +3,12 @@ import { CardRepo } from '@/modules/prisma/repositories/card.repo';
 import {
   CardAndTagsInterface,
   CardTagInterface,
-  FindManyCardsFullRespInterface,
-  FindManyCardsInterface,
-  GetSettingsFullRespInterface,
+  GetCardListFullRespInterface,
+  GetCardListInterface,
+  GetListWithFirstRespInterface,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
-import { CardEntity } from '@/modules/card/card.entity';
+import { CardEntity, CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
@@ -25,34 +25,28 @@ export class CardService {
     return this.cardRepo.create(payload, userId);
   }
 
-  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+  async getList(args: GetCardListInterface): Promise<GetCardListFullRespInterface> {
     const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.findMany(args),
+      this.cardRepo.getList(args),
       this.cardRepo.getTotalCount(args),
     ]);
 
     return { page, pageSize, records: cards.length, totalRecords, cards };
   }
 
-  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getCardListWithSettings(args),
-      this.cardRepo.getTotalCount(args),
-    ]);
+  async getListWithFirst(args: GetCardListInterface): Promise<GetListWithFirstRespInterface> {
+    let firstCard: CardWitTagsEntity | null = null;
 
-    return { page, pageSize, records: cards.length, totalRecords, cards };
+    const list = await this.getList(args);
+
+    if (list.cards.length) {
+      firstCard = await this.findOneById(list.cards[0].id);
+    }
+
+    return { ...list, firstCard };
   }
 
-  async getTrainingList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.findMany({ ...args, withoutHidden: true }),
-      this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
-    ]);
-
-    return { page, pageSize, records: cards.length, totalRecords, cards };
-  }
-
-  async findOneById(cardId: number): Promise<CardEntity> {
+  async findOneById(cardId: number): Promise<CardWitTagsEntity> {
     return this.cardRepo.findOneById(cardId);
   }
 

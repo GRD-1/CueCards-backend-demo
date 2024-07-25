@@ -13,11 +13,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
-  CardRespDto,
+  CardWithTagsRespDto,
   CreateCardDto,
-  GetManyCardsDto,
-  GetManyCardsRespDto,
-  GetWithSettingsRespDto,
+  GetCardListDto,
+  GetCardListRespDto,
+  GetCardListWithFRespDto,
   UpdateCardDto,
 } from '@/modules/card/card.dto';
 import { plainToInstance } from 'class-transformer';
@@ -42,63 +42,45 @@ export class CardController {
     return this.cardService.create(payload, userId);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get cards according to the conditions' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
-  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
-  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
-  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
-  @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
-  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetManyCardsRespDto> {
-    const data = await this.cardService.findMany({ ...query, authorId });
-
-    return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
-  }
-
-  @Get('training-settings')
-  @ApiOperation({ summary: 'Get a card list with the settings: parameter "cardIsHidden", card statistics e t.c.' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
-  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
-  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
-  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
-  @ApiOkResponse({ description: 'Successful request', type: GetWithSettingsRespDto })
-  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getCardListWithSettings(
-    @Query() query: GetManyCardsDto,
-    @UserId() authorId: number,
-  ): Promise<GetWithSettingsRespDto> {
-    const data = await this.cardService.getCardListWithSettings({ ...query, authorId });
-
-    return plainToInstance(GetWithSettingsRespDto, data, { enableImplicitConversion: true });
-  }
-
-  @Get('training-list')
+  @Get('list')
   @ApiOperation({ summary: 'Get a card list according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
   @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
-  @ApiOkResponse({ description: 'Successful request', type: GetManyCardsRespDto })
+  @ApiOkResponse({ description: 'Successful request', type: GetCardListRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getTrainingList(@Query() query: GetManyCardsDto, @UserId() authorId: number): Promise<GetManyCardsRespDto> {
-    const data = await this.cardService.getTrainingList({ ...query, authorId });
+  async getList(@Query() query: GetCardListDto, @UserId() userId: number): Promise<GetCardListRespDto> {
+    const data = await this.cardService.getList({ ...query, userId });
 
-    return plainToInstance(GetManyCardsRespDto, data, { enableImplicitConversion: true });
+    return plainToInstance(GetCardListRespDto, data, { enableImplicitConversion: true });
+  }
+
+  @Get('list-with-first')
+  @ApiOperation({ summary: 'Get a card list  and the first card' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by card value' })
+  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
+  @ApiOkResponse({ description: 'Successful request', type: GetCardListWithFRespDto })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async getListWithFirst(@Query() query: GetCardListDto, @UserId() userId: number): Promise<GetCardListWithFRespDto> {
+    const data = await this.cardService.getListWithFirst({ ...query, userId });
+
+    return plainToInstance(GetCardListWithFRespDto, data, { enableImplicitConversion: true });
   }
 
   @Get(':cardId/get-one')
   @ApiOperation({ summary: 'Get a card with a specific id' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
-  @ApiOkResponse({ description: 'The card has been found', type: CardRespDto })
+  @ApiOkResponse({ description: 'The card has been found', type: CardWithTagsRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardRespDto> {
+  async findOneById(@Param('cardId', ParseIntPipe) cardId: number): Promise<CardWithTagsRespDto> {
     const data = await this.cardService.findOneById(cardId);
 
-    return plainToInstance(CardRespDto, data, { enableImplicitConversion: true });
+    return plainToInstance(CardWithTagsRespDto, data, { enableImplicitConversion: true });
   }
 
   @Patch(':cardId/update')
