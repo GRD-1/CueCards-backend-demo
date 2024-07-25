@@ -19,29 +19,6 @@ export const CARD_SELECT_OPTIONS = {
   bsSynonyms: true,
   bsAudio: true,
   bsHint: true,
-};
-
-export const CARD_WITH_TAGS_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  fsLanguage: true,
-  fsValue: true,
-  fsDescription: true,
-  fsMeaningVariants: true,
-  fsWrongMeanings: true,
-  fsTranscription: true,
-  fsSynonyms: true,
-  fsAudio: true,
-  fsHint: true,
-  bsLanguage: true,
-  bsValue: true,
-  bsDescription: true,
-  bsMeaningVariants: true,
-  bsWrongMeanings: true,
-  bsTranscription: true,
-  bsSynonyms: true,
-  bsAudio: true,
-  bsHint: true,
   createdAt: true,
   updatedAt: true,
   deleteMark: true,
@@ -58,10 +35,12 @@ export const CARD_WITH_TAGS_SELECT_OPTIONS = {
   },
 };
 
-export const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
+export const CARD_LIST_SELECT_OPTIONS = {
   id: true,
   authorId: true,
+  fsLanguage: true,
   fsValue: true,
+  bsLanguage: true,
   bsValue: true,
   tags: {
     select: {
@@ -74,11 +53,4 @@ export const CARD_WITH_SETTINGS_SELECT_OPTIONS = {
       },
     },
   },
-};
-
-export const CARD_STATISTICS_SELECT_OPTIONS = {
-  fsTotalAnswers: true,
-  fsCorrectAnswers: true,
-  bsTotalAnswers: true,
-  bsCorrectAnswers: true,
 };

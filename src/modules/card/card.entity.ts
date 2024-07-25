@@ -27,17 +27,22 @@ export class CardEntity {
   deleteMark: boolean;
 }
 
-export class CardWithTagsEntity extends CardEntity {
+export class CardWitTagsEntity extends CardEntity {
+  tags: CardTags[];
+}
+
+export class CardListEntity {
+  id: number;
+  authorId: number;
+  fsLanguage: string;
+  fsValue: string;
+  bsLanguage: string;
+  bsValue: string;
   tags: CardTags[];
 }
 
 class CardTags {
   tag: TagEntity;
-}
-
-class HiddenCards {
-  cardId: number;
-  userId: number;
 }
 
 export class CardWithSettingsEntity {

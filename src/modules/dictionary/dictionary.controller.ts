@@ -58,7 +58,7 @@ export class DictionaryController {
   }
 
   @Get('list-with-first')
-  @ApiOperation({ summary: 'Get a dictionary list according to the conditions' })
+  @ApiOperation({ summary: 'Get a dictionary list and the first dictionary' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })

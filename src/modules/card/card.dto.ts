@@ -96,6 +96,36 @@ export class CardDto {
     bsHint: string | null;
 }
 
+export class CardListItemRespDto {
+  @ApiProperty({ description: 'card id', nullable: true })
+    id: number;
+
+  @ApiProperty({ description: 'user id', nullable: true, example: 1 })
+    authorId: number | null;
+
+  @ApiProperty({ description: 'front side language', nullable: false, example: 'en' })
+  @IsString()
+    fsLanguage: string;
+
+  @ApiProperty({ description: 'front side value', nullable: false, example: 'text text text' })
+  @IsString()
+    fsValue: string;
+
+  @ApiProperty({ description: 'back side language', nullable: false, example: 'ru' })
+  @IsString()
+    bsLanguage: string;
+
+  @ApiProperty({ description: 'back side value', nullable: false, example: 'text' })
+  @IsString()
+    bsValue: string;
+
+  @ApiProperty({ description: 'array of tags', nullable: true, type: [TagRespDto] })
+  @IsArray()
+  @Type(() => TagRespDto)
+  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
+    tags: TagRespDto[];
+}
+
 export class CreateCardDto extends CardDto {
   @ApiProperty({ description: 'array of tags id', nullable: true, example: [1, 2, 3] })
   @IsArray()
@@ -128,7 +158,7 @@ export class CardWithTagsRespDto extends CardRespDto {
     tags: TagRespDto[];
 }
 
-export class GetManyCardsDto {
+export class GetCardListDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()
@@ -155,7 +185,7 @@ export class GetManyCardsDto {
     partOfValue?: string;
 }
 
-export class GetManyCardsRespDto {
+export class GetCardListRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
     page: number;
@@ -172,11 +202,17 @@ export class GetManyCardsRespDto {
   @IsNumber()
     totalRecords: number;
 
-  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardRespDto] })
+  @ApiProperty({ description: 'an array of cards', nullable: false, type: [CardListItemRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CardRespDto)
-    cards: CardRespDto[];
+  @Type(() => CardListItemRespDto)
+    cards: CardListItemRespDto[];
+}
+
+export class GetCardListWithFRespDto extends GetCardListRespDto {
+  @ApiProperty({ description: 'the first card in a list', nullable: false, type: CardWithTagsRespDto })
+  @Type(() => CardWithTagsRespDto)
+    firstCard: CardWithTagsRespDto;
 }
 
 export class CardWithSettingsDto {
