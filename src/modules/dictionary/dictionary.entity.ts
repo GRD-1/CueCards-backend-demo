@@ -1,5 +1,5 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
-import { CardEntity } from '@/modules/card/card.entity';
+import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
 
 export class DictionaryEntity {
   id: number;
@@ -19,4 +19,8 @@ export class DictionaryWithTagsPrismaEntity extends DictionaryEntity {
 
 export class DictionaryWithTagsAndCardsEntity extends DictionaryWithTagsEntity {
   cards: CardEntity[];
+}
+
+export class DicWithTagsAndCardSettingsEntity extends DictionaryWithTagsEntity {
+  cards: CardWithSettingsEntity[];
 }

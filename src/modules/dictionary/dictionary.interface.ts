@@ -1,6 +1,7 @@
 import {
   DictionaryWithTagsAndCardsEntity,
   DictionaryWithTagsPrismaEntity,
+  DicWithTagsAndCardSettingsEntity,
 } from '@/modules/dictionary/dictionary.entity';
 
 export interface DictionaryInterface {
@@ -35,6 +36,10 @@ export interface GetDictListFullRespInterface extends GetDictListRespInterface {
 
 export interface GetListWithFirstRespInterface extends GetDictListFullRespInterface {
   firstDictionary: DictionaryWithTagsAndCardsEntity | null;
+}
+
+export interface GetSettingsWithFRespInterface extends GetDictListFullRespInterface {
+  firstDictionary: DicWithTagsAndCardSettingsEntity | null;
 }
 
 export interface DictionaryTagInterface {

@@ -15,11 +15,13 @@ import {
 import { UserId } from '@/modules/user/decorators/user-id.decorator';
 import {
   CreateDictionaryDto,
-  DictionaryRespWithoutTransform,
   GetListDto,
   GetListRespDto,
   GetListWithFirstRespDto,
+  GetSettingsWithFRespDto,
   UpdateDictionaryDto,
+  WithTagsAndCardSettingsRespDto,
+  WithTagsAndCardsRespDto,
 } from '@/modules/dictionary/dictionary.dto';
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
@@ -70,23 +72,8 @@ export class DictionaryController {
     return plainToInstance(GetListWithFirstRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get('customized')
-  @ApiOperation({ summary: 'Get the list of customized dictionaries' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
-  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })
-  @ApiQuery({ name: 'name', required: false, type: String, description: 'search for records by dictionary name' })
-  @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
-  @ApiOkResponse({ description: 'Successful request', type: GetListRespDto })
-  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getCustomizedList(@Query() query: GetListDto, @UserId() userId: number): Promise<GetListRespDto> {
-    const data = await this.dictionaryService.getList({ ...query, userId });
-
-    return plainToInstance(GetListRespDto, data, { enableImplicitConversion: true });
-  }
-
   @Get('customized-with-first')
-  @ApiOperation({ summary: 'Get a dictionary list according to the conditions' })
+  @ApiOperation({ summary: 'Get a dictionary list and the first customized dictionary without hidden cards' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })
@@ -100,23 +87,49 @@ export class DictionaryController {
     return plainToInstance(GetListWithFirstRespDto, data, { enableImplicitConversion: true });
   }
 
-  @Get('customized/:dictionaryId')
+  @Get('settings-with-first')
+  @ApiOperation({ summary: 'Get a dictionary list and the first dictionary with card settings: hidden, statistics' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records by user' })
+  @ApiQuery({ name: 'name', required: false, type: String, description: 'search for records by dictionary name' })
+  @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
+  @ApiOkResponse({ description: 'Successful request', type: GetSettingsWithFRespDto })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async getSettingsWithFirst(@Query() query: GetListDto, @UserId() userId: number): Promise<GetSettingsWithFRespDto> {
+    const data = await this.dictionaryService.getSettingsWithFirst({ ...query, userId });
+
+    return plainToInstance(GetSettingsWithFRespDto, data, { enableImplicitConversion: true });
+  }
+
+  @Get(':dictionaryId/customized')
   @ApiOperation({ summary: 'Get a customized dictionary without hidden cards' })
-  @ApiOkResponse({ description: 'Successful request', type: DictionaryRespWithoutTransform })
+  @ApiOkResponse({ description: 'Successful request', type: WithTagsAndCardsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async getCustomizedDictionary(
     @Param('dictionaryId', ParseIntPipe) id: number,
     @UserId() userId: number,
-  ): Promise<DictionaryRespWithoutTransform> {
+  ): Promise<WithTagsAndCardsRespDto> {
     return this.dictionaryService.getCustomizedDictionary(id, userId);
+  }
+
+  @Get(':dictionaryId/settings')
+  @ApiOperation({ summary: 'Get a dictionary with card settings' })
+  @ApiOkResponse({ description: 'Successful request', type: WithTagsAndCardSettingsRespDto })
+  @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async getDictionaryWithSettings(
+    @Param('dictionaryId', ParseIntPipe) id: number,
+    @UserId() userId: number,
+  ): Promise<WithTagsAndCardSettingsRespDto> {
+    return this.dictionaryService.getDictionaryWithSettings(id, userId);
   }
 
   @Get(':dictionaryId/get-one')
   @ApiOperation({ summary: 'Get a dictionary with a specific id' })
   @ApiParam({ name: 'dictionaryId', required: true, description: 'Dictionary id' })
-  @ApiOkResponse({ description: 'The dictionary has been found', type: DictionaryRespWithoutTransform })
+  @ApiOkResponse({ description: 'The dictionary has been found', type: WithTagsAndCardsRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async findOneById(@Param('dictionaryId', ParseIntPipe) id: number): Promise<DictionaryRespWithoutTransform> {
+  async findOneById(@Param('dictionaryId', ParseIntPipe) id: number): Promise<WithTagsAndCardsRespDto> {
     return this.dictionaryService.findOneById(id);
   }
 

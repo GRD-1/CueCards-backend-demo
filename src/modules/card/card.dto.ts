@@ -1,6 +1,7 @@
 import {
   IsArray,
-  IsBoolean, IsDate,
+  IsBoolean,
+  IsDate,
   IsInt,
   IsNumber,
   IsOptional,
@@ -195,19 +196,13 @@ export class CardWithSettingsDto {
   @IsString()
     bsValue: string;
 
-  @ApiProperty({ description: 'array of tags', nullable: false, type: [TagRespDto] })
-  @IsArray()
-  @Type(() => TagRespDto)
-  @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
-    tags: TagRespDto[];
-
   @ApiProperty({ description: 'the card statistics', nullable: true, type: CardStatsDto })
   @IsArray()
   @Type(() => CardStatsDto)
   @Transform(({ value }) => (value[0] ? value[0] : {}), { toClassOnly: true })
-    statistics: CardStatsDto;
+    statistics: CardStatsDto | null;
 
-  @ApiProperty({ description: 'is the card hidden in the training list', nullable: true, type: Boolean })
+  @ApiProperty({ description: 'is the card hidden in the dictionary settings', nullable: true, type: Boolean })
   @IsArray()
   @Type(() => Boolean)
   @Transform(({ value }) => (!!value[0]))
@@ -227,7 +222,7 @@ export class GetWithSettingsRespDto {
   @IsNumber()
     records: number;
 
-  @ApiProperty({ description: 'the total number of records', nullable: false })
+  @ApiProperty({ description: 'the total number of records matching this query', nullable: false })
   @IsNumber()
     totalRecords: number;
 

@@ -25,32 +25,32 @@ export class CardService {
     return this.cardRepo.create(payload, userId);
   }
 
-  async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.findMany(args),
-      this.cardRepo.getTotalCount(args),
-    ]);
-
-    return { page, pageSize, records: cards.length, totalRecords, cards };
-  }
-
-  async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getCardListWithSettings(args),
-      this.cardRepo.getTotalCount(args),
-    ]);
-
-    return { page, pageSize, records: cards.length, totalRecords, cards };
-  }
-
-  async getTrainingList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.findMany({ ...args, withoutHidden: true }),
-      this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
-    ]);
-
-    return { page, pageSize, records: cards.length, totalRecords, cards };
-  }
+  // async findMany(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+  //   const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+  //     this.cardRepo.findMany(args),
+  //     this.cardRepo.getTotalCount(args),
+  //   ]);
+  //
+  //   return { page, pageSize, records: cards.length, totalRecords, cards };
+  // }
+  //
+  // async getCardListWithSettings(args: FindManyCardsInterface): Promise<GetSettingsFullRespInterface> {
+  //   const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+  //     this.cardRepo.getCardListWithSettings(args),
+  //     this.cardRepo.getTotalCount(args),
+  //   ]);
+  //
+  //   return { page, pageSize, records: cards.length, totalRecords, cards };
+  // }
+  //
+  // async getTrainingList(args: FindManyCardsInterface): Promise<FindManyCardsFullRespInterface> {
+  //   const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
+  //     this.cardRepo.findMany({ ...args, withoutHidden: true }),
+  //     this.cardRepo.getTotalCount({ ...args, withoutHidden: true }),
+  //   ]);
+  //
+  //   return { page, pageSize, records: cards.length, totalRecords, cards };
+  // }
 
   async findOneById(cardId: number): Promise<CardEntity> {
     return this.cardRepo.findOneById(cardId);

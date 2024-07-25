@@ -5,10 +5,14 @@ import {
   GetDictListFullRespInterface,
   GetDictListInterface,
   GetListWithFirstRespInterface,
+  GetSettingsWithFRespInterface,
   UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryRepo } from '@/modules/prisma/repositories/dictionary.repo';
-import { DictionaryWithTagsAndCardsEntity } from '@/modules/dictionary/dictionary.entity';
+import {
+  DictionaryWithTagsAndCardsEntity,
+  DicWithTagsAndCardSettingsEntity,
+} from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
@@ -46,10 +50,6 @@ export class DictionaryService {
     return { ...list, firstDictionary };
   }
 
-  async getCustomizedDictionary(dictionaryId: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
-    return this.dictionaryRepo.getCustomizedDictionary(dictionaryId, userId);
-  }
-
   async getCustomizedWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
     let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
 
@@ -60,6 +60,26 @@ export class DictionaryService {
     }
 
     return { ...list, firstDictionary };
+  }
+
+  async getSettingsWithFirst(args: GetDictListInterface): Promise<GetSettingsWithFRespInterface> {
+    let firstDictionary: DicWithTagsAndCardSettingsEntity | null = null;
+
+    const list = await this.getList(args);
+
+    if (list.dictionaries.length) {
+      firstDictionary = await this.getDictionaryWithSettings(list.dictionaries[0].id, args.userId);
+    }
+
+    return { ...list, firstDictionary };
+  }
+
+  async getCustomizedDictionary(dictionaryId: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+    return this.dictionaryRepo.getCustomizedDictionary(dictionaryId, userId);
+  }
+
+  async getDictionaryWithSettings(dictionaryId: number, userId: number): Promise<DicWithTagsAndCardSettingsEntity> {
+    return this.dictionaryRepo.getDictionaryWithSettings(dictionaryId, userId);
   }
 
   async findOneById(dictionaryId: number): Promise<DictionaryWithTagsAndCardsEntity> {

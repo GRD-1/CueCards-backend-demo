@@ -3,7 +3,7 @@ import { CardStatisticsEntity } from '@/modules/card-statistics/card-statistics.
 
 export class CardEntity {
   id: number;
-  authorId: number | null;
+  authorId: number;
   fsLanguage: string;
   fsValue: string;
   fsDescription: string | null;
@@ -42,9 +42,10 @@ class HiddenCards {
 
 export class CardWithSettingsEntity {
   id: number;
+  authorId: number;
   fsValue: string;
   bsValue: string;
-  tags: CardTags[];
-  statistics?: CardStatisticsEntity[];
-  cardIsHidden: HiddenCards[];
+  tags: TagEntity[];
+  statistics: CardStatisticsEntity;
+  cardIsHidden: boolean;
 }
