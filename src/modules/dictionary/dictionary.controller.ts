@@ -12,7 +12,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserId } from '@/modules/user/decorators/user-id.decorator';
+import { UserId } from '@/decorators/user-id.decorator';
 import {
   CreateDictionaryDto,
   GetListDto,

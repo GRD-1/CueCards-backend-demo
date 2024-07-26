@@ -8,12 +8,7 @@ import {
   LanguageInterface,
   SearchConditionsArgsType,
 } from '@/modules/language/language.interface';
-
-const LANGUAGE_SELECT_OPTIONS = {
-  id: true,
-  name: true,
-  acronym: true,
-};
+import { LANGUAGE_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/language.select-options';
 
 @Injectable()
 export class LanguageRepo {

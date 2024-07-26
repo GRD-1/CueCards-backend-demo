@@ -10,7 +10,7 @@ datasource db {
 model User {
   id             Int              @id @default(autoincrement())
   email          String           @unique @db.VarChar(100)
-  nickname       String?          @db.VarChar
+  nickname       String           @db.VarChar
   avatar         String?          @db.VarChar
   password       String           @db.VarChar
   createdAt      DateTime         @default(now()) @db.Timestamp(6)

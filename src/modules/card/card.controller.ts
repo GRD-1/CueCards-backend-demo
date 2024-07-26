@@ -22,8 +22,8 @@ import {
 } from '@/modules/card/card.dto';
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
+import { UserId } from '@/decorators/user-id.decorator';
 import { CardService } from './card.service';
-import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('cards')
 // @ApiBearerAuth()

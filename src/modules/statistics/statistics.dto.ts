@@ -6,31 +6,31 @@ export class StatisticsDto {
   @ApiProperty({ description: 'dictionary id', nullable: false, type: Number })
   @IsInt()
   @Min(1)
-    dictionaryId: number;
+  readonly dictionaryId: number;
 
   @ApiProperty({ description: 'the total answers number', nullable: false, type: Number })
   @IsInt()
-    totalAnswers: number;
+  readonly totalAnswers: number;
 
   @ApiProperty({ description: 'the correct answers number', nullable: false, type: Number })
   @IsInt()
-    correctAnswers: number;
+  readonly correctAnswers: number;
 
   @ApiProperty({ description: 'the training time in milliseconds', nullable: false, type: Number })
   @IsInt()
-    trainingTime: number;
+  readonly trainingTime: number;
 
   @ApiProperty({ description: 'the number of used hints', nullable: false, type: Number })
   @IsInt()
-    hintsCount: number;
+  readonly hintsCount: number;
 }
 
 export class StatisticsRespDto extends StatisticsDto {
   @ApiProperty({ description: 'record id', nullable: true, type: Number })
-    id: number | null;
+  readonly id: number | null;
 
   @ApiProperty({ description: 'user id', nullable: false, type: Number })
-    userId: number;
+  readonly userId: number;
 }
 
 export class GetManyStatsDto {
@@ -38,57 +38,57 @@ export class GetManyStatsDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-    page?: number;
+  readonly page?: number;
 
   @ApiProperty({ description: 'number of records per page' })
   @IsOptional()
   @IsInt()
   @Min(1)
-    pageSize?: number;
+  readonly pageSize?: number;
 
   @ApiProperty({ description: 'dictionary id' })
   @IsOptional()
   @IsInt()
-    dictionaryId?: number;
+  readonly dictionaryId?: number;
 
   @ApiProperty({ description: 'the date and time of a selection start' })
   @IsOptional()
   @IsDate()
-    selectionStart?: Date;
+  readonly selectionStart?: Date;
 
   @ApiProperty({ description: 'the date and time of a selection end' })
   @IsOptional()
   @IsDate()
-    selectionEnd?: Date;
+  readonly selectionEnd?: Date;
 }
 
 export class GetManyStatsRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
-    page: number;
+  readonly page: number;
 
   @ApiProperty({ description: 'number of entries per page', nullable: false })
   @IsNumber()
-    pageSize: number;
+  readonly pageSize: number;
 
   @ApiProperty({ description: 'number of records in the response', nullable: false })
   @IsNumber()
-    records: number;
+  readonly records: number;
 
   @ApiProperty({ description: 'the total number of entries', nullable: false })
   @IsNumber()
-    totalRecords: number;
+  readonly totalRecords: number;
 
   @ApiProperty({ description: 'an array of statistics', nullable: false, type: [StatisticsRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => StatisticsRespDto)
-    statistics: StatisticsRespDto[];
+  readonly statistics: StatisticsRespDto[];
 }
 
 export class GetLastResultsDto {
   @ApiProperty({ description: 'dictionary id' })
   @IsOptional()
   @IsInt()
-    dictionaryId?: number;
+  readonly dictionaryId?: number;
 }

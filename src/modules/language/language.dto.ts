@@ -6,17 +6,17 @@ export class LanguageDto {
   @ApiProperty({ description: 'language name', nullable: false, example: 'italian' })
   @IsString()
   @IsNotEmpty()
-    name: string;
+  readonly name: string;
 
   @ApiProperty({ description: 'language name', nullable: false, example: 'it' })
   @IsString()
   @IsNotEmpty()
-    acronym: string;
+  readonly acronym: string;
 }
 
 export class LanguageRespDto extends LanguageDto {
   @ApiProperty({ description: 'language id', nullable: false, type: Number })
-    id: number;
+  readonly id: number;
 }
 
 export class GetManyLanguagesDto {
@@ -24,43 +24,43 @@ export class GetManyLanguagesDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-    page?: number;
+  readonly page?: number;
 
   @ApiProperty({ description: 'number of records per page' })
   @IsOptional()
   @IsInt()
   @Min(1)
-    pageSize?: number;
+  readonly pageSize?: number;
 
   @ApiProperty({ description: 'language name' })
   @IsOptional()
-    name?: string;
+  readonly name?: string;
 
   @ApiProperty({ description: 'part of the language name' })
   @IsOptional()
-    partOfName?: string;
+  readonly partOfName?: string;
 }
 
 export class GetManyLanguagesRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
-    page: number;
+  readonly page: number;
 
   @ApiProperty({ description: 'number of entries per page', nullable: false })
   @IsNumber()
-    pageSize: number;
+  readonly pageSize: number;
 
   @ApiProperty({ description: 'number of records in the response', nullable: false })
   @IsNumber()
-    records: number;
+  readonly records: number;
 
   @ApiProperty({ description: 'the total number of entries', nullable: false })
   @IsNumber()
-    totalRecords: number;
+  readonly totalRecords: number;
 
   @ApiProperty({ description: 'an array of languages', nullable: false, type: [LanguageRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LanguageRespDto)
-    languages: LanguageRespDto[];
+  readonly languages: LanguageRespDto[];
 }

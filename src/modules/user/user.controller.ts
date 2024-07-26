@@ -1,9 +1,20 @@
-import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
+import { UserId } from '@/decorators/user-id.decorator';
+import { LoginUserDto, UpdateUserDto, UserDto, UserRespDto } from './user.dto';
 import { UserService } from './user.service';
-import { UserId } from './decorators/user-id.decorator';
 
 @ApiTags('user')
 @ApiBearerAuth()
@@ -13,38 +24,40 @@ export class UserController {
 
   @Post('register')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UserResponseDto })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async create(@Body() dto: CreateUserDto): Promise<number> {
-    return this.userService.create(dto);
+  @ApiBody({ type: UserDto })
+  @ApiCreatedResponse({ description: 'The new user has been created. The id:', schema: { example: 123 } })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
+  async create(@Body() payload: UserDto): Promise<number> {
+    return this.userService.create(payload);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'login user' })
+  @ApiOkResponse({ description: 'The user is logged in. The id:', schema: { example: 123 } })
+  @ApiUnauthorizedResponse({ description: 'Authorisation failed', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
+  async login(@Body() payload: LoginUserDto): Promise<number> {
+    return this.userService.login(payload.email, payload.password);
   }
 
   @Get()
   // @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Get the current user' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponseDto })
-  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  async getCurrentUser(@UserId() userId: number): Promise<UserResponseDto | null> {
+  @ApiOperation({ summary: 'Get the current user data' })
+  @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async getCurrentUser(@UserId() userId: number): Promise<UserRespDto> {
     return this.userService.findOneById(userId);
   }
 
-  // @Put()
+  @Patch('update')
   // @UseGuards(AuthGuard)
-  // @ApiOperation({ summary: 'Update the current user' })
-  // @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
-  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  // @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
-  // async update(@User('id') id: number, @Body() dto: UpdateUserDto): Promise<UserResponse> {
-  //   return this.userService.update(id, dto);
-  // }
-  //
-  // @Post('login')
-  // @ApiOperation({ summary: 'login user' })
-  // @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
-  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
-  // async login(@Body() dto: LoginUserDto): Promise<LoginUserResponse | null> {
-  //   return this.userService.login(dto);
-  // }
+  @ApiOperation({ summary: 'Update a user data' })
+  @ApiBody({ type: UpdateUserDto, examples: { example1: { value: { nickname: 'myNewNickName' } } } })
+  @ApiOkResponse({ description: 'The user has been updated. The id:', schema: { example: 123 } })
+  @ApiBadRequestResponse({ description: 'Invalid user data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
+  async update(@UserId() userId: number, @Body() payload: UpdateUserDto): Promise<number> {
+    return this.userService.update(userId, payload);
+  }
 }

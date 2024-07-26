@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
+import { UserEntity } from '@/modules/user/user.entity';
 
 type RequestWithoutUser = Omit<Request, 'user'>;
 
 export interface ExpressRequestInterface extends RequestWithoutUser {
-  user: UserResponseDto | null;
+  user: UserEntity | null;
 }

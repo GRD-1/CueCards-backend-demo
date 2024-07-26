@@ -2,7 +2,7 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SettingsRespDto, UpdateSettingsDto } from '@/modules/settings/settings.dto';
 import { Body, Controller, Get, Patch, Put } from '@nestjs/common';
 import { SettingsService } from '@/modules/settings/settings.service';
-import { UserId } from '@/modules/user/decorators/user-id.decorator';
+import { UserId } from '@/decorators/user-id.decorator';
 
 @ApiTags('settings')
 @Controller('settings')
