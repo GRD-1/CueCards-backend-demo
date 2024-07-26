@@ -2,17 +2,7 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { SettingsEntity } from '@/modules/settings/settings.entity';
 import { SettingsInterface } from '@/modules/settings/settings.interface';
-
-const SETTINGS_SELECT_OPTIONS = {
-  id: true,
-  userId: true,
-  appLanguage: true,
-  trainingLanguage: true,
-  notifications: true,
-  hints: true,
-  voicing: true,
-  darkMode: true,
-};
+import { SETTINGS_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/settings.select-options';
 
 @Injectable()
 export class SettingsRepo {

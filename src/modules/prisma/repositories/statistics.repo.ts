@@ -11,17 +11,7 @@ import {
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { StatisticsEntity } from '@/modules/statistics/statistics.entity';
-
-const STATISTICS_SELECT_OPTIONS = {
-  id: true,
-  userId: true,
-  dictionaryId: true,
-  totalAnswers: true,
-  correctAnswers: true,
-  trainingTime: true,
-  hintsCount: true,
-  createdAt: true,
-};
+import { STATISTICS_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/statistics.select-options';
 
 @Injectable()
 export class StatisticsRepo {

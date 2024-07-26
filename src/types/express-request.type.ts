@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UserResponseDto } from '@/modules/user/interfaces/user-response.type';
+import { UserResponseDto } from '@/modules/user/user.dto';
 
 type RequestWithoutUser = Omit<Request, 'user'>;
 

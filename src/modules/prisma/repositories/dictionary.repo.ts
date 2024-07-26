@@ -16,23 +16,7 @@ import {
 } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-
-const DICTIONARY_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  name: true,
-  tags: {
-    select: {
-      tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
-      },
-    },
-  },
-};
+import { DICTIONARY_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/dictionary.select-options';
 
 @Injectable()
 export class DictionaryRepo {
@@ -229,10 +213,9 @@ export class DictionaryRepo {
 
   async updateOneById(args: UpdateDictionaryInterface): Promise<number> {
     const { dictionaryId, dictionaryData, tagIdToDeleteArr, newTagsArr } = args;
-    let updatedDictionary: Dictionary;
 
     if (tagIdToDeleteArr || newTagsArr) {
-      updatedDictionary = await this.prisma
+      await this.prisma
         .$transaction(async (prisma) => {
           await prisma.dictionary.update({
             where: { id: dictionaryId },
@@ -257,8 +240,6 @@ export class DictionaryRepo {
               data: newTagsArr,
             });
           }
-
-          return updatedDictionary;
         })
         .catch((err) => {
           switch (err.code) {
@@ -273,7 +254,7 @@ export class DictionaryRepo {
           }
         });
     } else {
-      updatedDictionary = await this.prisma.dictionary.update({
+      await this.prisma.dictionary.update({
         where: { id: dictionaryId },
         data: {
           ...dictionaryData,
@@ -281,7 +262,7 @@ export class DictionaryRepo {
       });
     }
 
-    return updatedDictionary.id;
+    return dictionaryId;
   }
 
   async delete(dictionaryId: number): Promise<number> {

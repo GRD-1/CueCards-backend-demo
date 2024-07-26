@@ -8,12 +8,7 @@ import {
   TagInterface,
 } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
-
-const TAG_SELECT_OPTIONS = {
-  id: true,
-  authorId: true,
-  name: true,
-};
+import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
 
 @Injectable()
 export class TagRepo {

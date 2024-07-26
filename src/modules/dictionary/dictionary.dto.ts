@@ -7,23 +7,23 @@ import { CardDto, CardWithSettingsDto } from '@/modules/card/card.dto';
 
 export class DictionaryDto {
   @ApiProperty({ description: 'user id', nullable: true })
-    authorId: number | null;
+  readonly authorId: number | null;
 
   @ApiProperty({ description: 'dictionary name', nullable: false })
   @IsString()
-    name: string;
+  readonly name: string;
 }
 
 export class CreateDictionaryDto extends DictionaryDto {
   @ApiProperty({ description: 'array of tags id', nullable: true, example: [1, 2, 3] })
   @IsArray()
   @IsInt({ each: true })
-    tags: number[];
+  readonly tags: number[];
 }
 
 export class DictionaryRespDto extends DictionaryDto {
   @ApiProperty({ description: 'dictionary id', nullable: true })
-    id: number;
+  readonly id: number;
 }
 
 export class WithCardsRespDto extends DictionaryRespDto {
@@ -31,7 +31,7 @@ export class WithCardsRespDto extends DictionaryRespDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CardDto)
-    cards: CardDto[];
+  readonly cards: CardDto[];
 }
 
 export class WithTagsRespDto extends DictionaryRespDto {
@@ -40,7 +40,7 @@ export class WithTagsRespDto extends DictionaryRespDto {
   @ValidateNested({ each: true })
   @Type(() => TagRespDto)
   @Transform(({ value }) => value.map(tag => tag.tag), { toClassOnly: true })
-    tags: TagRespDto[];
+  readonly tags: TagRespDto[];
 }
 
 export class WithTagsAndCardsRespDto extends WithCardsRespDto {
@@ -48,7 +48,7 @@ export class WithTagsAndCardsRespDto extends WithCardsRespDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TagRespDto)
-    tags: TagRespDto[];
+  readonly tags: TagRespDto[];
 }
 
 export class WithTagsAndCardSettingsRespDto extends DictionaryRespDto {
@@ -56,13 +56,13 @@ export class WithTagsAndCardSettingsRespDto extends DictionaryRespDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TagRespDto)
-    tags: TagRespDto[];
+  readonly tags: TagRespDto[];
 
   @ApiProperty({ description: 'Array of cards', type: [CardWithSettingsDto], nullable: true })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CardDto)
-    cards: CardWithSettingsDto[];
+  readonly cards: CardWithSettingsDto[];
 }
 
 export class GetListDto {
@@ -70,61 +70,61 @@ export class GetListDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-    page?: number;
+  readonly page?: number;
 
   @ApiProperty({ description: 'number of records per page' })
   @IsOptional()
   @IsInt()
   @Min(1)
-    pageSize?: number;
+  readonly pageSize?: number;
 
   @ApiProperty({ description: 'search for records by user' })
   @IsOptional()
-    byUser?: boolean;
+  readonly byUser?: boolean;
 
   @ApiProperty({ description: 'dictionary name' })
   @IsOptional()
-    name?: string;
+  readonly name?: string;
 
   @ApiProperty({ description: 'part of the dictionary name' })
   @IsOptional()
-    partOfName?: string;
+  readonly partOfName?: string;
 }
 
 export class GetListRespDto {
   @ApiProperty({ description: 'page number', nullable: false })
   @IsNumber()
-    page: number;
+  readonly page: number;
 
   @ApiProperty({ description: 'number of records per page', nullable: false })
   @IsNumber()
-    pageSize: number;
+  readonly pageSize: number;
 
   @ApiProperty({ description: 'number of records in the response', nullable: false })
   @IsNumber()
-    records: number;
+  readonly records: number;
 
   @ApiProperty({ description: 'the total number of records', nullable: false })
   @IsNumber()
-    totalRecords: number;
+  readonly totalRecords: number;
 
   @ApiProperty({ description: 'an array of dictionaries', nullable: false, type: [WithTagsRespDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => WithTagsRespDto)
-    dictionaries: WithTagsRespDto[];
+  readonly dictionaries: WithTagsRespDto[];
 }
 
 export class GetListWithFirstRespDto extends GetListRespDto {
   @ApiProperty({ description: 'the first dictionary in a list', nullable: false, type: WithTagsAndCardsRespDto })
   @Type(() => WithTagsAndCardsRespDto)
-    firstDictionary: WithTagsAndCardsRespDto;
+  readonly firstDictionary: WithTagsAndCardsRespDto;
 }
 
 export class GetSettingsWithFRespDto extends GetListRespDto {
   @ApiProperty({ description: 'the first dictionary in a list', nullable: false, type: WithTagsAndCardSettingsRespDto })
   @Type(() => WithTagsAndCardSettingsRespDto)
-    firstDictionary: WithTagsAndCardSettingsRespDto;
+  readonly firstDictionary: WithTagsAndCardSettingsRespDto;
 }
 
 export class UpdateDictionaryDto extends PartialType(CreateDictionaryDto) {}
