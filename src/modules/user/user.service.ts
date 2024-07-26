@@ -18,10 +18,10 @@ export class UserService {
     }
     const newUser = new UserWithPasswordEntity();
     Object.assign(newUser, payload);
-    const user = await this.userRepo.create(newUser);
+    const userId = await this.userRepo.create(newUser);
 
     // return this.buildUserResponseWithToken(user);
-    return user.id;
+    return userId;
   }
 
   async findOneById(id: number): Promise<UserEntity> {

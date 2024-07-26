@@ -6,15 +6,24 @@ import {
 } from '@/modules/prisma/repositories/select-options/user.select-options';
 import { UserEntity, UserWithPasswordEntity } from '@/modules/user/user.entity';
 import { UserInterface } from '@/modules/user/user.interface';
+import { DEFAULT_SETTINGS } from '@/modules/settings/settings.constants';
 
 @Injectable()
 export class UserRepo {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(newUser: UserInterface): Promise<UserEntity> {
-    return this.prisma.user.create({
-      select: USER_SELECT_OPTIONS,
-      data: newUser,
+  async create(userData: UserInterface): Promise<number> {
+    return this.prisma.$transaction(async (prisma) => {
+      const newUser = await this.prisma.user.create({
+        select: { id: true },
+        data: userData,
+      });
+
+      await prisma.settings.create({
+        data: { ...DEFAULT_SETTINGS, userId: newUser.id },
+      });
+
+      return newUser?.id;
     });
   }
 
