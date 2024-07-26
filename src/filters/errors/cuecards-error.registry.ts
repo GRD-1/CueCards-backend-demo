@@ -9,6 +9,7 @@ export const CCBK_ERROR_CODES = {
   RECORD_NOT_FOUND: 'CCBK05',
   UNIQUE_VIOLATION: 'CCBK06',
   BAD_REQUEST: 'CCBK07',
+  INVALID_CREDENTIALS: 'CCBK08',
 };
 
 export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
@@ -46,5 +47,10 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     error: true,
     statusCode: HttpStatus.BAD_REQUEST,
     errorMsg: 'Bad Request Exception',
+  },
+  [CCBK_ERROR_CODES.INVALID_CREDENTIALS]: {
+    error: true,
+    statusCode: HttpStatus.UNAUTHORIZED,
+    errorMsg: 'Authorization failed',
   },
 };

@@ -17,8 +17,8 @@ import {
   StatisticsDto,
   StatisticsRespDto,
 } from '@/modules/statistics/statistics.dto';
+import { UserId } from '@/decorators/user-id.decorator';
 import { StatisticsService } from './statistics.service';
-import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('statistics')
 // @ApiBearerAuth()

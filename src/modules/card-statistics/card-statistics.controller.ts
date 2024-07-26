@@ -13,7 +13,7 @@ import { CCBK_ERR_TO_HTTP, CCBK_ERROR_CODES } from '@/filters/errors/cuecards-er
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CardStatisticsService } from '@/modules/card-statistics/card-statistics.service';
 import { UpdateStatsDto } from '@/modules/card-statistics/card-statistics.dto';
-import { UserId } from '../user/decorators/user-id.decorator';
+import { UserId } from '@/decorators/user-id.decorator';
 
 @ApiTags('card-statistics')
 // @ApiBearerAuth()

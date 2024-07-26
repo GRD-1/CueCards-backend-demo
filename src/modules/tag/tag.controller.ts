@@ -14,8 +14,8 @@ import {
 } from '@nestjs/swagger';
 import { GetManyTagsDto, GetManyTagsRespDto, TagDto, TagRespDto } from '@/modules/tag/tag.dto';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
+import { UserId } from '@/decorators/user-id.decorator';
 import { TagService } from './tag.service';
-import { UserId } from '../user/decorators/user-id.decorator';
 
 @ApiTags('tags')
 // @ApiBearerAuth()
