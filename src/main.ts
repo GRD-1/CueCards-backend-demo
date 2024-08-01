@@ -2,11 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
 import config from '@/config/config.service';
+import { readFileSync } from 'fs';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
 
 async function bootstrap(): Promise<void> {
+  const httpsOptions = {
+    key: readFileSync('certificates/private-key.pem'),
+    cert: readFileSync('certificates/certificate.pem'),
+  };
+
   const app = await NestFactory.create(AppModule, {
+    httpsOptions,
     logger: [config.LOG_LEVEL],
   });
   app.setGlobalPrefix('/api');
