@@ -11,10 +11,10 @@
 
 ## Contents
 
-1. [Stack](#Stack)
+1. [Stack](#stack)
 2. [Launch](#launch)
 3. [Tests](#tests)
-4. [Database](#tests)
+4. [Database](#database)
 5. [CI/CD](#cicd)
 6. [Documentation](#documentation)
 

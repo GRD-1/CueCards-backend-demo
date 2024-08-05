@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
-import config from '@/config/config.service';
+import envService from '@/config/env.service';
 import { readFileSync } from 'fs';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './filters/global-exception.filter';
@@ -12,9 +12,10 @@ async function bootstrap(): Promise<void> {
     cert: readFileSync('certificates/certificate.pem'),
   };
 
+  const logLevel = envService.getAppLogLevel();
   const app = await NestFactory.create(AppModule, {
     httpsOptions,
-    logger: [config.LOG_LEVEL],
+    logger: [logLevel],
   });
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
@@ -48,6 +49,7 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, params);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(config.APP_PORT);
+  const port = envService.getAppPort();
+  await app.listen(port);
 }
 bootstrap();
