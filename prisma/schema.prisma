@@ -12,7 +12,7 @@ model User {
   email          String           @unique @db.VarChar(100)
   nickname       String           @db.VarChar
   avatar         String?          @db.VarChar
-  password       String           @db.VarChar
+  confirmed      Boolean          @default(false)
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
   updatedAt      DateTime         @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark     Boolean          @default(false)
@@ -23,8 +23,20 @@ model User {
   cardIsHidden   CardIsHidden[]   @relation("UserRelation")
   settings       Settings[]       @relation("UserRelation")
   statistics     Statistics[]     @relation("UserRelation")
+  credentials    Credentials?     @relation("UserRelation")
 
   @@map("users")
+}
+
+model Credentials {
+  userId       Int      @id @default(autoincrement())
+  password     String   @db.VarChar
+  version      Int      @default(1)
+  lastPassword String   @default("") @db.VarChar
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  users        User     @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("credentials")
 }
 
 model Language {

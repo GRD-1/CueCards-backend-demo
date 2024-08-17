@@ -1,6 +1,9 @@
-export interface UserInterface {
+export interface IUser {
   email: string;
   nickname: string;
-  avatar: string | null;
+  avatar?: string | null;
+}
+
+export interface IUserWithPassword extends IUser {
   password: string;
 }

@@ -56,6 +56,7 @@
       "error",
       { "blankLine": "always", "prev": "*", "next": "return" }
     ],
+    "@typescript-eslint/no-non-null-assertion": "off",
 
     // typescript specific
     "no-underscore-dangle": "off",

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
-  CARD_SELECT_OPTIONS,
   CARD_LIST_SELECT_OPTIONS,
+  CARD_SELECT_OPTIONS,
 } from '@/modules/prisma/repositories/select-options/card.select-options';
 import {
   CardAndTagsInterface,
@@ -14,7 +14,7 @@ import {
   SearchConditionsArgsType,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
-import { CardEntity, CardWitTagsEntity } from '@/modules/card/card.entity';
+import { CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
