@@ -4,7 +4,7 @@ import { IUser, IUserWithPassword } from '@/modules/user/user.interface';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { hash } from 'bcrypt';
-import { UserWithCredentialsEntity } from './user.entity';
+import { UserEntity, UserWithCredentialsEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
@@ -19,11 +19,11 @@ export class UserService {
     return userId;
   }
 
-  async findOneById(id: number): Promise<UserWithCredentialsEntity | null> {
+  async findOneById(id: number): Promise<UserEntity> {
     return this.userRepo.findOneById(id);
   }
 
-  async findOneByEmail(email: string): Promise<UserWithCredentialsEntity | null> {
+  async findOneByEmail(email: string): Promise<UserEntity | null> {
     return this.userRepo.findOneByEmail(email);
   }
 
@@ -37,22 +37,22 @@ export class UserService {
     return updatedUser.id;
   }
 
-  async updatePassword(userId: number, oldPass: string, newPass: string): Promise<UserWithCredentialsEntity> {
-    const user = await this.userRepo.findOneById(userId);
-    const hashedOldPass = await hash(oldPass, 10);
-    const hashedNewPass = await hash(newPass, 10);
-
-    if (hashedOldPass !== user?.credentials?.password) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid password');
-    }
-    if (oldPass === newPass) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'New password must be different');
-    }
-
-    await this.userRepo.updatePassword(userId, hashedOldPass, hashedNewPass);
-
-    return user;
-  }
+  // async updatePassword(userId: number, oldPass: string, newPass: string): Promise<UserWithCredentialsEntity> {
+  //   const user = await this.userRepo.findOneById(userId);
+  //   const hashedOldPass = await hash(oldPass, 10);
+  //   const hashedNewPass = await hash(newPass, 10);
+  //
+  //   if (hashedOldPass !== user?.credentials?.password) {
+  //     throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid password');
+  //   }
+  //   if (oldPass === newPass) {
+  //     throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'New password must be different');
+  //   }
+  //
+  //   await this.userRepo.updatePassword(userId, hashedOldPass, hashedNewPass);
+  //
+  //   return user;
+  // }
 
   // async resetPassword(userId: number, version: number, password: string): Promise<UserWithCredentialsEntity> {
   //   const user = await this.findOneByCredentials(userId, version);

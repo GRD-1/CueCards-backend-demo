@@ -9,9 +9,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { UpdateUserDto, UserRespDto } from '@/modules/user/user.dto';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { UserId } from '@/decorators/user-id.decorator';
-import { UpdateUserDto, UserRespDto } from './user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('user')
@@ -20,14 +20,14 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Get()
-  // // @UseGuards(AuthGuard)
-  // @ApiOperation({ summary: 'Get the current user data' })
-  // @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
-  // @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  // async getCurrentUser(@UserId() userId: number): Promise<UserRespDto> {
-  //   return this.userService.findOneById(userId);
-  // }
+  @Get()
+  // @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get the current user data' })
+  @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  async findOneById(@UserId() userId: number): Promise<UserRespDto> {
+    return this.userService.findOneById(userId);
+  }
 
   @Patch('update')
   // @UseGuards(AuthGuard)
@@ -43,10 +43,10 @@ export class UserController {
 
   @Delete('update-password')
   // @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'Update a user password' })
-  @ApiOkResponse({ description: 'The user password has been updated' })
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiOkResponse({ description: 'The user has been deleted' })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async updatePassword(@UserId() userId: number): Promise<number> {
+  async delete(@UserId() userId: number): Promise<number> {
     return this.userService.delete(userId);
   }
 }

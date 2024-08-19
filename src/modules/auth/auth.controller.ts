@@ -2,33 +2,32 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
-  ApiNotFoundResponse,
-  ApiOkResponse,
+  ApiCreatedResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Patch } from '@nestjs/common';
-import { UserService } from '@/modules/user/user.service';
-import { UpdateUserDto } from '@/modules/user/user.dto';
+import { Body, Controller, Post } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
-import { UserId } from '@/decorators/user-id.decorator';
+import { AuthService } from '@/modules/auth/auth.service';
+import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import { UserDto } from '@/modules/user/user.dto';
 
-@ApiTags('user')
+@ApiTags('auth')
 @ApiBearerAuth()
-@Controller('user')
+@Controller('auth')
 export class AuthController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  // @Post('register')
-  // @ApiOperation({ summary: 'Create a new user' })
-  // @ApiBody({ type: UserDto })
-  // @ApiCreatedResponse({ description: 'The new user has been created. The id:', schema: { example: 123 } })
-  // @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  // @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  // async create(@Body() payload: UserDto): Promise<number> {
-  //   return this.userService.create(payload);
-  // }
+  @Post('sign-up')
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiBody({ type: UserDto })
+  @ApiCreatedResponse({ description: 'The new user has been created', schema: { example: SIGNUP_MSG } })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
+  async signUp(@Body() payload: UserDto): Promise<string> {
+    return this.authService.signUp(payload);
+  }
 
   // @Post('login')
   // @ApiOperation({ summary: 'login user' })

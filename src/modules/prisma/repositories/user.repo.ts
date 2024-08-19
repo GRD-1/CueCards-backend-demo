@@ -13,36 +13,36 @@ export class UserRepo {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userData: IUserWithPassword): Promise<UserWithCredentialsEntity> {
-    return this.prisma.$transaction(async (prisma) => {
-      const newUser = await this.prisma.user.create({
-        select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
-        data: userData,
-      });
+    const { email, nickname, avatar, password } = userData;
 
-      await prisma.credentials.create({
-        data: { userId: newUser.id, password: userData.password, lastPassword: userData.password },
-      });
-
-      await prisma.settings.create({
-        data: { ...DEFAULT_SETTINGS, userId: newUser.id },
-      });
-
-      return newUser;
+    return this.prisma.user.create({
+      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
+      data: {
+        email,
+        nickname,
+        avatar,
+        credentials: {
+          create: {
+            password,
+          },
+        },
+        settings: { create: {} },
+      },
     });
   }
 
-  async findOneByEmail(email?: string): Promise<UserWithCredentialsEntity | null> {
+  async findOneByEmail(email?: string): Promise<UserEntity | null> {
     const user = await this.prisma.user.findFirst({
-      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
+      select: USER_SELECT_OPTIONS,
       where: { email },
     });
 
     return user || null;
   }
 
-  async findOneById(id: number): Promise<UserWithCredentialsEntity | null> {
+  async findOneById(id: number): Promise<UserEntity> {
     return this.prisma.user.findFirstOrThrow({
-      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
+      select: USER_SELECT_OPTIONS,
       where: {
         id,
       },

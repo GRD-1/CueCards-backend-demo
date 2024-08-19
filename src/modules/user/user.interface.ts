@@ -1,7 +1,8 @@
 export interface IUser {
   email: string;
   nickname: string;
-  avatar?: string | null;
+  avatar: string | null;
+  password: string;
 }
 
 export interface IUserWithPassword extends IUser {

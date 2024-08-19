@@ -1,13 +1,10 @@
 export class UserEntity {
   id: number;
+  uuid: string;
   email: string;
   nickname: string;
   avatar: string | null;
   confirmed: boolean;
-}
-
-export class UserWithCredentialsEntity extends UserEntity {
-  credentials: CredentialsEntity | null;
 }
 
 export class CredentialsEntity {
@@ -16,4 +13,8 @@ export class CredentialsEntity {
   password: string;
   lastPassword: string;
   updatedAt: Date;
+}
+
+export class UserWithCredentialsEntity extends UserEntity {
+  credentials: CredentialsEntity | null;
 }

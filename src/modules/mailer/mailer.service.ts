@@ -25,12 +25,19 @@ export class MailerService {
     @Inject(emailConfig.KEY)
     private emailConf: ConfigType<typeof emailConfig>,
   ) {
-    this.transport = createTransport(this.emailConf);
+    this.transport = createTransport({
+      service: 'gmail',
+      auth: {
+        user: this.emailConf.user,
+        pass: this.emailConf.password,
+      },
+    });
     this.templates = {
       confirmation: MailerService.parseTemplate('confirmation.hbs'),
       resetPassword: MailerService.parseTemplate('reset-password.hbs'),
     };
-    this.email = `"My App" <${emailConf.user}>`;
+    // this.email = `"My App" <${emailConf.user}>`;
+    this.email = emailConf.user as string;
     this.domain = this.appConf.domain!;
     this.logger = new Logger(MailerService.name);
   }
@@ -41,28 +48,28 @@ export class MailerService {
     return Handlebars.compile<ITemplatedData>(templateText, { strict: true });
   }
 
-  public sendEmail(to: string, subject: string, html: string, log?: string): void {
-    this.transport
+  public async sendEmail(to: string, subject: string, html: string, log?: string): Promise<void> {
+    await this.transport
       .sendMail({
         from: this.email,
         to,
         subject,
         html,
       })
-      .then(() => this.logger.log(log ?? 'A new email was sent.'))
+      .then(() => this.logger.log(log ?? 'A confirmation email was sent.'))
       .catch((error) => {
-        throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, 'Email was not sent', error);
+        this.logger.error(`Failed to send email: ${error.message}`, error.stack);
+        throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, 'Confirmation email was not sent', error.stack);
       });
   }
 
-  public sendConfirmationEmail(user: IUser, token: string): void {
-    const { email, nickname } = user;
+  public async sendConfirmationEmail(email: string, nickname: string, token: string): Promise<void> {
     const subject = 'Confirm your email';
     const html = this.templates.confirmation({
       nickname,
       link: `https://${this.domain}/auth/confirm/${token}`,
     });
-    this.sendEmail(email, subject, html, 'A new confirmation email was sent.');
+    await this.sendEmail(email, subject, html, 'A new confirmation email was sent.');
   }
 
   public sendResetPasswordEmail(user: IUser, token: string): void {

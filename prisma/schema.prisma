@@ -9,27 +9,28 @@ datasource db {
 
 model User {
   id             Int              @id @default(autoincrement())
-  email          String           @unique @db.VarChar(100)
+  uuid           String           @unique @default(uuid())
+  email          String           @unique @db.VarChar(255)
   nickname       String           @db.VarChar
   avatar         String?          @db.VarChar
   confirmed      Boolean          @default(false)
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
   updatedAt      DateTime         @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark     Boolean          @default(false)
+  credentials    Credentials?     @relation("UserRelation")
+  settings       Settings?        @relation("UserRelation")
   cards          Card[]           @relation("AuthorRelation")
   dictionaries   Dictionary[]     @relation("AuthorRelation")
   tags           Tag[]            @relation("AuthorRelation")
   cardStatistics CardStatistics[] @relation("UserRelation")
   cardIsHidden   CardIsHidden[]   @relation("UserRelation")
-  settings       Settings[]       @relation("UserRelation")
   statistics     Statistics[]     @relation("UserRelation")
-  credentials    Credentials?     @relation("UserRelation")
 
   @@map("users")
 }
 
 model Credentials {
-  userId       Int      @id @default(autoincrement())
+  userId       Int      @id
   password     String   @db.VarChar
   version      Int      @default(1)
   lastPassword String   @default("") @db.VarChar
@@ -161,8 +162,7 @@ model CardIsHidden {
 }
 
 model Settings {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @unique @db.Integer
+  userId           Int      @id
   appLanguage      String   @default("ru")
   trainingLanguage String   @default("en")
   notifications    Boolean  @default(true)
@@ -175,7 +175,6 @@ model Settings {
   appLang          Language @relation("AppLanguageRelation", fields: [appLanguage], references: [acronym])
   trainingLang     Language @relation("TrainingLanguageRelation", fields: [trainingLanguage], references: [acronym])
 
-  @@index([userId], map: "SettingsUserId")
   @@map("settings")
 }
 

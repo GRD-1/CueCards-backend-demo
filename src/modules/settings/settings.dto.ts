@@ -29,9 +29,6 @@ export class SettingsDto {
 }
 
 export class SettingsRespDto extends SettingsDto {
-  @ApiProperty({ description: 'record id', nullable: true, example: 1 })
-  readonly id: number;
-
   @ApiProperty({ description: 'user id', nullable: true, example: 1 })
   readonly userId: number;
 }
