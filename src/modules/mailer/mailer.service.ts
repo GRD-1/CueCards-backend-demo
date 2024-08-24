@@ -8,16 +8,14 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { IUser } from '@/modules/user/user.interface';
 import Handlebars from 'handlebars';
+import sesTransport from 'nodemailer-ses-transport';
 
 @Injectable()
 export class MailerService {
   private readonly transport: Transporter<SMTPTransport.SentMessageInfo>;
   private readonly templates: ITemplates;
-  private readonly logger: Logger;
-  private readonly email: string;
-  private readonly domain: string;
+  private readonly logger = new Logger(MailerService.name);
 
   constructor(
     @Inject(appConfig.KEY)
@@ -25,24 +23,20 @@ export class MailerService {
     @Inject(emailConfig.KEY)
     private emailConf: ConfigType<typeof emailConfig>,
   ) {
-    this.transport = createTransport({
-      service: 'gmail',
-      auth: {
-        user: this.emailConf.user,
-        pass: this.emailConf.password,
-      },
-    });
+    this.transport = createTransport(
+      sesTransport({
+        accessKeyId: this.emailConf.awsAccessKey!,
+        secretAccessKey: this.emailConf.awsSecretAccessKey!,
+        region: this.emailConf.awsRegion!,
+      }),
+    );
     this.templates = {
-      confirmation: MailerService.parseTemplate('confirmation.hbs'),
-      resetPassword: MailerService.parseTemplate('reset-password.hbs'),
+      confirmation: this.parseTemplate('confirmation.hbs'),
+      resetPassword: this.parseTemplate('reset-password.hbs'),
     };
-    // this.email = `"My App" <${emailConf.user}>`;
-    this.email = emailConf.user as string;
-    this.domain = this.appConf.domain!;
-    this.logger = new Logger(MailerService.name);
   }
 
-  private static parseTemplate(templateName: string): Handlebars.TemplateDelegate<ITemplatedData> {
+  private parseTemplate(templateName: string): Handlebars.TemplateDelegate<ITemplatedData> {
     const templateText = readFileSync(join(__dirname, 'templates', templateName), 'utf-8');
 
     return Handlebars.compile<ITemplatedData>(templateText, { strict: true });
@@ -51,7 +45,7 @@ export class MailerService {
   public async sendEmail(to: string, subject: string, html: string, log?: string): Promise<void> {
     await this.transport
       .sendMail({
-        from: this.email,
+        from: this.emailConf.user,
         to,
         subject,
         html,
@@ -67,18 +61,17 @@ export class MailerService {
     const subject = 'Confirm your email';
     const html = this.templates.confirmation({
       nickname,
-      link: `https://${this.domain}/auth/confirm/${token}`,
+      link: `https://${this.appConf.domain}/api/auth/confirm/?token=${token}`,
     });
     await this.sendEmail(email, subject, html, 'A new confirmation email was sent.');
   }
 
-  public sendResetPasswordEmail(user: IUser, token: string): void {
-    const { email, nickname } = user;
+  public async sendResetPasswordEmail(email: string, nickname: string, token: string): Promise<void> {
     const subject = 'Reset your password';
     const html = this.templates.resetPassword({
       nickname,
-      link: `https://${this.domain}/auth/reset-password/${token}`,
+      link: `https://${this.appConf.domain}/api/auth/reset-password?token=${token}`,
     });
-    this.sendEmail(email, subject, html, 'A new reset password email was sent.');
+    await this.sendEmail(email, subject, html, 'A new reset password email was sent.');
   }
 }

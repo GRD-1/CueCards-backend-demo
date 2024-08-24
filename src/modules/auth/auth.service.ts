@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { MailerService } from '@/modules/mailer/mailer.service';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
@@ -12,6 +11,7 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { isNil, isUndefined } from '@nestjs/common/utils/shared.utils';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import dayjs from 'dayjs';
+import { MailerService } from '@/modules/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {

@@ -13,6 +13,10 @@ import { AuthService } from '@/modules/auth/auth.service';
 import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
 import { UserDto } from '@/modules/user/user.dto';
 
+import * as nodemailer from 'nodemailer';
+import sesTransport from 'nodemailer-ses-transport';
+import { ConfigService } from '@nestjs/config';
+
 @ApiTags('auth')
 @ApiBearerAuth()
 @Controller('auth')
@@ -28,6 +32,50 @@ export class AuthController {
   async signUp(@Body() payload: UserDto): Promise<string> {
     return this.authService.signUp(payload);
   }
+
+  // constructor(
+  //   private readonly authService: AuthService,
+  //   private readonly mailService: MailService,
+  // ) {}
+
+  // @Post('test-mailer')
+  // async testMailer(): Promise<string> {
+  //   try {
+  //     await this.mailService.sendConfirmationEmail('d.grebelny@gmail.com', 'Barabulka', 'test-token');
+  //
+  //     return 'Email sent successfully';
+  //   } catch (error) {
+  //     console.error(error);
+  //
+  //     return 'Failed to send email';
+  //   }
+  // }
+  //
+  // @Post('test')
+  // async test(): Promise<string> {
+  //   const configService = new ConfigService();
+  //
+  //   const transporter = nodemailer.createTransport(sesTransport({
+  //     accessKeyId: configService.get('AWS_ACCESS_KEY_ID')!,
+  //     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY')!,
+  //     region: configService.get('AWS_SES_REGION')!,
+  //   }));
+  //
+  //   transporter.sendMail({
+  //     from: 'cuecards2000@gmail.com',
+  //     to: 'd.grebelny@gmail.com',
+  //     subject: 'Test Email',
+  //     text: 'Hello, this is a new test email from CueCards.',
+  //   }, (err, info) => {
+  //     if (err) {
+  //       console.error(err);
+  //     } else {
+  //       console.log(info);
+  //     }
+  //   });
+  //
+  //   return 'test completed';
+  // }
 
   // @Post('login')
   // @ApiOperation({ summary: 'login user' })

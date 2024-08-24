@@ -40,6 +40,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.632.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^9.0.0",

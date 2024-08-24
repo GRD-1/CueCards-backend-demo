@@ -18,6 +18,7 @@ import {
 } from '@/config/configs';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
+import { MailerModule } from '@/modules/mailer/mailer.module';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
 import { StatisticsModule } from './modules/statistics/statistics.module';
@@ -27,7 +28,6 @@ import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from './modules/jwt/jwt.module';
-import { MailerModule } from './modules/mailer/mailer.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CacheService } from './modules/cache/cache.service';
 
@@ -61,6 +61,28 @@ import { CacheService } from './modules/cache/cache.service';
       }),
       inject: [ConfigService],
     }),
+    // MailerModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     transport: nodemailer.createTransport(sesTransport({
+    //       accessKeyId: configService.get('AWS_ACCESS_KEY_ID')!,
+    //       secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY')!,
+    //       region: configService.get('AWS_SES_REGION')!,
+    //     })),
+    //     defaults: {
+    //       from: configService.get('EMAIL_USER')!,
+    //     },
+    //     template: {
+    //       dir: 'src/modules/mail/templates',
+    //       adapter: new HandlebarsAdapter(),
+    //       options: {
+    //         strict: true,
+    //       },
+    //     },
+    //   }),
+    // }),
+    // }),
     PrismaModule,
     CardModule,
     CardStatisticsModule,
@@ -71,8 +93,8 @@ import { CacheService } from './modules/cache/cache.service';
     UserModule,
     LanguageModule,
     JwtModule,
-    MailerModule,
     AuthModule,
+    MailerModule,
   ],
   providers: [CacheService],
 })
