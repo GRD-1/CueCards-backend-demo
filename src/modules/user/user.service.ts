@@ -37,6 +37,10 @@ export class UserService {
     return updatedUser.id;
   }
 
+  async confirm(email: string): Promise<number> {
+    return this.userRepo.confirm(email);
+  }
+
   // async updatePassword(userId: number, oldPass: string, newPass: string): Promise<UserWithCredentialsEntity> {
   //   const user = await this.userRepo.findOneById(userId);
   //   const hashedOldPass = await hash(oldPass, 10);

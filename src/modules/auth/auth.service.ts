@@ -2,9 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
-import { IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
+import { IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
-import { LOGOUT_MSG, RESET_PASS_EMAIL_MSG, RESET_PASS_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import {
+  CONFIRMATION_MSG,
+  LOGOUT_MSG,
+  RESET_PASS_EMAIL_MSG,
+  RESET_PASS_MSG,
+  SIGNUP_MSG,
+} from '@/modules/auth/auth.constants';
 import { hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
@@ -12,12 +18,16 @@ import { isNil, isUndefined } from '@nestjs/common/utils/shared.utils';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import dayjs from 'dayjs';
 import { MailerService } from '@/modules/mailer/mailer.service';
+import { jwtConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    @Inject(jwtConfig.KEY)
+    private jwtConf: ConfigType<typeof jwtConfig>,
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
@@ -30,16 +40,26 @@ export class AuthService {
     ]);
   }
 
-  public async signUp(userData: IUserWithPassword, domain?: string): Promise<string> {
+  public async signUp(userData: IUserWithPassword): Promise<string> {
     const user = await this.usersService.create(userData);
-    const confirmationToken = await this.jwtService.generateToken({
-      user,
-      tokenType: TokenTypeEnum.CONFIRMATION,
-      domain,
-    });
-    await this.mailerService.sendConfirmationEmail(user.email, user.nickname, confirmationToken);
+    const cacheKey = `confirm_code:${user.email}`;
+    const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
+
+    await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
+    await this.cacheManager.set(cacheKey, cacheValue, this.jwtConf.confirmation.time);
 
     return SIGNUP_MSG;
+  }
+
+  public async confirm(email: string, code: string): Promise<string> {
+    const cachedCode = await this.cacheManager.get(`confirm_code:${email}`);
+
+    if (cachedCode !== code) {
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid confirmation code');
+    }
+    await this.usersService.confirm(email);
+
+    return CONFIRMATION_MSG;
   }
 
   // public async singIn(email: string, password: string, domain?: string): Promise<IAuthResult> {

@@ -1,16 +1,21 @@
-import { IsEmail, IsJWT, IsString, Length, Matches, MinLength } from 'class-validator';
+import { IsEmail, IsJWT, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { PASSWORD_REGEX } from '@/modules/user/user.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
-// export class SignUpDto extends PasswordsDto {
-//   @IsString()
-//   @IsEmail()
-//   @Length(5, 255)
-//   readonly email!: string;
-// }
-//
-// export abstract class SignInDto extends PasswordsDto {
+export class ConfirmDto {
+  @ApiProperty({ description: 'The confirmation code' })
+  @IsString()
+  @Transform(({ value }) => value.toLowerCase())
+  readonly email: string;
+
+  @ApiProperty({ description: 'The confirmation code' })
+  @IsString()
+  @Length(4)
+  readonly code: string;
+}
+
+// export class SignInDto extends PasswordsDto {
 //   @IsString()
 //   @IsEmail()
 //   @Length(5, 255)

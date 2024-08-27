@@ -57,6 +57,16 @@ export class UserRepo {
     });
   }
 
+  async confirm(email: string): Promise<number> {
+    const user = await this.prisma.user.update({
+      select: { id: true },
+      data: { confirmed: true },
+      where: { email },
+    });
+
+    return user.id;
+  }
+
   async updatePassword(userId: number, lastPassword: string, password: string): Promise<CredentialsEntity> {
     return this.prisma.credentials.upsert({
       where: { userId },

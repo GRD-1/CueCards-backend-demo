@@ -3,19 +3,18 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
 import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
-import { UserDto } from '@/modules/user/user.dto';
-
-import * as nodemailer from 'nodemailer';
-import sesTransport from 'nodemailer-ses-transport';
-import { ConfigService } from '@nestjs/config';
+import { LoginUserDto, UserDto } from '@/modules/user/user.dto';
+import { ConfirmDto } from '@/modules/auth/auth.dto';
 
 @ApiTags('auth')
 @ApiBearerAuth()
@@ -33,49 +32,14 @@ export class AuthController {
     return this.authService.signUp(payload);
   }
 
-  // constructor(
-  //   private readonly authService: AuthService,
-  //   private readonly mailService: MailService,
-  // ) {}
-
-  // @Post('test-mailer')
-  // async testMailer(): Promise<string> {
-  //   try {
-  //     await this.mailService.sendConfirmationEmail('d.grebelny@gmail.com', 'Barabulka', 'test-token');
-  //
-  //     return 'Email sent successfully';
-  //   } catch (error) {
-  //     console.error(error);
-  //
-  //     return 'Failed to send email';
-  //   }
-  // }
-  //
-  // @Post('test')
-  // async test(): Promise<string> {
-  //   const configService = new ConfigService();
-  //
-  //   const transporter = nodemailer.createTransport(sesTransport({
-  //     accessKeyId: configService.get('AWS_ACCESS_KEY_ID')!,
-  //     secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY')!,
-  //     region: configService.get('AWS_SES_REGION')!,
-  //   }));
-  //
-  //   transporter.sendMail({
-  //     from: 'cuecards2000@gmail.com',
-  //     to: 'd.grebelny@gmail.com',
-  //     subject: 'Test Email',
-  //     text: 'Hello, this is a new test email from CueCards.',
-  //   }, (err, info) => {
-  //     if (err) {
-  //       console.error(err);
-  //     } else {
-  //       console.log(info);
-  //     }
-  //   });
-  //
-  //   return 'test completed';
-  // }
+  @Post('confirm')
+  @ApiOperation({ summary: 'Confirm the registration' })
+  @ApiBody({ type: ConfirmDto })
+  @ApiOkResponse({ description: 'The registration has been confirmed' })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async login(@Body() payload: ConfirmDto): Promise<string> {
+    return this.authService.confirm(payload.email, payload.code);
+  }
 
   // @Post('login')
   // @ApiOperation({ summary: 'login user' })

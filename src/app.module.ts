@@ -61,28 +61,6 @@ import { CacheService } from './modules/cache/cache.service';
       }),
       inject: [ConfigService],
     }),
-    // MailerModule.forRootAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: (configService: ConfigService) => ({
-    //     transport: nodemailer.createTransport(sesTransport({
-    //       accessKeyId: configService.get('AWS_ACCESS_KEY_ID')!,
-    //       secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY')!,
-    //       region: configService.get('AWS_SES_REGION')!,
-    //     })),
-    //     defaults: {
-    //       from: configService.get('EMAIL_USER')!,
-    //     },
-    //     template: {
-    //       dir: 'src/modules/mail/templates',
-    //       adapter: new HandlebarsAdapter(),
-    //       options: {
-    //         strict: true,
-    //       },
-    //     },
-    //   }),
-    // }),
-    // }),
     PrismaModule,
     CardModule,
     CardStatisticsModule,

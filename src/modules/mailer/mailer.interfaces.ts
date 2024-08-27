@@ -1,11 +1,20 @@
 import { TemplateDelegate } from 'handlebars';
 
-export interface ITemplatedData {
+export interface ITemplatedLinkMail {
   nickname: string;
   link: string;
 }
 
+export interface ITemplatedCodeMail {
+  nickname: string;
+  code: string;
+}
+
+export type ITemplatedData = ITemplatedLinkMail | ITemplatedCodeMail;
+
 export interface ITemplates {
-  confirmation: TemplateDelegate<ITemplatedData>;
-  resetPassword: TemplateDelegate<ITemplatedData>;
+  confirmationLink: TemplateDelegate<ITemplatedLinkMail>;
+  resetPasswordLink: TemplateDelegate<ITemplatedLinkMail>;
+  confirmationCode: TemplateDelegate<ITemplatedCodeMail>;
+  resetPasswordCode: TemplateDelegate<ITemplatedCodeMail>;
 }
