@@ -2,14 +2,17 @@ import { registerAs } from '@nestjs/config';
 import { readFileSync } from 'fs';
 
 export const jwtConfig = registerAs('jwt', () => {
-  const publicKey = readFileSync('keys/public.key', 'utf-8');
-  const privateKey = readFileSync('keys/private.key', 'utf-8');
+  const publicKey = readFileSync('keys/public.pem', 'utf-8');
+  const privateKey = readFileSync('keys/private.pem', 'utf-8');
 
   return {
+    publicKey,
+    privateKey,
     access: {
-      privateKey,
-      publicKey,
       time: process.env.JWT_ACCESS_TIME ? parseInt(process.env.JWT_ACCESS_TIME, 10) : 600,
+    },
+    refresh: {
+      time: process.env.JWT_REFRESH_TIME ? parseInt(process.env.JWT_REFRESH_TIME, 10) : 604800,
     },
     confirmation: {
       secret: process.env.JWT_CONFIRMATION_SECRET,
@@ -18,10 +21,6 @@ export const jwtConfig = registerAs('jwt', () => {
     resetPassword: {
       secret: process.env.JWT_RESET_PASSWORD_SECRET,
       time: process.env.JWT_RESET_PASSWORD_TIME ? parseInt(process.env.JWT_RESET_PASSWORD_TIME, 10) : 1800,
-    },
-    refresh: {
-      secret: process.env.JWT_REFRESH_SECRET,
-      time: process.env.JWT_REFRESH_TIME ? parseInt(process.env.JWT_REFRESH_TIME, 10) : 604800,
     },
   };
 });

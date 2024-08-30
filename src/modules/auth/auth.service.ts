@@ -2,24 +2,17 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
-import { IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
+import { IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
-import {
-  CONFIRMATION_MSG,
-  LOGOUT_MSG,
-  RESET_PASS_EMAIL_MSG,
-  RESET_PASS_MSG,
-  SIGNUP_MSG,
-} from '@/modules/auth/auth.constants';
+import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
 import { hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { isNil, isUndefined } from '@nestjs/common/utils/shared.utils';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
-import dayjs from 'dayjs';
 import { MailerService } from '@/modules/mailer/mailer.service';
 import { jwtConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
+import { UserRepo } from '@/modules/prisma/repositories/user.repo';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +24,7 @@ export class AuthService {
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private readonly userRepo: UserRepo,
   ) {}
 
   private async generateAuthTokens(args: IGenerateTokenArgs): Promise<[string, string]> {
@@ -51,39 +45,34 @@ export class AuthService {
     return SIGNUP_MSG;
   }
 
-  public async confirm(email: string, code: string): Promise<string> {
+  public async confirm(email: string, code: string): Promise<IAuthResult> {
     const cachedCode = await this.cacheManager.get(`confirm_code:${email}`);
 
     if (cachedCode !== code) {
       throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid confirmation code');
     }
-    await this.usersService.confirm(email);
+    const user = await this.userRepo.confirm(email);
+    const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
 
-    return CONFIRMATION_MSG;
+    return { accessToken, refreshToken };
   }
 
-  // public async singIn(email: string, password: string, domain?: string): Promise<IAuthResult> {
-  //   const hashedPass = await hash(password, 10);
-  //   const user = await this.usersService.findOneByEmail(email);
-  //   const userPassHash = user?.credentials?.password;
-  //
-  //   if (hashedPass !== user?.credentials?.password) {
-  //     throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, 'Invalid credentials');
-  //   }
-  //   if (!user.confirmed) {
-  //     const confirmationToken = await this.jwtService.generateToken({
-  //       user,
-  //       tokenType: TokenTypeEnum.CONFIRMATION,
-  //       domain,
-  //     });
-  //     this.mailerService.sendConfirmationEmail(user, confirmationToken);
-  //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Please confirm your email');
-  //   }
-  //   const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
-  //
-  //   return { user, accessToken, refreshToken };
-  // }
-  //
+  public async signIn(email: string, password: string, domain?: string): Promise<IAuthResult> {
+    const hashedPass = await hash(password, 10);
+    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const userPassHash = user.credentials?.password;
+
+    if (hashedPass !== userPassHash) {
+      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, 'Invalid credentials');
+    }
+    if (!user.confirmed) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, 'Unconfirmed email');
+    }
+    const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
+
+    return { accessToken, refreshToken };
+  }
+
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
   //   const { id, version, tokenId } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
   //   await this.checkIfTokenIsBlacklisted(id, tokenId);

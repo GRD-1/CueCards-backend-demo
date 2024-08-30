@@ -19,6 +19,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case exception instanceof CueCardsError:
         responsePayload = { ...CCBK_ERR_TO_HTTP[(exception as CueCardsError).code] };
         responsePayload.errorMsg = `${responsePayload.errorMsg}: ${(exception as CueCardsError).message}`;
+
         this.logger.error(exception);
         break;
 
@@ -44,7 +45,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         break;
 
       default:
-        this.logger.error(exception, 'Unknown exception');
         this.logger.error(exception.stack);
         break;
     }

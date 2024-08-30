@@ -23,9 +23,9 @@ export class UserService {
     return this.userRepo.findOneById(id);
   }
 
-  async findOneByEmail(email: string): Promise<UserEntity | null> {
-    return this.userRepo.findOneByEmail(email);
-  }
+  // async findOneByEmail(email: string): Promise<UserEntity | null> {
+  //   return this.userRepo.findOneByEmail(email);
+  // }
 
   async update(id: number, payload: Partial<IUser>): Promise<number> {
     const { email } = payload;
@@ -37,9 +37,9 @@ export class UserService {
     return updatedUser.id;
   }
 
-  async confirm(email: string): Promise<number> {
-    return this.userRepo.confirm(email);
-  }
+  // async confirm(email: string): Promise<number> {
+  //   return this.userRepo.confirm(email);
+  // }
 
   // async updatePassword(userId: number, oldPass: string, newPass: string): Promise<UserWithCredentialsEntity> {
   //   const user = await this.userRepo.findOneById(userId);

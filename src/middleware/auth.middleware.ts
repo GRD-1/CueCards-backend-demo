@@ -22,7 +22,7 @@ export class AuthMiddleware implements NestMiddleware {
       return;
     }
     const token = req.headers.authorization.split(' ')[1];
-    const secret = this.jwtConf.access.privateKey;
+    const secret = this.jwtConf.privateKey;
     try {
       const decodeToken = verify(token, secret) as JwtPayload;
       if (decodeToken.id) {

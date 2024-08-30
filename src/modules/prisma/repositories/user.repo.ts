@@ -6,7 +6,6 @@ import {
 } from '@/modules/prisma/repositories/select-options/user.select-options';
 import { CredentialsEntity, UserEntity, UserWithCredentialsEntity } from '@/modules/user/user.entity';
 import { IUser, IUserWithPassword } from '@/modules/user/user.interface';
-import { DEFAULT_SETTINGS } from '@/modules/settings/settings.constants';
 
 @Injectable()
 export class UserRepo {
@@ -40,6 +39,15 @@ export class UserRepo {
     return user || null;
   }
 
+  async findOneWithCredentialsByEmail(email?: string): Promise<UserWithCredentialsEntity> {
+    const user = await this.prisma.user.findFirstOrThrow({
+      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
+      where: { email },
+    });
+
+    return user || null;
+  }
+
   async findOneById(id: number): Promise<UserEntity> {
     return this.prisma.user.findFirstOrThrow({
       select: USER_SELECT_OPTIONS,
@@ -57,14 +65,12 @@ export class UserRepo {
     });
   }
 
-  async confirm(email: string): Promise<number> {
-    const user = await this.prisma.user.update({
-      select: { id: true },
+  async confirm(email: string): Promise<UserWithCredentialsEntity> {
+    return this.prisma.user.update({
+      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
       data: { confirmed: true },
       where: { email },
     });
-
-    return user.id;
   }
 
   async updatePassword(userId: number, lastPassword: string, password: string): Promise<CredentialsEntity> {

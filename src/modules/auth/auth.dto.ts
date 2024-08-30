@@ -1,4 +1,4 @@
-import { IsEmail, IsJWT, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsJWT, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { PASSWORD_REGEX } from '@/modules/user/user.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
@@ -15,12 +15,29 @@ export class ConfirmDto {
   readonly code: string;
 }
 
-// export class SignInDto extends PasswordsDto {
-//   @IsString()
-//   @IsEmail()
-//   @Length(5, 255)
-//   readonly email!: string;
-// }
+export class SignInDto {
+  @ApiProperty({ description: 'email', nullable: false })
+  @IsEmail()
+  readonly email: string;
+
+  @ApiProperty({ description: 'password', nullable: false })
+  @IsNotEmpty()
+  readonly password: string;
+
+  @ApiProperty({ description: 'application domain', nullable: true })
+  @IsOptional()
+  readonly domain: string;
+}
+
+export class SignInRespDto {
+  @ApiProperty({ description: 'access token', nullable: false })
+  @IsString()
+  readonly accessToken: string;
+
+  @ApiProperty({ description: 'refresh token', nullable: false })
+  @IsString()
+  readonly refreshToken: string;
+}
 
 export abstract class EmailDto {
   @ApiProperty({ description: 'user email', nullable: false })

@@ -1,8 +1,6 @@
-import { IUser } from '@/modules/user/user.interface';
 import { UserWithCredentialsEntity } from '@/modules/user/user.entity';
 
 export interface IAuthResult {
-  user: IUser;
   accessToken: string;
   refreshToken: string;
 }

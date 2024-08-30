@@ -48,16 +48,6 @@ export class UserRespDto {
   readonly confirmed: boolean;
 }
 
-export class LoginUserDto {
-  @ApiProperty({ description: 'email', nullable: false })
-  @IsEmail()
-  readonly email: string;
-
-  @ApiProperty({ description: 'password', nullable: false })
-  @IsNotEmpty()
-  readonly password: string;
-}
-
 export class UpdateUserDto extends PartialType(UserDto) {}
 
 export class UpdatePasswordDto {
