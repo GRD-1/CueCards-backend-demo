@@ -8,7 +8,6 @@ import { validationSchema } from '@/config/config.schema';
 import {
   appConfig,
   cacheConfig,
-  cookieConfig,
   emailConfig,
   jwtConfig,
   nodeConfig,
@@ -36,17 +35,7 @@ import { CacheService } from './modules/cache/cache.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema,
-      load: [
-        appConfig,
-        cookieConfig,
-        emailConfig,
-        jwtConfig,
-        nodeConfig,
-        postgresConfig,
-        prismaConfig,
-        redisConfig,
-        cacheConfig,
-      ],
+      load: [appConfig, emailConfig, jwtConfig, nodeConfig, postgresConfig, prismaConfig, redisConfig, cacheConfig],
       cache: true,
     }),
     CacheModule.registerAsync({
@@ -56,8 +45,6 @@ import { CacheService } from './modules/cache/cache.service';
         store: redisStore,
         host: configService.get('REDIS_HOST'),
         port: configService.get('REDIS_PORT'),
-        username: configService.get('REDIS_USERNAME'),
-        password: configService.get('REDIS_PASSWORD'),
       }),
       inject: [ConfigService],
     }),

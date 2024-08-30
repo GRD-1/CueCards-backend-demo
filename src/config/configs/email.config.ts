@@ -9,4 +9,5 @@ export const emailConfig = registerAs('email', () => ({
   awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   awsRegion: process.env.AWS_SES_REGION,
+  ttl: process.env.EEMAIL_TTL ? parseInt(process.env.EEMAIL_TTL, 10) : 900,
 }));

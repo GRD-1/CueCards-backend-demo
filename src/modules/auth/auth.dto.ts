@@ -1,7 +1,15 @@
-import { IsEmail, IsJWT, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsEmail, IsIn, IsJWT, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { PASSWORD_REGEX } from '@/modules/user/user.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { UserDto } from '@/modules/user/user.dto';
+import { EmailType } from '@/modules/auth/auth.interfaces';
+
+export class SignUpDto extends UserDto {
+  @ApiProperty({ description: 'application domain', nullable: true })
+  @IsOptional()
+  readonly domain?: string;
+}
 
 export class ConfirmDto {
   @ApiProperty({ description: 'The confirmation code' })
@@ -26,7 +34,7 @@ export class SignInDto {
 
   @ApiProperty({ description: 'application domain', nullable: true })
   @IsOptional()
-  readonly domain: string;
+  readonly domain?: string;
 }
 
 export class SignInRespDto {
@@ -45,6 +53,10 @@ export abstract class EmailDto {
   @Length(5, 255)
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
+
+  @ApiProperty({ description: 'email type', nullable: false })
+  @IsIn(Object.values(EmailType))
+  readonly type: EmailType;
 }
 
 export class PasswordsDto {

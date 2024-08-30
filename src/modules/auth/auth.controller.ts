@@ -10,11 +10,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Body, Controller, Post } from '@nestjs/common';
-import { CCBK_ERR_TO_HTTP, CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
-import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
-import { UserDto } from '@/modules/user/user.dto';
-import { ConfirmDto, SignInDto, SignInRespDto } from '@/modules/auth/auth.dto';
+import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import { ConfirmDto, EmailDto, SignInDto, SignInRespDto, SignUpDto } from '@/modules/auth/auth.dto';
 
 @ApiTags('auth')
 @ApiBearerAuth()
@@ -24,11 +23,11 @@ export class AuthController {
 
   @Post('sign-up')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiBody({ type: UserDto })
+  @ApiBody({ type: SignUpDto })
   @ApiCreatedResponse({ description: 'The new user has been created', schema: { example: SIGNUP_MSG } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async signUp(@Body() payload: UserDto): Promise<string> {
+  async signUp(@Body() payload: SignUpDto): Promise<string> {
     return this.authService.signUp(payload);
   }
 
@@ -41,10 +40,19 @@ export class AuthController {
     return this.authService.confirm(payload.email, payload.code);
   }
 
+  @Post('send-email')
+  @ApiOperation({ summary: 'Send a email with a confirmation code' })
+  @ApiBody({ type: EmailDto })
+  @ApiOkResponse({ description: 'The email has been sent', schema: { example: EMAIL_MSG } })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async sendEmail(@Body() payload: EmailDto): Promise<string> {
+    return this.authService.sendEmail(payload.email, payload.type);
+  }
+
   @Post('sign-in')
   @ApiOperation({ summary: 'Sign in a user' })
   @ApiOkResponse({ description: 'The user is logged in', type: SignInRespDto })
-  @ApiUnauthorizedResponse({ description: 'Unverified email', schema: { example: CCBK_ERROR_CODES.UNCONFIRMED_EMAIL } })
+  @ApiUnauthorizedResponse({ description: 'Unverified email', schema: { example: CCBK_ERR_TO_HTTP.CCBK10 } })
   @ApiUnauthorizedResponse({ description: 'Authorisation failed', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
   async signIn(@Body() payload: SignInDto): Promise<SignInRespDto> {
     return this.authService.signIn(payload.email, payload.password);

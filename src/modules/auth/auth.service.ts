@@ -2,15 +2,15 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
-import { IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
+import { EmailType, IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
-import { SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
 import { hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { MailerService } from '@/modules/mailer/mailer.service';
-import { jwtConfig } from '@/config/configs';
+import { emailConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
 
@@ -19,34 +19,30 @@ export class AuthService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
-    @Inject(jwtConfig.KEY)
-    private jwtConf: ConfigType<typeof jwtConfig>,
+    @Inject(emailConfig.KEY)
+    private emailConf: ConfigType<typeof emailConfig>,
     private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly userRepo: UserRepo,
   ) {}
 
-  private async generateAuthTokens(args: IGenerateTokenArgs): Promise<[string, string]> {
-    return Promise.all([
-      this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.ACCESS }),
-      this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.REFRESH }),
-    ]);
-  }
-
   public async signUp(userData: IUserWithPassword): Promise<string> {
-    const user = await this.usersService.create(userData);
-    const cacheKey = `confirm_code:${user.email}`;
-    const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
-
-    await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
-    await this.cacheManager.set(cacheKey, cacheValue, this.jwtConf.confirmation.time);
+    await this.usersService.create(userData);
+    await this.sendCode(userData.email, EmailType.Confirmation);
 
     return SIGNUP_MSG;
   }
 
+  public async sendEmail(email: string, type: EmailType): Promise<string> {
+    await this.userRepo.findOneWithCredentialsByEmail(email);
+    await this.sendCode(email, type);
+
+    return EMAIL_MSG;
+  }
+
   public async confirm(email: string, code: string): Promise<IAuthResult> {
-    const cachedCode = await this.cacheManager.get(`confirm_code:${email}`);
+    const cachedCode = await this.cacheManager.get(`code:${EmailType.Confirmation}:${email}`);
 
     if (cachedCode !== code) {
       throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid confirmation code');
@@ -71,6 +67,23 @@ export class AuthService {
     const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
 
     return { accessToken, refreshToken };
+  }
+
+  public async sendCode(email: string, type: EmailType): Promise<void> {
+    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const cacheKey = `code:${type}:${user.email}`;
+    const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
+    const ttl = this.emailConf.ttl;
+
+    await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
+    await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as any);
+  }
+
+  private async generateAuthTokens(args: IGenerateTokenArgs): Promise<[string, string]> {
+    return Promise.all([
+      this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.ACCESS }),
+      this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.REFRESH }),
+    ]);
   }
 
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {

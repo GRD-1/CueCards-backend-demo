@@ -14,13 +14,5 @@ export const jwtConfig = registerAs('jwt', () => {
     refresh: {
       time: process.env.JWT_REFRESH_TIME ? parseInt(process.env.JWT_REFRESH_TIME, 10) : 604800,
     },
-    confirmation: {
-      secret: process.env.JWT_CONFIRMATION_SECRET,
-      time: process.env.JWT_CONFIRMATION_TIME ? parseInt(process.env.JWT_CONFIRMATION_TIME, 10) : 3600,
-    },
-    resetPassword: {
-      secret: process.env.JWT_RESET_PASSWORD_SECRET,
-      time: process.env.JWT_RESET_PASSWORD_TIME ? parseInt(process.env.JWT_RESET_PASSWORD_TIME, 10) : 1800,
-    },
   };
 });
