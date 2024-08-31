@@ -41,7 +41,7 @@ export class JwtService {
       algorithm: 'RS256',
     };
 
-    return JwtService.jwtSign({ payload, secret, options });
+    return JwtService.signJwt({ payload, secret, options });
   }
 
   public async verifyToken(token: string, tokenType: TokenTypeEnum): Promise<JwtPayload> {
@@ -53,7 +53,7 @@ export class JwtService {
       algorithms: ['RS256'],
     };
 
-    return JwtService.jwtVerify({ token, secret, options }).catch((err) => {
+    return JwtService.verifyJwt({ token, secret, options }).catch((err) => {
       if (err instanceof jwt.TokenExpiredError) {
         throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Token expired');
       }
@@ -64,7 +64,17 @@ export class JwtService {
     });
   }
 
-  private static async jwtSign(args: IGenerateTokenAsyncArgs): Promise<string> {
+  public async decodeJwt(token: string): Promise<JwtPayload> {
+    const jwtPayload = jwt.decode(token);
+
+    if (typeof jwtPayload === 'string' || jwtPayload === null) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    }
+
+    return jwtPayload;
+  }
+
+  private static async signJwt(args: IGenerateTokenAsyncArgs): Promise<string> {
     const { payload, secret, options } = args;
 
     return new Promise((resolve, reject) => {
@@ -84,7 +94,7 @@ export class JwtService {
     });
   }
 
-  private static async jwtVerify<T extends ITokenPayload>(args: IVerifyTokenArgs): Promise<JwtPayload> {
+  private static async verifyJwt<T extends ITokenPayload>(args: IVerifyTokenArgs): Promise<JwtPayload> {
     const { token, secret, options } = args;
 
     return new Promise((resolve, rejects) => {

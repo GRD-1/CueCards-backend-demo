@@ -37,7 +37,7 @@ export class SignInDto {
   readonly domain?: string;
 }
 
-export class SignInRespDto {
+export class TokensDto {
   @ApiProperty({ description: 'access token', nullable: false })
   @IsString()
   readonly accessToken: string;
@@ -53,8 +53,10 @@ export abstract class EmailDto {
   @Length(5, 255)
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
+}
 
-  @ApiProperty({ description: 'email type', nullable: false })
+export abstract class SendEmailDto extends EmailDto {
+  @ApiProperty({ description: 'email type', nullable: false, enum: EmailType })
   @IsIn(Object.values(EmailType))
   readonly type: EmailType;
 }

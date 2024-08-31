@@ -4,8 +4,8 @@ import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { EmailType, IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
-import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
-import { hash } from 'bcrypt';
+import { EMAIL_MSG, LOGOUT_MSG, RESET_PASS_EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import { compare } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -13,6 +13,7 @@ import { MailerService } from '@/modules/mailer/mailer.service';
 import { emailConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
@@ -54,11 +55,10 @@ export class AuthService {
   }
 
   public async signIn(email: string, password: string, domain?: string): Promise<IAuthResult> {
-    const hashedPass = await hash(password, 10);
     const user = await this.userRepo.findOneWithCredentialsByEmail(email);
-    const userPassHash = user.credentials?.password;
+    const passwordApproved = await compare(password, user.credentials!.password);
 
-    if (hashedPass !== userPassHash) {
+    if (!passwordApproved) {
       throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, 'Invalid credentials');
     }
     if (!user.confirmed) {
@@ -73,7 +73,6 @@ export class AuthService {
     const user = await this.userRepo.findOneWithCredentialsByEmail(email);
     const cacheKey = `code:${type}:${user.email}`;
     const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
-    const ttl = this.emailConf.ttl;
 
     await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
     await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as any);
@@ -84,6 +83,33 @@ export class AuthService {
       this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.ACCESS }),
       this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.REFRESH }),
     ]);
+  }
+
+  public async logout(accessToken: string, refreshToken: string): Promise<string> {
+    const { tokenId: refreshId, exp: refExp } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
+    const { tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(accessToken);
+
+    await this.blacklistToken(refreshId, refExp);
+    await this.blacklistToken(accessId, accExp);
+
+    return LOGOUT_MSG;
+  }
+
+  private async blacklistToken(tokenId: string, exp?: number): Promise<void> {
+    const now = dayjs().unix();
+    const expiration = exp || dayjs().unix();
+    const ttl = expiration - now;
+
+    if (ttl > 0) {
+      await this.cacheManager.set(`blacklist:${tokenId}`, now.toString(), { ttl } as any);
+    }
+  }
+
+  public async resetPassword(email: string): Promise<string> {
+    await this.userRepo.findOneWithCredentialsByEmail(email);
+    await this.sendCode(email, EmailType.Reset);
+
+    return RESET_PASS_EMAIL_MSG;
   }
 
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
@@ -104,38 +130,6 @@ export class AuthService {
   //   if (!isUndefined(time) && !isNil(time)) {
   //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
   //   }
-  // }
-  //
-  // public async logout(refreshToken: string): Promise<string> {
-  //   const { id, tokenId, exp } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
-  //   await this.blacklistToken(id, tokenId, exp);
-  //
-  //   return LOGOUT_MSG;
-  // }
-  //
-  // private async blacklistToken(userId: number, tokenId: string, exp?: number): Promise<void> {
-  //   const now = dayjs().unix();
-  //   const expiration = exp || dayjs().unix();
-  //   const ttl = (expiration - now) * 1000;
-  //
-  //   if (ttl > 0) {
-  //     await this.cacheManager.set(`blacklist:${userId}:${tokenId}`, now.toString(), ttl);
-  //   }
-  // }
-  //
-  // public async resetPasswordEmail(email: string, domain?: string): Promise<string> {
-  //   const user = await this.usersService.findOneByEmail(email);
-  //
-  //   if (user) {
-  //     const resetToken = await this.jwtService.generateToken({
-  //       user,
-  //       tokenType: TokenTypeEnum.RESET_PASSWORD,
-  //       domain,
-  //     });
-  //     this.mailerService.sendResetPasswordEmail(user, resetToken);
-  //   }
-  //
-  //   return RESET_PASS_EMAIL_MSG;
   // }
   //
   // public async resetPassword(resetToken: string, oldPass: string, newPass: string): Promise<string> {

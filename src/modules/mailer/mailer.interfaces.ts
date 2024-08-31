@@ -3,11 +3,13 @@ import { TemplateDelegate } from 'handlebars';
 export interface ITemplatedLinkMail {
   nickname: string;
   link: string;
+  ttlInMinutes: number;
 }
 
 export interface ITemplatedCodeMail {
   nickname: string;
   code: string;
+  ttlInMinutes: number;
 }
 
 export type ITemplatedData = ITemplatedLinkMail | ITemplatedCodeMail;

@@ -74,14 +74,16 @@ export class MailerService {
 
   public async sendConfirmationEmail(email: string, nickname: string, code: string): Promise<void> {
     const subject = 'Confirm your email';
-    const html = this.templates.confirmationCode({ nickname, code });
+    const ttlInMinutes = this.emailConf.ttl / 60;
+    const html = this.templates.confirmationCode({ nickname, code, ttlInMinutes });
 
     await this.sendEmail(email, subject, html, 'A new confirmation email has been sent');
   }
 
   public async sendResetPasswordEmail(email: string, nickname: string, code: string): Promise<void> {
     const subject = 'Reset your password';
-    const html = this.templates.resetPasswordCode({ nickname, code });
+    const ttlInMinutes = this.emailConf.ttl / 60;
+    const html = this.templates.resetPasswordCode({ nickname, code, ttlInMinutes });
 
     await this.sendEmail(email, subject, html, 'A new reset password email has been sent');
   }
