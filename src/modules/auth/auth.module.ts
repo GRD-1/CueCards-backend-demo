@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from '@/modules/user/user.module';
 import { JwtModule } from '@/modules/jwt/jwt.module';
 import { MailerModule } from '@/modules/mailer/mailer.module';
 import { AuthController } from '@/modules/auth/auth.controller';
@@ -8,7 +7,7 @@ import { PrismaService } from '@/modules/prisma/prisma.service';
 import { AuthService } from './auth.service';
 
 @Module({
-  imports: [UserModule, JwtModule, MailerModule],
+  imports: [JwtModule, MailerModule],
   controllers: [AuthController],
   providers: [AuthService, PrismaService, UserRepo],
 })

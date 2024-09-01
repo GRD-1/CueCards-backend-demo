@@ -4,8 +4,18 @@ import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { EmailType, IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
-import { EMAIL_MSG, LOGOUT_MSG, RESET_PASS_EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
-import { compare } from 'bcrypt';
+import {
+  EMAIL_MSG,
+  EMAIL_OCCUPIED_MSG,
+  INVALID_CODE_MSG,
+  INVALID_CREDENTIALS_MSG,
+  LOGOUT_MSG,
+  RESET_PASS_EMAIL_MSG,
+  SIGNUP_MSG,
+  UNCONFIRMED_EMAIL_MSG,
+  USED_PASSWORD_MSG,
+} from '@/modules/auth/auth.constants';
+import { compare, hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -22,14 +32,21 @@ export class AuthService {
     private readonly cacheManager: Cache,
     @Inject(emailConfig.KEY)
     private emailConf: ConfigType<typeof emailConfig>,
-    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly userRepo: UserRepo,
   ) {}
 
   public async signUp(userData: IUserWithPassword): Promise<string> {
-    await this.usersService.create(userData);
+    const { email, nickname, avatar, password } = userData;
+    const hashedPass = await hash(password, 10);
+
+    const emailIsOccupied = await this.userRepo.findOneByEmail(email);
+    if (emailIsOccupied) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, EMAIL_OCCUPIED_MSG);
+    }
+
+    await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
     await this.sendCode(userData.email, EmailType.Confirmation);
 
     return SIGNUP_MSG;
@@ -46,7 +63,7 @@ export class AuthService {
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Confirmation}:${email}`);
 
     if (cachedCode !== code) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, 'Invalid confirmation code');
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_MSG);
     }
     const user = await this.userRepo.confirm(email);
     const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
@@ -59,10 +76,10 @@ export class AuthService {
     const passwordApproved = await compare(password, user.credentials!.password);
 
     if (!passwordApproved) {
-      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, 'Invalid credentials');
+      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, INVALID_CREDENTIALS_MSG);
     }
     if (!user.confirmed) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, 'Unconfirmed email');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, UNCONFIRMED_EMAIL_MSG);
     }
     const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
 
@@ -74,7 +91,12 @@ export class AuthService {
     const cacheKey = `code:${type}:${user.email}`;
     const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
 
-    await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
+    if (type === EmailType.Confirmation) {
+      await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
+    } else {
+      await this.mailerService.sendResetPasswordEmail(user.email, user.nickname, cacheValue);
+    }
+
     await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as any);
   }
 
@@ -112,6 +134,25 @@ export class AuthService {
     return RESET_PASS_EMAIL_MSG;
   }
 
+  public async confirmReset(email: string, code: string, password: string): Promise<IAuthResult> {
+    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const cachedCode = await this.cacheManager.get(`code:${EmailType.Reset}:${email}`);
+    const hashedPass = await hash(password, 10);
+    const theSamePassword = await compare(password, user.credentials!.password);
+
+    if (cachedCode !== code) {
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_MSG);
+    }
+    if (theSamePassword) {
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, USED_PASSWORD_MSG);
+    }
+
+    await this.userRepo.updatePassword(user.id, hashedPass);
+    const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
+
+    return { accessToken, refreshToken };
+  }
+
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
   //   const { id, version, tokenId } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
   //   await this.checkIfTokenIsBlacklisted(id, tokenId);
@@ -130,13 +171,6 @@ export class AuthService {
   //   if (!isUndefined(time) && !isNil(time)) {
   //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
   //   }
-  // }
-  //
-  // public async resetPassword(resetToken: string, oldPass: string, newPass: string): Promise<string> {
-  //   const { id } = await this.jwtService.verifyToken(resetToken, TokenTypeEnum.RESET_PASSWORD);
-  //   await this.usersService.updatePassword(id, oldPass, newPass);
-  //
-  //   return RESET_PASS_MSG;
   // }
   //
   // public async updatePassword(userId: number, oldPass: string, newPass: string): Promise<IAuthResult> {

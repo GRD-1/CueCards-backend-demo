@@ -1,23 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
-import { IUser, IUserWithPassword } from '@/modules/user/user.interface';
+import { IUser } from '@/modules/user/user.interface';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { hash } from 'bcrypt';
-import { UserEntity, UserWithCredentialsEntity } from './user.entity';
+import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepo: UserRepo) {}
 
-  async create(payload: IUserWithPassword): Promise<UserWithCredentialsEntity> {
-    const { email, nickname, avatar, password } = payload;
-    await this.checkEmailUniqueness(email);
-    const hashedPass = await hash(password, 10);
-    const userId = await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
-
-    return userId;
-  }
+  // async create(payload: IUserWithPassword): Promise<UserWithCredentialsEntity> {
+  //   const { email, nickname, avatar, password } = payload;
+  //   const account = await this.userRepo.findOneByEmail(email);
+  //   if (account) {
+  //     throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This email address is already occupied');
+  //   }
+  //
+  //   const hashedPass = await hash(password, 10);
+  //   const user = await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
+  //
+  //   return user;
+  // }
 
   async findOneById(id: number): Promise<UserEntity> {
     return this.userRepo.findOneById(id);
@@ -30,7 +33,11 @@ export class UserService {
   async update(id: number, payload: Partial<IUser>): Promise<number> {
     const { email } = payload;
     if (email) {
-      await this.checkEmailUniqueness(email, id);
+      // await this.checkEmailUniqueness(email, id);
+      const user = await this.userRepo.findOneByEmail(email);
+      if (user && user.id !== id) {
+        throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This email address is already occupied');
+      }
     }
     const updatedUser = await this.userRepo.update(id, payload);
 
@@ -66,12 +73,12 @@ export class UserService {
   //   return user;
   // }
 
-  private async checkEmailUniqueness(email: string, userId?: number): Promise<void> {
-    const user = await this.userRepo.findOneByEmail(email);
-    if (user && user.id !== userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This email address is already occupied');
-    }
-  }
+  // private async checkEmailUniqueness(email: string, userId?: number): Promise<void> {
+  //   const user = await this.userRepo.findOneByEmail(email);
+  //   if (user && user.id !== userId) {
+  //     throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This email address is already occupied');
+  //   }
+  // }
 
   // public async findOneWithCredentials(id: number, version: number): Promise<UserWithCredentialsEntity | null> {
   //   const user = await this.userRepo.findOneById(id);

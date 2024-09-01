@@ -11,12 +11,15 @@ export class SignUpDto extends UserDto {
   readonly domain?: string;
 }
 
-export class ConfirmDto {
-  @ApiProperty({ description: 'The confirmation code' })
-  @IsString()
+export abstract class EmailDto {
+  @ApiProperty({ description: 'user email', nullable: false })
+  @IsEmail()
+  @Length(5, 255)
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
+}
 
+export class ConfirmDto extends EmailDto {
   @ApiProperty({ description: 'The confirmation code' })
   @IsString()
   @Length(4)
@@ -47,40 +50,19 @@ export class TokensDto {
   readonly refreshToken: string;
 }
 
-export abstract class EmailDto {
-  @ApiProperty({ description: 'user email', nullable: false })
-  @IsEmail()
-  @Length(5, 255)
-  @Transform(({ value }) => value.toLowerCase())
-  readonly email: string;
-}
-
 export abstract class SendEmailDto extends EmailDto {
   @ApiProperty({ description: 'email type', nullable: false, enum: EmailType })
   @IsIn(Object.values(EmailType))
   readonly type: EmailType;
 }
 
-export class PasswordsDto {
+export abstract class ConfirmResetDto extends ConfirmDto {
   @IsString()
   @Length(8, 35)
   @Matches(PASSWORD_REGEX, {
     message: 'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
   })
-  readonly oldPassword: string;
-
-  @IsString()
-  @Length(8, 35)
-  @Matches(PASSWORD_REGEX, {
-    message: 'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
-  })
-  readonly newPassword: string;
-}
-
-export abstract class ResetPasswordDto extends PasswordsDto {
-  @IsString()
-  @IsJWT()
-  readonly resetToken: string;
+  readonly password: string;
 }
 
 // export abstract class ChangePasswordDto {
@@ -89,7 +71,7 @@ export abstract class ResetPasswordDto extends PasswordsDto {
 //   @Matches(PASSWORD_REGEX, {
 //     message: 'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
 //   })
-//   readonly password: string;
+//   readonly oldPassword: string;
 //
 //   @IsString()
 //   @Length(8, 35)

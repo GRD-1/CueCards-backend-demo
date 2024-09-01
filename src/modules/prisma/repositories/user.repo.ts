@@ -73,19 +73,19 @@ export class UserRepo {
     });
   }
 
-  async updatePassword(userId: number, lastPassword: string, password: string): Promise<CredentialsEntity> {
+  async updatePassword(userId: number, newPass: string, oldPass?: string): Promise<CredentialsEntity> {
     return this.prisma.credentials.upsert({
       where: { userId },
       update: {
         version: { increment: 1 },
-        lastPassword,
-        password,
+        password: newPass,
+        lastPassword: oldPass,
       },
       create: {
         userId,
         version: 1,
-        lastPassword,
-        password,
+        password: newPass,
+        lastPassword: oldPass,
       },
     });
   }

@@ -65,10 +65,9 @@ export class MailerService {
 
     try {
       await this.sesClient.send(new SendEmailCommand(params));
-      this.logger.log(log ?? 'A confirmation email was sent.');
+      this.logger.log(log ?? 'An email has been sent.');
     } catch (error) {
-      this.logger.error(`Failed to send email: ${error.message}`, error.stack);
-      throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, 'Confirmation email was not sent', error.stack);
+      throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, 'The email was not sent', error.stack);
     }
   }
 
@@ -85,6 +84,6 @@ export class MailerService {
     const ttlInMinutes = this.emailConf.ttl / 60;
     const html = this.templates.resetPasswordCode({ nickname, code, ttlInMinutes });
 
-    await this.sendEmail(email, subject, html, 'A new reset password email has been sent');
+    await this.sendEmail(email, subject, html, 'The password reset code has been sent');
   }
 }

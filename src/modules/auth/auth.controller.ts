@@ -15,7 +15,15 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
 import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
-import { ConfirmDto, EmailDto, SendEmailDto, SignInDto, SignUpDto, TokensDto } from '@/modules/auth/auth.dto';
+import {
+  ConfirmDto,
+  ConfirmResetDto,
+  EmailDto,
+  SendEmailDto,
+  SignInDto,
+  SignUpDto,
+  TokensDto,
+} from '@/modules/auth/auth.dto';
 
 @ApiTags('auth')
 @ApiBearerAuth()
@@ -77,10 +85,20 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset a user password' })
   @ApiBody({ type: EmailDto })
-  @ApiOkResponse({ description: 'The password has been reset' })
+  @ApiOkResponse({ description: 'The email with a password reset code has been sent' })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async resetPassword(@Body() payload: EmailDto): Promise<string> {
     return this.authService.resetPassword(payload.email);
+  }
+
+  @Post('confirm-reset')
+  @ApiOperation({ summary: 'Confirm a password reset' })
+  @ApiBody({ type: ConfirmResetDto })
+  @ApiOkResponse({ description: 'The password has been reset' })
+  @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
+  @ApiBadRequestResponse({ description: '... Invalid reset code', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  async confirmReset(@Body() payload: ConfirmResetDto): Promise<TokensDto> {
+    return this.authService.confirmReset(payload.email, payload.code, payload.password);
   }
 
   // @Patch('update-password')
