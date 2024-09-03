@@ -8,7 +8,7 @@ import {
   GetListWithFirstRespInterface,
   UpdateCardInterface,
 } from '@/modules/card/card.interface';
-import { CardEntity, CardWitTagsEntity } from '@/modules/card/card.entity';
+import { CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
@@ -16,7 +16,7 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 export class CardService {
   constructor(private readonly cardRepo: CardRepo) {}
 
-  async create(payload: CardAndTagsInterface, userId: number): Promise<number> {
+  async create(payload: CardAndTagsInterface, userId: string): Promise<number> {
     const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
     if (existingCardId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A card with that value already exists');
@@ -50,7 +50,7 @@ export class CardService {
     return this.cardRepo.findOneById(cardId);
   }
 
-  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>, userId: number): Promise<number> {
+  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>, userId: string): Promise<number> {
     const { tags: newTags, ...cardData } = payload;
     let tagIdToDeleteArr: number[];
     let newTagsArr: CardTagInterface[];
@@ -72,24 +72,24 @@ export class CardService {
     return this.cardRepo.updateOneById(args);
   }
 
-  async delete(cardId: number, userId: number): Promise<number> {
+  async delete(cardId: number, userId: string): Promise<number> {
     await this.checkEditingRights(cardId, userId);
 
     return this.cardRepo.delete(cardId);
   }
 
-  async checkEditingRights(cardId: number, userId: number): Promise<void> {
+  async checkEditingRights(cardId: number, userId: string): Promise<void> {
     const card = await this.cardRepo.findOneById(cardId);
     if (card.authorId !== userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
     }
   }
 
-  async hide(cardId: number, userId: number): Promise<number> {
+  async hide(cardId: number, userId: string): Promise<number> {
     return this.cardRepo.hide(cardId, userId);
   }
 
-  async display(cardId: number, userId: number): Promise<number> {
+  async display(cardId: number, userId: string): Promise<number> {
     return this.cardRepo.display(cardId, userId);
   }
 }

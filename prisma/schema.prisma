@@ -8,8 +8,7 @@ datasource db {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  uuid           String           @unique @default(uuid())
+  id             String           @id @default(uuid()) @db.Uuid
   email          String           @unique @db.VarChar(255)
   nickname       String           @db.VarChar
   avatar         String?          @db.VarChar
@@ -30,7 +29,7 @@ model User {
 }
 
 model Credentials {
-  userId       Int      @id
+  userId       String   @id @db.Uuid
   password     String   @db.VarChar
   version      Int      @default(1)
   lastPassword String   @default("") @db.VarChar
@@ -57,7 +56,7 @@ model Language {
 
 model Card {
   id                Int              @id @default(autoincrement())
-  authorId          Int
+  authorId          String           @db.Uuid
   fsLanguage        String
   fsValue           String           @unique @db.VarChar
   fsDescription     String?          @default("") @db.VarChar
@@ -91,7 +90,7 @@ model Card {
 
 model Dictionary {
   id         Int             @id() @default(autoincrement())
-  authorId   Int
+  authorId   String          @db.Uuid
   name       String          @unique @db.VarChar
   createdAt  DateTime        @default(now()) @db.Timestamp(6)
   updatedAt  DateTime        @default(now()) @updatedAt @db.Timestamp(6)
@@ -105,7 +104,7 @@ model Dictionary {
 
 model Tag {
   id            Int             @id @default(autoincrement())
-  authorId      Int
+  authorId      String          @db.Uuid
   name          String          @unique @db.VarChar
   createdAt     DateTime        @default(now()) @db.Timestamp(6)
   updatedAt     DateTime        @default(now()) @updatedAt @db.Timestamp(6)
@@ -139,13 +138,13 @@ model DictionaryTag {
 
 model CardStatistics {
   cardId           Int
-  userId           Int
+  userId           String @db.Uuid
   fsTotalAnswers   Int
   fsCorrectAnswers Int
   bsTotalAnswers   Int
   bsCorrectAnswers Int
-  card             Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users            User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  card             Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User   @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([cardId, userId], map: "card_user_unique_constraint")
   @@map("card_statistics")
@@ -153,16 +152,16 @@ model CardStatistics {
 
 model CardIsHidden {
   cardId Int
-  userId Int
-  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users  User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @db.Uuid
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users  User   @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([cardId, userId], map: "card_user_constraint")
   @@map("card_is_hidden")
 }
 
 model Settings {
-  userId           Int      @id
+  userId           String   @id @db.Uuid
   appLanguage      String   @default("ru")
   trainingLanguage String   @default("en")
   notifications    Boolean  @default(true)
@@ -180,7 +179,7 @@ model Settings {
 
 model Statistics {
   id             Int        @id @default(autoincrement())
-  userId         Int        @db.Integer
+  userId         String     @db.Uuid
   dictionaryId   Int
   totalAnswers   Int
   correctAnswers Int

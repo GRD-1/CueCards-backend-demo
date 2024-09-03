@@ -1,5 +1,5 @@
 export class UserEntity {
-  id: number;
+  id: string;
   uuid: string;
   email: string;
   nickname: string;
@@ -8,7 +8,7 @@ export class UserEntity {
 }
 
 export class CredentialsEntity {
-  userId: number;
+  userId: string;
   version = 0;
   password: string;
   lastPassword: string;

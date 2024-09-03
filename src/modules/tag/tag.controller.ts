@@ -30,7 +30,7 @@ export class TagController {
   @ApiCreatedResponse({ description: 'The new tag has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: TagDto, @UserId() userId: number): Promise<number> {
+  async create(@Body() payload: TagDto, @UserId() userId: string): Promise<number> {
     return this.tagService.create(payload.name, userId);
   }
 
@@ -43,7 +43,7 @@ export class TagController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyTagsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyTagsDto, @UserId() authorId: number): Promise<GetManyTagsRespDto> {
+  async findMany(@Query() query: GetManyTagsDto, @UserId() authorId: string): Promise<GetManyTagsRespDto> {
     return this.tagService.findMany({ ...query, authorId });
   }
 
@@ -65,7 +65,7 @@ export class TagController {
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
-  async update(@Param('tagId') tagId: number, @Body() payload: TagDto, @UserId() userId: number): Promise<number> {
+  async update(@Param('tagId') tagId: number, @Body() payload: TagDto, @UserId() userId: string): Promise<number> {
     return this.tagService.updateOneById(tagId, payload, userId);
   }
 
@@ -75,7 +75,7 @@ export class TagController {
   @ApiOkResponse({ description: 'The tag has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
-  async delete(@Param('tagId') tagId: number, @UserId() userId: number): Promise<number> {
+  async delete(@Param('tagId') tagId: number, @UserId() userId: string): Promise<number> {
     return this.tagService.delete(tagId, userId);
   }
 }

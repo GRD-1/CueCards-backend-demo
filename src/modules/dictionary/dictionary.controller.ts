@@ -38,7 +38,7 @@ export class DictionaryController {
   @ApiCreatedResponse({ description: 'The new dictionary has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: CreateDictionaryDto, @UserId() userId: number): Promise<number> {
+  async create(@Body() payload: CreateDictionaryDto, @UserId() userId: string): Promise<number> {
     return this.dictionaryService.create(payload, userId);
   }
 
@@ -51,7 +51,7 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetListRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getList(@Query() query: GetListDto, @UserId() userId: number): Promise<GetListRespDto> {
+  async getList(@Query() query: GetListDto, @UserId() userId: string): Promise<GetListRespDto> {
     const data = await this.dictionaryService.getList({ ...query, userId });
 
     return plainToInstance(GetListRespDto, data, { enableImplicitConversion: true });
@@ -66,7 +66,7 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetListWithFirstRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getListWithFirst(@Query() query: GetListDto, @UserId() userId: number): Promise<GetListWithFirstRespDto> {
+  async getListWithFirst(@Query() query: GetListDto, @UserId() userId: string): Promise<GetListWithFirstRespDto> {
     const data = await this.dictionaryService.getListWithFirst({ ...query, userId });
 
     return plainToInstance(GetListWithFirstRespDto, data, { enableImplicitConversion: true });
@@ -81,7 +81,7 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetListWithFirstRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getCustomizedWithFirst(@Query() query: GetListDto, @UserId() userId: number): Promise<GetListWithFirstRespDto> {
+  async getCustomizedWithFirst(@Query() query: GetListDto, @UserId() userId: string): Promise<GetListWithFirstRespDto> {
     const data = await this.dictionaryService.getCustomizedWithFirst({ ...query, userId });
 
     return plainToInstance(GetListWithFirstRespDto, data, { enableImplicitConversion: true });
@@ -96,7 +96,7 @@ export class DictionaryController {
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetSettingsWithFRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getSettingsWithFirst(@Query() query: GetListDto, @UserId() userId: number): Promise<GetSettingsWithFRespDto> {
+  async getSettingsWithFirst(@Query() query: GetListDto, @UserId() userId: string): Promise<GetSettingsWithFRespDto> {
     const data = await this.dictionaryService.getSettingsWithFirst({ ...query, userId });
 
     return plainToInstance(GetSettingsWithFRespDto, data, { enableImplicitConversion: true });
@@ -108,7 +108,7 @@ export class DictionaryController {
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async getCustomizedDictionary(
     @Param('dictionaryId', ParseIntPipe) id: number,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<WithTagsAndCardsRespDto> {
     return this.dictionaryService.getCustomizedDictionary(id, userId);
   }
@@ -119,7 +119,7 @@ export class DictionaryController {
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async getDictionaryWithSettings(
     @Param('dictionaryId', ParseIntPipe) id: number,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<WithTagsAndCardSettingsRespDto> {
     return this.dictionaryService.getDictionaryWithSettings(id, userId);
   }
@@ -145,7 +145,7 @@ export class DictionaryController {
   async update(
     @Param('dictionaryId', ParseIntPipe) id: number,
     @Body() payload: UpdateDictionaryDto,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<number> {
     return this.dictionaryService.updateOneById(id, payload, userId);
   }
@@ -156,7 +156,7 @@ export class DictionaryController {
   @ApiOkResponse({ description: 'The dictionary has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
-  async delete(@Param('dictionaryId', ParseIntPipe) dictionaryId: number, @UserId() userId: number): Promise<number> {
+  async delete(@Param('dictionaryId', ParseIntPipe) dictionaryId: number, @UserId() userId: string): Promise<number> {
     return this.dictionaryService.delete(dictionaryId, userId);
   }
 }

@@ -33,7 +33,7 @@ export class CardStatsController {
   async updateCardStatistics(
     @Param('cardId', ParseIntPipe) cardId: number,
     @Body() payload: UpdateStatsDto,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<void> {
     if (!userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'user is not authorised');

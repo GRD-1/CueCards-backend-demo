@@ -11,7 +11,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
 import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
@@ -23,7 +23,9 @@ import {
   SignInDto,
   SignUpDto,
   TokensDto,
+  UpdatePasswordDto,
 } from '@/modules/auth/auth.dto';
+import { UserId } from '@/decorators/user-id.decorator';
 
 @ApiTags('auth')
 @ApiBearerAuth()
@@ -102,12 +104,11 @@ export class AuthController {
   }
 
   // @Patch('update-password')
-  // // @UseGuards(AuthGuard)
   // @ApiOperation({ summary: 'Update a user password' })
-  // @ApiBody({ type: UpdatePasswordDto, examples: { 1: { value: { password: 'oldPass', newPassword: 'newPass' } } } })
+  // @ApiBody({ type: UpdatePasswordDto })
   // @ApiOkResponse({ description: 'The user password has been updated' })
   // @ApiBadRequestResponse({ description: 'Invalid password', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
-  // async updatePassword(@UserId() userId: number, @Body() payload: UpdatePasswordDto): Promise<void> {
-  //   return this.userService.updatePassword(userId, payload.password, payload.newPassword);
+  // async updatePassword(@UserId() userId: number, @Body() payload: UpdatePasswordDto): Promise<TokensDto> {
+  //   return this.authService.updatePassword(...Object.values(payload));
   // }
 }

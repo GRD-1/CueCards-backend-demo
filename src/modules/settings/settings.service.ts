@@ -7,15 +7,15 @@ import { SettingsInterface } from '@/modules/settings/settings.interface';
 export class SettingsService {
   constructor(private readonly settingsRepo: SettingsRepo) {}
 
-  async getSettings(userId: number): Promise<SettingsEntity | null> {
+  async getSettings(userId: string): Promise<SettingsEntity | null> {
     return this.settingsRepo.getSettings(userId);
   }
 
-  async updateSettings(userId: number, payload: Partial<SettingsInterface>): Promise<SettingsEntity> {
+  async updateSettings(userId: string, payload: Partial<SettingsInterface>): Promise<SettingsEntity> {
     return this.settingsRepo.updateSettings(userId, payload);
   }
 
-  async resetSettings(userId: number): Promise<SettingsEntity> {
+  async resetSettings(userId: string): Promise<SettingsEntity> {
     return this.settingsRepo.resetSettings(userId);
   }
 }

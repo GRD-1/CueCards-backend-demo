@@ -14,7 +14,7 @@ export class TagRespDto extends TagDto {
   readonly id: number;
   
   @ApiProperty({ description: 'user id', nullable: true, type: Number })
-  readonly authorId?: number | null;
+  readonly authorId?: string | null;
 }
 
 export class GetManyTagsDto {

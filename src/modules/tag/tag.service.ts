@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { FindManyTagsFullRespInterface, FindManyTagsInterface, TagInterface } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 import { TagRepo } from '@/modules/prisma/repositories/tag.repo';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { appConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class TagService {
   constructor(private readonly tagRepo: TagRepo) {}
 
-  async create(name: string, userId: number): Promise<number> {
+  async create(name: string, userId: string): Promise<number> {
     const existingTagId = await this.tagRepo.getIdByName(name);
     if (existingTagId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A tag with that name already exists');
@@ -31,19 +33,19 @@ export class TagService {
     return this.tagRepo.findOneById(tagId);
   }
 
-  async updateOneById(tagId: number, payload: TagInterface, userId: number): Promise<number> {
+  async updateOneById(tagId: number, payload: TagInterface, userId: string): Promise<number> {
     await this.checkEditingRights(tagId, userId);
 
     return this.tagRepo.updateOneById(tagId, payload);
   }
 
-  async delete(tagId: number, userId: number): Promise<number> {
+  async delete(tagId: number, userId: string): Promise<number> {
     await this.checkEditingRights(tagId, userId);
 
     return this.tagRepo.delete(tagId);
   }
 
-  async checkEditingRights(tagId: number, userId: number): Promise<void> {
+  async checkEditingRights(tagId: number, userId: string): Promise<void> {
     const tag = await this.tagRepo.findOneById(tagId);
     if (tag.authorId !== userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');

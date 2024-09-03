@@ -1,6 +1,6 @@
 export class StatisticsEntity {
   id: number;
-  userId: number;
+  userId: string;
   dictionaryId: number;
   totalAnswers: number;
   correctAnswers: number;

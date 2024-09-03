@@ -12,7 +12,7 @@ export class SettingsController {
   @Get()
   @ApiOperation({ summary: 'Get the application settings' })
   @ApiOkResponse({ description: 'Successful request', type: SettingsRespDto })
-  async getSettings(@UserId() userId: number): Promise<SettingsRespDto | null> {
+  async getSettings(@UserId() userId: string): Promise<SettingsRespDto | null> {
     return this.settingsService.getSettings(userId);
   }
 
@@ -20,7 +20,7 @@ export class SettingsController {
   @ApiOperation({ summary: 'Update the application settings' })
   @ApiBody({ type: UpdateSettingsDto, examples: { example1: { value: { notifications: true, hints: true } } } })
   @ApiOkResponse({ description: 'The settings have been updated successfully', type: SettingsRespDto })
-  async updateSettings(@Body() payload: UpdateSettingsDto, @UserId() userId: number): Promise<SettingsRespDto> {
+  async updateSettings(@Body() payload: UpdateSettingsDto, @UserId() userId: string): Promise<SettingsRespDto> {
     console.log('\ncontroller payload:', payload, '\n');
 
     return this.settingsService.updateSettings(userId, payload);
@@ -29,7 +29,7 @@ export class SettingsController {
   @Put('reset')
   @ApiOperation({ summary: 'Reset the application settings' })
   @ApiOkResponse({ description: 'The settings have been reset', type: SettingsRespDto })
-  async resetSettings(@UserId() userId: number): Promise<SettingsRespDto> {
+  async resetSettings(@UserId() userId: string): Promise<SettingsRespDto> {
     return this.settingsService.resetSettings(userId);
   }
 }

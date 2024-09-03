@@ -7,7 +7,7 @@ import { CardDto, CardWithSettingsDto } from '@/modules/card/card.dto';
 
 export class DictionaryDto {
   @ApiProperty({ description: 'user id', nullable: true })
-  readonly authorId: number | null;
+  readonly authorId: string | null;
 
   @ApiProperty({ description: 'dictionary name', nullable: false })
   @IsString()

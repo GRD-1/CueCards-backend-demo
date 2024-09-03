@@ -33,7 +33,7 @@ export class UserDto {
 
 export class UserRespDto {
   @ApiProperty({ description: 'id', nullable: false })
-  readonly id: number;
+  readonly id: string;
 
   @ApiProperty({ description: 'email', nullable: false })
   readonly email: string;

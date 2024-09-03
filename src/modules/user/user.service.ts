@@ -22,7 +22,7 @@ export class UserService {
   //   return user;
   // }
 
-  async findOneById(id: number): Promise<UserEntity> {
+  async findOneById(id: string): Promise<UserEntity> {
     return this.userRepo.findOneById(id);
   }
 
@@ -30,7 +30,7 @@ export class UserService {
   //   return this.userRepo.findOneByEmail(email);
   // }
 
-  async update(id: number, payload: Partial<IUser>): Promise<number> {
+  async update(id: string, payload: Partial<IUser>): Promise<string> {
     const { email } = payload;
     if (email) {
       // await this.checkEmailUniqueness(email, id);
@@ -89,7 +89,7 @@ export class UserService {
   //   return user;
   // }
 
-  public async delete(userId: number): Promise<number> {
+  public async delete(userId: string): Promise<string> {
     return this.userRepo.delete(userId);
   }
 

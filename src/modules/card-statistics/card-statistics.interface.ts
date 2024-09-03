@@ -10,7 +10,7 @@ export interface UpdateCardStatsInterface {
 
 export interface UpdateCardStatsRepoInterface {
   cardId: number;
-  userId: number;
+  userId: string;
   cardSide: CardSide;
   isAnswerCorrect: boolean;
 }

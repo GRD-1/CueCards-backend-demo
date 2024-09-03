@@ -25,7 +25,7 @@ export class UserController {
   @ApiOperation({ summary: 'Get the current user data' })
   @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async findOneById(@UserId() userId: number): Promise<UserRespDto> {
+  async findOneById(@UserId() userId: string): Promise<UserRespDto> {
     return this.userService.findOneById(userId);
   }
 
@@ -37,7 +37,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Invalid user data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async update(@UserId() userId: number, @Body() payload: UpdateUserDto): Promise<number> {
+  async update(@UserId() userId: string, @Body() payload: UpdateUserDto): Promise<string> {
     return this.userService.update(userId, payload);
   }
 
@@ -46,7 +46,7 @@ export class UserController {
   @ApiOperation({ summary: 'Delete user' })
   @ApiOkResponse({ description: 'The user has been deleted' })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async delete(@UserId() userId: number): Promise<number> {
+  async delete(@UserId() userId: string): Promise<string> {
     return this.userService.delete(userId);
   }
 }

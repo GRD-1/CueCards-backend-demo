@@ -1,19 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
-import { UserService } from '@/modules/user/user.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { EmailType, IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
 import {
   EMAIL_MSG,
   EMAIL_OCCUPIED_MSG,
-  INVALID_CODE_MSG,
-  INVALID_CREDENTIALS_MSG,
+  INVALID_CODE_ERR_MSG,
+  INVALID_CREDENTIALS_ERR_MSG,
   LOGOUT_MSG,
   RESET_PASS_EMAIL_MSG,
   SIGNUP_MSG,
-  UNCONFIRMED_EMAIL_MSG,
-  USED_PASSWORD_MSG,
+  UNCONFIRMED_EMAIL_ERR_MSG,
+  USED_PASSWORD_ERR_MSG,
 } from '@/modules/auth/auth.constants';
 import { compare, hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
@@ -63,7 +62,7 @@ export class AuthService {
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Confirmation}:${email}`);
 
     if (cachedCode !== code) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_ERR_MSG);
     }
     const user = await this.userRepo.confirm(email);
     const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
@@ -76,10 +75,10 @@ export class AuthService {
     const passwordApproved = await compare(password, user.credentials!.password);
 
     if (!passwordApproved) {
-      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, INVALID_CREDENTIALS_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, INVALID_CREDENTIALS_ERR_MSG);
     }
     if (!user.confirmed) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, UNCONFIRMED_EMAIL_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, UNCONFIRMED_EMAIL_ERR_MSG);
     }
     const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
 
@@ -141,10 +140,10 @@ export class AuthService {
     const theSamePassword = await compare(password, user.credentials!.password);
 
     if (cachedCode !== code) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_ERR_MSG);
     }
     if (theSamePassword) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, USED_PASSWORD_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, USED_PASSWORD_ERR_MSG);
     }
 
     await this.userRepo.updatePassword(user.id, hashedPass);
@@ -152,6 +151,13 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  // public async updatePassword(userId: number, oldPass: string, newPass: string): Promise<IAuthResult> {
+  //   const user = await this.userRepo.updatePassword(userId, oldPass, newPass);
+  //   const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
+  //
+  //   return { user, accessToken, refreshToken };
+  // }
 
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
   //   const { id, version, tokenId } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
@@ -171,12 +177,5 @@ export class AuthService {
   //   if (!isUndefined(time) && !isNil(time)) {
   //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
   //   }
-  // }
-  //
-  // public async updatePassword(userId: number, oldPass: string, newPass: string): Promise<IAuthResult> {
-  //   const user = await this.usersService.updatePassword(userId, oldPass, newPass);
-  //   const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
-  //
-  //   return { user, accessToken, refreshToken };
   // }
 }

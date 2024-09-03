@@ -1,5 +1,5 @@
 export class SettingsEntity {
-  userId: number;
+  userId: string;
   appLanguage: string;
   trainingLanguage: string;
   notifications: boolean;

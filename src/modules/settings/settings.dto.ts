@@ -29,8 +29,8 @@ export class SettingsDto {
 }
 
 export class SettingsRespDto extends SettingsDto {
-  @ApiProperty({ description: 'user id', nullable: true, example: 1 })
-  readonly userId: number;
+  @ApiProperty({ description: 'user id', nullable: true, example: '00000000-0000-0000-0000-000000000000' })
+  readonly userId: string;
 }
 
 export class UpdateSettingsDto extends PartialType(SettingsDto) {}

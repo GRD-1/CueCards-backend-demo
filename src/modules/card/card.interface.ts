@@ -29,7 +29,7 @@ export interface GetCardListInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  userId: number;
+  userId: string;
   value?: string;
   partOfValue?: string;
 }
@@ -66,6 +66,6 @@ export interface UpdateCardInterface {
 }
 
 export interface GetCardListConditionsInterface {
-  authorId?: number | { in: number[] };
+  authorId?: string | { in: string[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
 }

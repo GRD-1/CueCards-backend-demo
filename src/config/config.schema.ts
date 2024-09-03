@@ -8,6 +8,7 @@ export const validationSchema = Joi.object({
   APP_PORT: Joi.number().required(),
   APP_DOMAIN: Joi.string().required(),
   APP_LOG_LEVEL: Joi.string().valid(...Object.values(AppLogLevel)),
+  APP_DEFAULT_USER: Joi.string(),
   NODE_ENV: Joi.string()
     .valid(...Object.values(Environment))
     .required(),

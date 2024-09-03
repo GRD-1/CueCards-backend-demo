@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Card } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -17,12 +17,18 @@ import {
 import { CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { appConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class CardRepo {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(appConfig.KEY)
+    private appConf: ConfigType<typeof appConfig>,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(payload: CardAndTagsInterface, authorId: number): Promise<number> {
+  async create(payload: CardAndTagsInterface, authorId: string): Promise<number> {
     const { tags, ...newCardData } = payload;
     let newCard: Card;
 
@@ -93,7 +99,7 @@ export class CardRepo {
     const { userId, byUser, value, partOfValue } = args;
     const searchConditions: GetCardListConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? userId : { in: [userId, 0] };
+    searchConditions.authorId = byUser ? userId : { in: [userId, this.appConf.defaultUserId] };
 
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
@@ -193,7 +199,7 @@ export class CardRepo {
     });
   }
 
-  async hide(cardId: number, userId: number): Promise<number> {
+  async hide(cardId: number, userId: string): Promise<number> {
     const deletedCard = await this.prisma.cardIsHidden
       .upsert({
         where: {
@@ -218,7 +224,7 @@ export class CardRepo {
     return deletedCard.cardId;
   }
 
-  async display(cardId: number, userId: number): Promise<number> {
+  async display(cardId: number, userId: string): Promise<number> {
     const deletedCard = await this.prisma.cardIsHidden
       .delete({
         where: {

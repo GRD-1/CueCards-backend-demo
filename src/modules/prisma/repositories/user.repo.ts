@@ -48,7 +48,7 @@ export class UserRepo {
     return user || null;
   }
 
-  async findOneById(id: number): Promise<UserEntity> {
+  async findOneById(id: string): Promise<UserEntity> {
     return this.prisma.user.findFirstOrThrow({
       select: USER_SELECT_OPTIONS,
       where: {
@@ -57,7 +57,7 @@ export class UserRepo {
     });
   }
 
-  async update(id: number, payload: Partial<IUser>): Promise<UserEntity> {
+  async update(id: string, payload: Partial<IUser>): Promise<UserEntity> {
     return this.prisma.user.update({
       select: USER_SELECT_OPTIONS,
       data: payload,
@@ -73,7 +73,7 @@ export class UserRepo {
     });
   }
 
-  async updatePassword(userId: number, newPass: string, oldPass?: string): Promise<CredentialsEntity> {
+  async updatePassword(userId: string, newPass: string, oldPass?: string): Promise<CredentialsEntity> {
     return this.prisma.credentials.upsert({
       where: { userId },
       update: {
@@ -90,13 +90,7 @@ export class UserRepo {
     });
   }
 
-  async getCredentials(userId: number): Promise<CredentialsEntity> {
-    return this.prisma.credentials.findUniqueOrThrow({
-      where: { userId },
-    });
-  }
-
-  async delete(id: number): Promise<number> {
+  async delete(id: string): Promise<string> {
     const userId = await this.prisma.user.delete({
       select: { id: true },
       where: { id },
