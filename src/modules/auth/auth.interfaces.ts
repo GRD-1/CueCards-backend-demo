@@ -1,5 +1,3 @@
-import { UserWithCredentialsEntity } from '@/modules/user/user.entity';
-
 export enum EmailType {
   Confirmation = 'confirm',
   Reset = 'reset'
@@ -11,7 +9,13 @@ export interface IAuthResult {
 }
 
 export interface IGenerateTokenArgs {
-  user: UserWithCredentialsEntity;
+  userId: string;
+  version: number;
   domain?: string | null;
   tokenId?: string;
+}
+
+export interface IUpdatePasswordArgs extends IAuthResult {
+  currentPassword: string;
+  newPassword: string;
 }

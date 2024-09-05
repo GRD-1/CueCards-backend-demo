@@ -1,6 +1,5 @@
 export const USER_SELECT_OPTIONS = {
   id: true,
-  uuid: true,
   email: true,
   nickname: true,
   avatar: true,
@@ -9,7 +8,6 @@ export const USER_SELECT_OPTIONS = {
 
 export const USER_WITH_CREDENTIALS_SELECT_OPTIONS = {
   id: true,
-  uuid: true,
   email: true,
   nickname: true,
   avatar: true,

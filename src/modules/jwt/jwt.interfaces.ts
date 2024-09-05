@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { UserWithCredentialsEntity } from '@/modules/user/user.entity';
+import { JwtPayload } from 'jsonwebtoken';
 
 export enum TokenTypeEnum {
   ACCESS = 'access',
@@ -9,7 +9,7 @@ export enum TokenTypeEnum {
 }
 
 export interface ITokenPayload {
-  userUuid: string;
+  userId: string;
   version: number;
   tokenId: string;
 }
@@ -27,8 +27,16 @@ export interface IVerifyTokenArgs {
 }
 
 export interface IGenerateTokenArgs {
-  user: UserWithCredentialsEntity;
+  userId: string;
+  version: number;
   tokenType: TokenTypeEnum;
   domain?: string | null;
   tokenId?: string;
+}
+
+export interface CustomJwtPayload extends JwtPayload {
+  iss: string;
+  sub: string;
+  exp: number;
+  jti: string;
 }

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
-import { EmailType, IAuthResult, IGenerateTokenArgs } from '@/modules/auth/auth.interfaces';
+import { EmailType, IAuthResult, IGenerateTokenArgs, IUpdatePasswordArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
 import {
   EMAIL_MSG,
@@ -64,25 +64,21 @@ export class AuthService {
     if (cachedCode !== code) {
       throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_ERR_MSG);
     }
-    const user = await this.userRepo.confirm(email);
-    const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
+    const { id, credentials } = await this.userRepo.confirm(email);
 
-    return { accessToken, refreshToken };
+    return this.generateAuthTokens({ userId: id, version: credentials!.version });
   }
 
   public async signIn(email: string, password: string, domain?: string): Promise<IAuthResult> {
-    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
-    const passwordApproved = await compare(password, user.credentials!.password);
+    const { id, confirmed, credentials } = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const version = credentials!.version;
 
-    if (!passwordApproved) {
-      throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, INVALID_CREDENTIALS_ERR_MSG);
-    }
-    if (!user.confirmed) {
+    await this.validatePassword(credentials!.password, password);
+    if (!confirmed) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, UNCONFIRMED_EMAIL_ERR_MSG);
     }
-    const [accessToken, refreshToken] = await this.generateAuthTokens({ user, domain });
 
-    return { accessToken, refreshToken };
+    return this.generateAuthTokens({ userId: id, version, domain });
   }
 
   public async sendCode(email: string, type: EmailType): Promise<void> {
@@ -99,11 +95,13 @@ export class AuthService {
     await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as any);
   }
 
-  private async generateAuthTokens(args: IGenerateTokenArgs): Promise<[string, string]> {
-    return Promise.all([
+  private async generateAuthTokens(args: IGenerateTokenArgs): Promise<IAuthResult> {
+    const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.ACCESS }),
       this.jwtService.generateToken({ ...args, tokenType: TokenTypeEnum.REFRESH }),
     ]);
+
+    return { accessToken, refreshToken };
   }
 
   public async logout(accessToken: string, refreshToken: string): Promise<string> {
@@ -134,30 +132,55 @@ export class AuthService {
   }
 
   public async confirmReset(email: string, code: string, password: string): Promise<IAuthResult> {
-    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const { id: userId, credentials } = await this.userRepo.findOneWithCredentialsByEmail(email);
+    const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Reset}:${email}`);
-    const hashedPass = await hash(password, 10);
-    const theSamePassword = await compare(password, user.credentials!.password);
+
+    await this.validatePassword(storedPassword, password, true);
+    const newPasswordHash = await this.validatePassword(storedLastPassword, password, true);
 
     if (cachedCode !== code) {
       throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_ERR_MSG);
     }
-    if (theSamePassword) {
-      throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, USED_PASSWORD_ERR_MSG);
-    }
 
-    await this.userRepo.updatePassword(user.id, hashedPass);
-    const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
+    const { version } = await this.userRepo.updatePassword(userId, storedPassword, newPasswordHash);
 
-    return { accessToken, refreshToken };
+    return this.generateAuthTokens({ userId, version });
   }
 
-  // public async updatePassword(userId: number, oldPass: string, newPass: string): Promise<IAuthResult> {
-  //   const user = await this.userRepo.updatePassword(userId, oldPass, newPass);
-  //   const [accessToken, refreshToken] = await this.generateAuthTokens({ user });
-  //
-  //   return { user, accessToken, refreshToken };
-  // }
+  public async updatePassword(args: IUpdatePasswordArgs): Promise<IAuthResult> {
+    const { accessToken: currentAccToken, refreshToken: currentRefToken, currentPassword, newPassword } = args;
+    const { sub: userId, tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(currentAccToken);
+    const { tokenId: refreshId, exp: refExp } = await this.jwtService.decodeJwt(currentRefToken);
+
+    const { credentials } = await this.userRepo.findOneById(userId);
+    const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
+
+    const oldPasswordHash = await this.validatePassword(storedPassword, currentPassword);
+    const newPasswordHash = await this.validatePassword(storedLastPassword, newPassword, true);
+
+    const { version } = await this.userRepo.updatePassword(userId, oldPasswordHash, newPasswordHash);
+
+    await this.blacklistToken(accessId, accExp);
+    await this.blacklistToken(refreshId, refExp);
+
+    return this.generateAuthTokens({ userId, version });
+  }
+
+  public async validatePassword(storedPassword: string, password: string, isPasswordNew?: boolean): Promise<string> {
+    const passwordHash = await hash(password, 10);
+    const isEqual = await compare(password, storedPassword);
+    const invalidPassword = isPasswordNew ? isEqual : !isEqual;
+    if (invalidPassword) {
+      if (isPasswordNew) {
+        throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, USED_PASSWORD_ERR_MSG);
+      } else {
+        throw new CueCardsError(CCBK_ERROR_CODES.INVALID_CREDENTIALS, INVALID_CREDENTIALS_ERR_MSG);
+      }
+    }
+
+    return passwordHash;
+  }
 
   // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
   //   const { id, version, tokenId } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);

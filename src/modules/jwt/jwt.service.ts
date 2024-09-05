@@ -4,6 +4,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { appConfig, jwtConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import {
+  CustomJwtPayload,
   IGenerateTokenArgs,
   IGenerateTokenAsyncArgs,
   ITokenPayload,
@@ -26,16 +27,16 @@ export class JwtService {
   ) {}
 
   public async generateToken(args: IGenerateTokenArgs): Promise<string> {
-    const { user, tokenType, domain, tokenId } = args;
+    const { userId, version, tokenType, domain, tokenId } = args;
     const payload: ITokenPayload = {
-      userUuid: user.uuid,
-      version: user.credentials!.version!,
+      userId,
+      version,
       tokenId: tokenId ?? v4(),
     };
     const secret = this.jwtConf.privateKey;
     const options: jwt.SignOptions = {
       issuer: this.appConf.id,
-      subject: user.email,
+      subject: userId,
       audience: domain ?? this.appConf.domain,
       expiresIn: this.jwtConf[tokenType].time,
       algorithm: 'RS256',
@@ -44,7 +45,7 @@ export class JwtService {
     return JwtService.signJwt({ payload, secret, options });
   }
 
-  public async verifyToken(token: string, tokenType: TokenTypeEnum): Promise<JwtPayload> {
+  public async verifyToken(token: string, tokenType: TokenTypeEnum): Promise<CustomJwtPayload> {
     const secret = this.jwtConf.publicKey;
     const options: jwt.VerifyOptions = {
       issuer: this.appConf.id,
@@ -64,14 +65,14 @@ export class JwtService {
     });
   }
 
-  public async decodeJwt(token: string): Promise<JwtPayload> {
+  public async decodeJwt(token: string): Promise<CustomJwtPayload> {
     const jwtPayload = jwt.decode(token);
 
     if (typeof jwtPayload === 'string' || jwtPayload === null) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
     }
 
-    return jwtPayload;
+    return jwtPayload as CustomJwtPayload;
   }
 
   private static async signJwt(args: IGenerateTokenAsyncArgs): Promise<string> {
@@ -94,11 +95,11 @@ export class JwtService {
     });
   }
 
-  private static async verifyJwt<T extends ITokenPayload>(args: IVerifyTokenArgs): Promise<JwtPayload> {
+  private static async verifyJwt(args: IVerifyTokenArgs): Promise<CustomJwtPayload> {
     const { token, secret, options } = args;
 
     return new Promise((resolve, rejects) => {
-      jwt.verify(token, secret, options, (error, payload: T) => {
+      jwt.verify(token, secret, options, (error, payload: CustomJwtPayload) => {
         if (error) {
           rejects(error);
 

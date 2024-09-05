@@ -103,12 +103,12 @@ export class AuthController {
     return this.authService.confirmReset(payload.email, payload.code, payload.password);
   }
 
-  // @Patch('update-password')
-  // @ApiOperation({ summary: 'Update a user password' })
-  // @ApiBody({ type: UpdatePasswordDto })
-  // @ApiOkResponse({ description: 'The user password has been updated' })
-  // @ApiBadRequestResponse({ description: 'Invalid password', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
-  // async updatePassword(@UserId() userId: number, @Body() payload: UpdatePasswordDto): Promise<TokensDto> {
-  //   return this.authService.updatePassword(...Object.values(payload));
-  // }
+  @Patch('update-password')
+  @ApiOperation({ summary: 'Update a user password' })
+  @ApiBody({ type: UpdatePasswordDto })
+  @ApiOkResponse({ description: 'The user password has been updated' })
+  @ApiBadRequestResponse({ description: 'Invalid password', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
+  async updatePassword(@Body() payload: UpdatePasswordDto): Promise<TokensDto> {
+    return this.authService.updatePassword(payload);
+  }
 }

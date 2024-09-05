@@ -43,11 +43,11 @@ export class SignInDto {
 
 export class TokensDto {
   @ApiProperty({ description: 'access token', nullable: false })
-  @IsString()
+  @IsJWT()
   readonly accessToken: string;
 
   @ApiProperty({ description: 'refresh token', nullable: false })
-  @IsString()
+  @IsJWT()
   readonly refreshToken: string;
 }
 
@@ -58,6 +58,7 @@ export abstract class SendEmailDto extends EmailDto {
 }
 
 export abstract class ConfirmResetDto extends ConfirmDto {
+  @ApiProperty({ description: 'new password', nullable: false })
   @IsString()
   @Length(8, 35)
   @Matches(PASSWORD_REGEX, { message: INVALID_PASSWORD_ERR_MSG })
@@ -65,11 +66,13 @@ export abstract class ConfirmResetDto extends ConfirmDto {
 }
 
 export abstract class UpdatePasswordDto extends TokensDto {
+  @ApiProperty({ description: 'current password', nullable: false })
   @IsString()
   @Length(8, 35)
   @Matches(PASSWORD_REGEX, { message: INVALID_PASSWORD_ERR_MSG })
-  readonly oldPassword: string;
+  readonly currentPassword: string;
 
+  @ApiProperty({ description: 'new password', nullable: false })
   @IsString()
   @Length(8, 35)
   @Matches(PASSWORD_REGEX, { message: INVALID_PASSWORD_ERR_MSG })

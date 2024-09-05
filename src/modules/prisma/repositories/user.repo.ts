@@ -48,9 +48,9 @@ export class UserRepo {
     return user || null;
   }
 
-  async findOneById(id: string): Promise<UserEntity> {
+  async findOneById(id: string): Promise<UserWithCredentialsEntity> {
     return this.prisma.user.findFirstOrThrow({
-      select: USER_SELECT_OPTIONS,
+      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
       where: {
         id,
       },
@@ -73,19 +73,19 @@ export class UserRepo {
     });
   }
 
-  async updatePassword(userId: string, newPass: string, oldPass?: string): Promise<CredentialsEntity> {
+  async updatePassword(userId: string, currentPassword: string, newPassword: string): Promise<CredentialsEntity> {
     return this.prisma.credentials.upsert({
       where: { userId },
       update: {
         version: { increment: 1 },
-        password: newPass,
-        lastPassword: oldPass,
+        password: newPassword,
+        lastPassword: currentPassword,
       },
       create: {
         userId,
         version: 1,
-        password: newPass,
-        lastPassword: oldPass,
+        password: newPassword,
+        lastPassword: currentPassword,
       },
     });
   }

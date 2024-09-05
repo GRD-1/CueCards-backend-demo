@@ -1,6 +1,5 @@
 export class UserEntity {
   id: string;
-  uuid: string;
   email: string;
   nickname: string;
   avatar: string | null;
