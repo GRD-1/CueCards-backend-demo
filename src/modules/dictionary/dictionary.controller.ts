@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -25,9 +26,12 @@ import {
 } from '@/modules/dictionary/dictionary.dto';
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
+import { AuthGuard } from '@/guards/auth.guard';
 import { DictionaryService } from './dictionary.service';
 
 @ApiTags('dictionaries')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('dictionaries')
 export class DictionaryController {
   constructor(private readonly dictionaryService: DictionaryService) {}

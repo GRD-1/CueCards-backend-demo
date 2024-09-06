@@ -13,6 +13,8 @@ import {
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { v4 } from 'uuid';
+import dayjs from 'dayjs';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class JwtService {
@@ -23,6 +25,8 @@ export class JwtService {
     private jwtConf: ConfigType<typeof jwtConfig>,
     @Inject(appConfig.KEY)
     private appConf: ConfigType<typeof appConfig>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   public async generateToken(args: IGenerateTokenArgs): Promise<string> {
@@ -106,5 +110,23 @@ export class JwtService {
         resolve(payload);
       });
     });
+  }
+
+  public async blacklistToken(tokenId: string, exp?: number): Promise<void> {
+    const now = dayjs().unix();
+    const expiration = exp || dayjs().unix();
+    const ttl = expiration - now;
+
+    if (ttl > 0) {
+      await this.cacheManager.set(`blacklist:${tokenId}`, now.toString(), { ttl } as any);
+    }
+  }
+
+  public async isTokenBlacklisted(tokenId: string): Promise<void> {
+    const tokenValue = await this.cacheManager.get(`blacklist:${tokenId}`);
+
+    if (tokenValue) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    }
   }
 }

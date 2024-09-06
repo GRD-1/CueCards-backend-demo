@@ -1,10 +1,13 @@
-import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SettingsRespDto, UpdateSettingsDto } from '@/modules/settings/settings.dto';
-import { Body, Controller, Get, Patch, Put } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Put, UseGuards } from '@nestjs/common';
 import { SettingsService } from '@/modules/settings/settings.service';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 
 @ApiTags('settings')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('settings')
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}

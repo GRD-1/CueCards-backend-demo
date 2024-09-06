@@ -25,7 +25,6 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { UserModule } from './modules/user/user.module';
 import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
-import { AuthMiddleware } from './middleware/auth.middleware';
 import { JwtModule } from './modules/jwt/jwt.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CacheService } from './modules/cache/cache.service';
@@ -66,6 +65,5 @@ import { CacheService } from './modules/cache/cache.service';
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(RequestLoggingMiddleware, ResponseLoggingMiddleware).forRoutes('*');
-    // consumer.apply(AuthMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

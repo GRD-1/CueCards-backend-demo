@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -12,16 +12,17 @@ import {
 import { UpdateUserDto, UserRespDto } from '@/modules/user/user.dto';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 import { UserService } from './user.service';
 
 @ApiTags('user')
 @ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Get the current user data' })
   @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
@@ -30,7 +31,6 @@ export class UserController {
   }
 
   @Patch('update')
-  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Update a user data' })
   @ApiBody({ type: UpdateUserDto, examples: { example1: { value: { nickname: 'myNewNickName' } } } })
   @ApiOkResponse({ description: 'The user has been updated. The id:', schema: { example: 123 } })
@@ -42,7 +42,6 @@ export class UserController {
   }
 
   @Delete('update-password')
-  // @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'Delete user' })
   @ApiOkResponse({ description: 'The user has been deleted' })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })

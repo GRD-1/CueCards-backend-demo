@@ -26,11 +26,10 @@ import {
   UpdatePasswordDto,
 } from '@/modules/auth/auth.dto';
 import { AuthGuard } from '@/guards/auth.guard';
-import { TokenPayload } from '@/decorators/token.decorator';
+import { TokenPayload } from '@/decorators/token-payload.decorator';
 import { CustomJwtPayload } from '@/modules/jwt/jwt.interfaces';
 
 @ApiTags('auth')
-@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -125,6 +124,7 @@ export class AuthController {
   @Post('refresh-tokens')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a new couple of tokens' })
   @ApiBody({ type: UpdatePasswordDto })
   @ApiOkResponse({ description: 'The tokens have been refreshed' })

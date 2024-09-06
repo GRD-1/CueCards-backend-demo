@@ -4,11 +4,10 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { RequestInterface } from '@/types/request.type';
-import { AuthService } from '@/modules/auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService, private readonly authService: AuthService) {}
+  constructor(private readonly jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<RequestInterface>();
@@ -23,7 +22,7 @@ export class AuthGuard implements CanActivate {
 
     if (token) {
       const tokenPayload = await this.jwtService.verifyToken(token, TokenTypeEnum.ACCESS);
-      await this.authService.isTokenBlacklisted(tokenPayload.jti);
+      await this.jwtService.isTokenBlacklisted(tokenPayload.jti);
       request.user = { id: tokenPayload.sub };
       request.tokenPayload = tokenPayload;
 

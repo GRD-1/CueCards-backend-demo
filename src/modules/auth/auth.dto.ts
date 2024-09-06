@@ -1,15 +1,20 @@
 import { IsEmail, IsIn, IsJWT, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator';
-import { PASSWORD_REGEX } from '@/modules/user/user.constants';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { UserDto } from '@/modules/user/user.dto';
 import { EmailType } from '@/modules/auth/auth.interfaces';
-import { INVALID_PASSWORD_ERR_MSG } from '@/modules/auth/auth.constants';
+import { INVALID_PASSWORD_ERR_MSG, PASSWORD_REGEX } from '@/modules/auth/auth.constants';
 
 export class SignUpDto extends UserDto {
   @ApiProperty({ description: 'application domain', nullable: true })
   @IsOptional()
   readonly domain?: string;
+
+  @ApiProperty({ description: 'user password', nullable: false, example: 'Password88' })
+  @IsString()
+  @Length(8, 35)
+  @Matches(PASSWORD_REGEX, { message: INVALID_PASSWORD_ERR_MSG })
+  readonly password: string;
 }
 
 export abstract class EmailDto {

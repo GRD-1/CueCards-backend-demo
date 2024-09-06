@@ -1,3 +1,5 @@
+export const PASSWORD_REGEX = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+
 export const SIGNUP_MSG = 'The user has been created. Check you email to finish the registration';
 export const EMAIL_OCCUPIED_MSG = 'This email address is already occupied';
 export const EMAIL_MSG = 'The email has been sent';

@@ -23,7 +23,6 @@ import { MailerService } from '@/modules/mailer/mailer.service';
 import { emailConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
-import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
@@ -111,20 +110,10 @@ export class AuthService {
     const { tokenId: refreshId, exp: refExp } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
     const { tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(accessToken);
 
-    await this.blacklistToken(refreshId, refExp);
-    await this.blacklistToken(accessId, accExp);
+    await this.jwtService.blacklistToken(refreshId, refExp);
+    await this.jwtService.blacklistToken(accessId, accExp);
 
     return LOGOUT_MSG;
-  }
-
-  private async blacklistToken(tokenId: string, exp?: number): Promise<void> {
-    const now = dayjs().unix();
-    const expiration = exp || dayjs().unix();
-    const ttl = expiration - now;
-
-    if (ttl > 0) {
-      await this.cacheManager.set(`blacklist:${tokenId}`, now.toString(), { ttl } as any);
-    }
   }
 
   public async resetPassword(email: string): Promise<string> {
@@ -164,8 +153,8 @@ export class AuthService {
 
     const { version } = await this.userRepo.updatePassword(userId, oldPasswordHash, newPasswordHash);
 
-    await this.blacklistToken(accessId, accExp);
-    await this.blacklistToken(refreshId, refExp);
+    await this.jwtService.blacklistToken(accessId, accExp);
+    await this.jwtService.blacklistToken(refreshId, refExp);
 
     return this.generateAuthTokens({ userId, version });
   }
@@ -194,18 +183,10 @@ export class AuthService {
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
     }
     if (user.credentials.version !== version) {
-      await this.blacklistToken(jti, exp);
+      await this.jwtService.blacklistToken(jti, exp);
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
     }
 
     return this.generateAuthTokens({ userId, version });
-  }
-
-  public async isTokenBlacklisted(tokenId: string): Promise<void> {
-    const tokenValue = await this.cacheManager.get(`blacklist:${tokenId}`);
-
-    if (tokenValue) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
-    }
   }
 }

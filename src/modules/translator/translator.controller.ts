@@ -1,8 +1,11 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@/guards/auth.guard';
 import { TranslatorService } from './translator.service';
 
 @ApiTags('translator')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('translator')
 export class TranslatorController {
   constructor(private readonly translatorService: TranslatorService) {}

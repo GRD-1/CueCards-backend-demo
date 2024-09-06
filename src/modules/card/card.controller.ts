@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -23,11 +37,12 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 import { CardService } from './card.service';
 
 @ApiTags('cards')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
@@ -111,6 +126,7 @@ export class CardController {
   }
 
   @Post(':cardId/hide')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Hide a card from the training list' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card has been hidden. The id:', schema: { example: 123 } })
@@ -120,6 +136,7 @@ export class CardController {
   }
 
   @Post(':cardId/display')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Display a card in the training list' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card is now displayed in the training list. The id:', schema: { example: 123 } })

@@ -2,7 +2,6 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, Matches } from 'clas
 import { ApiProperty } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
-import { PASSWORD_REGEX } from '@/modules/user/user.constants';
 
 export class UserDto {
   @ApiProperty({ description: 'user email', nullable: false })
@@ -21,14 +20,6 @@ export class UserDto {
   @IsString()
   @IsOptional()
   readonly avatar: string | null;
-
-  @ApiProperty({ description: 'user password', nullable: false, example: 'Password88' })
-  @IsString()
-  @Length(8, 35)
-  @Matches(PASSWORD_REGEX, {
-    message: 'Password requires a lowercase letter, an uppercase letter, and a number or symbol',
-  })
-  readonly password: string;
 }
 
 export class UserRespDto {
@@ -49,13 +40,3 @@ export class UserRespDto {
 }
 
 export class UpdateUserDto extends PartialType(UserDto) {}
-
-export class UpdatePasswordDto {
-  @ApiProperty({ description: 'password', nullable: false })
-  @IsNotEmpty()
-  readonly password: string;
-
-  @ApiProperty({ description: 'new password', nullable: false })
-  @IsNotEmpty()
-  readonly newPassword: string;
-}
