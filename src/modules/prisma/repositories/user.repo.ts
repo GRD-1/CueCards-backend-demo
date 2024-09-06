@@ -48,7 +48,16 @@ export class UserRepo {
     return user || null;
   }
 
-  async findOneById(id: string): Promise<UserWithCredentialsEntity> {
+  async findOneById(id: string): Promise<UserWithCredentialsEntity | null> {
+    return this.prisma.user.findFirst({
+      select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findOneByIdOrThrow(id: string): Promise<UserWithCredentialsEntity> {
     return this.prisma.user.findFirstOrThrow({
       select: USER_WITH_CREDENTIALS_SELECT_OPTIONS,
       where: {

@@ -12,3 +12,4 @@ export const INVALID_CREDENTIALS_ERR_MSG = 'Invalid credentials';
 export const UNCONFIRMED_EMAIL_ERR_MSG = 'Unconfirmed email';
 export const USED_PASSWORD_ERR_MSG = 'You already used this password before';
 export const INVALID_PASSWORD_ERR_MSG = 'Password requires a lowercase letter, an uppercase letter, and a number';
+export const SUSPICIOUS_TOKEN_ERR_MSG = 'Suspicious token! Invalid user id!';

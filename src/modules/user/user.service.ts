@@ -23,7 +23,7 @@ export class UserService {
   // }
 
   async findOneById(id: string): Promise<UserEntity> {
-    return this.userRepo.findOneById(id);
+    return this.userRepo.findOneByIdOrThrow(id);
   }
 
   // async findOneByEmail(email: string): Promise<UserEntity | null> {

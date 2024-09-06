@@ -66,6 +66,6 @@ import { CacheService } from './modules/cache/cache.service';
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(RequestLoggingMiddleware, ResponseLoggingMiddleware).forRoutes('*');
-    consumer.apply(AuthMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+    // consumer.apply(AuthMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

@@ -1,36 +1,35 @@
-import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Response } from 'express';
-import { JwtPayload, verify } from 'jsonwebtoken';
-import { jwtConfig } from '@/config/configs';
-import { ExpressRequestInterface } from '@/types/express-request.type';
-import { UserService } from '@/modules/user/user.service';
-import { ConfigType } from '@nestjs/config';
+import { RequestInterface } from '@/types/request.type';
+import { JwtService } from '@/modules/jwt/jwt.service';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(
-    @Inject(jwtConfig.KEY)
-    private jwtConf: ConfigType<typeof jwtConfig>,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
 
-  async use(req: ExpressRequestInterface, res: Response, next: NextFunction): Promise<void> {
-    if (!req.headers.authorization) {
-      req.user = null;
+  async use(req: RequestInterface, res: Response, next: NextFunction): Promise<void> {
+    const authorizationHeader = req.headers.authorization;
+
+    if (!authorizationHeader) {
       next();
 
       return;
     }
-    const token = req.headers.authorization.split(' ')[1];
-    const secret = this.jwtConf.privateKey;
-    try {
-      const decodeToken = verify(token, secret) as JwtPayload;
-      if (decodeToken.id) {
-        req.user = await this.userService.findOneById(decodeToken.id);
-      }
-    } catch (err) {
-      req.user = null;
-    }
+
+    const parts = authorizationHeader.split(' ');
+    // if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+    //   req.token = parts[1];
+    // } else {
+    //   req.token = authorizationHeader;
+    // }
+    //
+    // try {
+    //   req.tokenPayload = await this.jwtService.decodeJwt(req.token);
+    // } catch (err) {
+    //   throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    // }
     next();
   }
 }

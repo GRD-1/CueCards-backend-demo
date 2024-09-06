@@ -1,13 +1,11 @@
 import * as jwt from 'jsonwebtoken';
-import { JwtPayload } from 'jsonwebtoken';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { appConfig, jwtConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import {
-  CustomJwtPayload,
+  CustomJwtPayload, ICustomFields,
   IGenerateTokenArgs,
   IGenerateTokenAsyncArgs,
-  ITokenPayload,
   IVerifyTokenArgs,
   TokenTypeEnum,
 } from '@/modules/jwt/jwt.interfaces';
@@ -28,10 +26,8 @@ export class JwtService {
 
   public async generateToken(args: IGenerateTokenArgs): Promise<string> {
     const { userId, version, tokenType, domain, tokenId } = args;
-    const payload: ITokenPayload = {
-      userId,
+    const customFields: ICustomFields = {
       version,
-      tokenId: tokenId ?? v4(),
     };
     const secret = this.jwtConf.privateKey;
     const options: jwt.SignOptions = {
@@ -40,9 +36,10 @@ export class JwtService {
       audience: domain ?? this.appConf.domain,
       expiresIn: this.jwtConf[tokenType].time,
       algorithm: 'RS256',
+      jwtid: tokenId ?? v4(),
     };
 
-    return JwtService.signJwt({ payload, secret, options });
+    return JwtService.signJwt({ customFields, secret, options });
   }
 
   public async verifyToken(token: string, tokenType: TokenTypeEnum): Promise<CustomJwtPayload> {
@@ -76,10 +73,10 @@ export class JwtService {
   }
 
   private static async signJwt(args: IGenerateTokenAsyncArgs): Promise<string> {
-    const { payload, secret, options } = args;
+    const { customFields, secret, options } = args;
 
     return new Promise((resolve, reject) => {
-      jwt.sign(payload, secret, options, (error, token) => {
+      jwt.sign(customFields, secret, options, (error, token) => {
         if (error) {
           reject(error);
 

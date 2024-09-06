@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
-import { TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
+import { CustomJwtPayload, TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { EmailType, IAuthResult, IGenerateTokenArgs, IUpdatePasswordArgs } from '@/modules/auth/auth.interfaces';
 import { IUserWithPassword } from '@/modules/user/user.interface';
 import {
@@ -10,7 +10,7 @@ import {
   INVALID_CREDENTIALS_ERR_MSG,
   LOGOUT_MSG,
   RESET_PASS_EMAIL_MSG,
-  SIGNUP_MSG,
+  SIGNUP_MSG, SUSPICIOUS_TOKEN_ERR_MSG,
   UNCONFIRMED_EMAIL_ERR_MSG,
   USED_PASSWORD_ERR_MSG,
 } from '@/modules/auth/auth.constants';
@@ -26,6 +26,8 @@ import dayjs from 'dayjs';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
@@ -58,7 +60,7 @@ export class AuthService {
     return EMAIL_MSG;
   }
 
-  public async confirm(email: string, code: string): Promise<IAuthResult> {
+  public async confirmEmail(email: string, code: string): Promise<IAuthResult> {
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Confirmation}:${email}`);
 
     if (cachedCode !== code) {
@@ -153,7 +155,7 @@ export class AuthService {
     const { sub: userId, tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(currentAccToken);
     const { tokenId: refreshId, exp: refExp } = await this.jwtService.decodeJwt(currentRefToken);
 
-    const { credentials } = await this.userRepo.findOneById(userId);
+    const { credentials } = await this.userRepo.findOneByIdOrThrow(userId);
     const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
 
     const oldPasswordHash = await this.validatePassword(storedPassword, currentPassword);
@@ -182,23 +184,27 @@ export class AuthService {
     return passwordHash;
   }
 
-  // public async refreshTokenAccess(refreshToken: string, domain?: string): Promise<IAuthResult> {
-  //   const { id, version, tokenId } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
-  //   await this.checkIfTokenIsBlacklisted(id, tokenId);
-  //   const user = await this.usersService.findOneById(id);
-  //   if (isUndefined(user) || isNil(user) || user?.credentials?.version !== version) {
-  //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
-  //   }
-  //   const [accessToken, newRefreshToken] = await this.generateAuthTokens({ user, domain, tokenId });
-  //
-  //   return { user, accessToken, refreshToken: newRefreshToken };
-  // }
-  //
-  // private async checkIfTokenIsBlacklisted(userId: number, tokenId: string): Promise<void> {
-  //   const time = await this.cacheManager.get(`blacklist:${userId}:${tokenId}`);
-  //
-  //   if (!isUndefined(time) && !isNil(time)) {
-  //     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
-  //   }
-  // }
+  public async refreshTokens(tokenPayload: CustomJwtPayload): Promise<IAuthResult> {
+    const { sub: userId, version, jti, exp } = tokenPayload;
+
+    const user = await this.userRepo.findOneById(userId);
+    if (!user || !user.credentials) {
+      this.logger.error(SUSPICIOUS_TOKEN_ERR_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    }
+    if (user.credentials.version !== version) {
+      await this.blacklistToken(jti, exp);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    }
+
+    return this.generateAuthTokens({ userId, version });
+  }
+
+  public async isTokenBlacklisted(tokenId: string): Promise<void> {
+    const tokenValue = await this.cacheManager.get(`blacklist:${tokenId}`);
+
+    if (tokenValue) {
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+    }
+  }
 }

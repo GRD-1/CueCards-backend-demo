@@ -8,14 +8,12 @@ export enum TokenTypeEnum {
   RESET_PASSWORD = 'resetPassword'
 }
 
-export interface ITokenPayload {
-  userId: string;
+export interface ICustomFields {
   version: number;
-  tokenId: string;
 }
 
 export interface IGenerateTokenAsyncArgs {
-  payload: ITokenPayload;
+  customFields: ICustomFields;
   secret: string;
   options: jwt.SignOptions;
 }
@@ -39,4 +37,5 @@ export interface CustomJwtPayload extends JwtPayload {
   sub: string;
   exp: number;
   jti: string;
+  version: number;
 }
