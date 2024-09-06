@@ -8,10 +8,7 @@ import { AuthService } from '@/modules/auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly jwtService: JwtService, private readonly authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<RequestInterface>();
@@ -22,7 +19,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const parts = authorizationHeader.split(' ');
-    const token = (parts.length === 2 && parts[0].toLowerCase() === 'bearer') ? parts[1] : null;
+    const token = parts.length === 2 && parts[0].toLowerCase() === 'bearer' ? parts[1] : null;
 
     if (token) {
       const tokenPayload = await this.jwtService.verifyToken(token, TokenTypeEnum.ACCESS);

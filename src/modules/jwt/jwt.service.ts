@@ -3,7 +3,8 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { appConfig, jwtConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import {
-  CustomJwtPayload, ICustomFields,
+  CustomJwtPayload,
+  ICustomFields,
   IGenerateTokenArgs,
   IGenerateTokenAsyncArgs,
   IVerifyTokenArgs,
