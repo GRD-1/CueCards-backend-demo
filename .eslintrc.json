@@ -5,11 +5,11 @@
     "import"
   ],
   "extends": [
-    "airbnb",
-    "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "eslint:recommended",
+    "plugin:prettier/recommended"
   ],
   "settings": {
     "import/parsers": {
@@ -27,7 +27,8 @@
   "env": {
     "es2020": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "rules": {
     // broken rules
@@ -79,6 +80,13 @@
     // Nest specific
     "comma-dangle": ["error", "always-multiline"],
     "arrow-body-style": "off",
-    "new-cap": ["error", { "newIsCap": false, "capIsNew": false }]
+    "new-cap": ["error", { "newIsCap": false, "capIsNew": false }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }
+    ],
+
+    // eslint-plugin-prettier rules
+    "prettier/prettier": ["error", { "printWidth": 120, "trailingComma": "all" }]
   }
 }
