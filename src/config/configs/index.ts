@@ -6,3 +6,4 @@ export * from './postgres.config';
 export * from './prisma.config';
 export * from './redis.config';
 export * from './cache.config';
+export * from './user.config';

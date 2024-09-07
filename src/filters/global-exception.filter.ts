@@ -20,7 +20,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         responsePayload = { ...CCBK_ERR_TO_HTTP[(exception as CueCardsError).code] };
         responsePayload.errorMsg = `${responsePayload.errorMsg}: ${(exception as CueCardsError).message}`;
 
-        this.logger.error(exception);
+        this.logger.error(exception.stack);
         break;
 
       case exception instanceof HttpException:
@@ -29,7 +29,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         if (responsePayload.statusCode === HttpStatus.NOT_FOUND) {
           responsePayload.errorMsg = `The path was not found: ${responsePayload.errorMsg}`;
         }
-        this.logger.error(exception);
+        this.logger.error(exception.stack);
         break;
 
       case exception instanceof Prisma.PrismaClientKnownRequestError:

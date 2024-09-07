@@ -17,14 +17,14 @@ import {
 import { CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { appConfig } from '@/config/configs';
+import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class CardRepo {
   constructor(
-    @Inject(appConfig.KEY)
-    private appConf: ConfigType<typeof appConfig>,
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -99,8 +99,7 @@ export class CardRepo {
     const { userId, byUser, value, partOfValue } = args;
     const searchConditions: GetCardListConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? userId : { in: [userId, this.appConf.defaultUserId] };
-
+    searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
     if (partOfValue) {
       searchConditions.OR = [{ fsValue: { contains: partOfValue } }, { bsValue: { contains: partOfValue } }];
     } else if (value) {

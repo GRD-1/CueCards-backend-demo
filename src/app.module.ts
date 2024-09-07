@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { PrismaModule } from '@/modules/prisma/prisma.module';
 import { TagModule } from '@/modules/tag/tag.module';
 import { CardStatisticsModule } from '@/modules/card-statistics/card-statistics.module';
@@ -14,6 +14,7 @@ import {
   postgresConfig,
   prismaConfig,
   redisConfig,
+  userConfig,
 } from '@/config/configs';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
@@ -34,7 +35,17 @@ import { CacheService } from './modules/cache/cache.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema,
-      load: [appConfig, emailConfig, jwtConfig, nodeConfig, postgresConfig, prismaConfig, redisConfig, cacheConfig],
+      load: [
+        appConfig,
+        emailConfig,
+        jwtConfig,
+        nodeConfig,
+        postgresConfig,
+        prismaConfig,
+        redisConfig,
+        cacheConfig,
+        userConfig,
+      ],
       cache: true,
     }),
     CacheModule.registerAsync({

@@ -2,7 +2,7 @@ export enum Environment {
   Development = 'development',
   Production = 'production',
   Test = 'test',
-  Staging = 'staging'
+  Staging = 'staging',
 }
 
 export enum AppLogLevel {
@@ -10,14 +10,14 @@ export enum AppLogLevel {
   Warn = 'warn',
   Log = 'log',
   Verbose = 'verbose',
-  Debug = 'debug'
+  Debug = 'debug',
 }
 
 export enum PrismaLogLevel {
   Query = 'query',
   Info = 'info',
   Warn = 'warn',
-  Error = 'error'
+  Error = 'error',
 }
 
 export interface IRedisConfig {

@@ -94,7 +94,7 @@ export class AuthService {
       await this.mailerService.sendResetPasswordEmail(user.email, user.nickname, cacheValue);
     }
 
-    await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as any);
+    await this.cacheManager.set(cacheKey, cacheValue, { ttl: this.emailConf.ttl } as never);
   }
 
   private async generateAuthTokens(args: IGenerateTokenArgs): Promise<IAuthResult> {

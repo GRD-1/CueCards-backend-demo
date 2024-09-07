@@ -118,7 +118,7 @@ export class JwtService {
     const ttl = expiration - now;
 
     if (ttl > 0) {
-      await this.cacheManager.set(`blacklist:${tokenId}`, now.toString(), { ttl } as any);
+      await this.cacheManager.set(`blacklist:${tokenId}`, now.toString(), { ttl } as never);
     }
   }
 

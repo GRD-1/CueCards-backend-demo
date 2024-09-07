@@ -17,14 +17,14 @@ import {
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { DICTIONARY_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/dictionary.select-options';
-import { appConfig } from '@/config/configs';
+import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class DictionaryRepo {
   constructor(
-    @Inject(appConfig.KEY)
-    private appConf: ConfigType<typeof appConfig>,
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -97,7 +97,7 @@ export class DictionaryRepo {
     const { userId, byUser, name, partOfName } = args;
     const searchConditions: FindManyDictConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? userId : { in: [userId, this.appConf.defaultUserId] };
+    searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };

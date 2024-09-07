@@ -5,7 +5,7 @@ import { Response, NextFunction, Request } from 'express';
 export class ResponseLoggingMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction): void {
     const originalSend = res.send;
-    res.send = (body): any => {
+    res.send = (body): Response => {
       const logger = new Logger('HttpResponse');
       const msg = `${req.method} ${req.originalUrl}`;
       logger.debug(msg);

@@ -1,6 +1,6 @@
 export enum EmailType {
   Confirmation = 'confirm',
-  Reset = 'reset'
+  Reset = 'reset',
 }
 
 export interface IAuthResult {

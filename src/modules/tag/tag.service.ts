@@ -1,11 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FindManyTagsFullRespInterface, FindManyTagsInterface, TagInterface } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 import { TagRepo } from '@/modules/prisma/repositories/tag.repo';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { appConfig } from '@/config/configs';
-import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class TagService {

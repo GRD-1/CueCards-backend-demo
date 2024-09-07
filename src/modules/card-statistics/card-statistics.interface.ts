@@ -1,6 +1,6 @@
 export enum CardSide {
   FrontSide = 'frontSide',
-  BackSide = 'backSide'
+  BackSide = 'backSide',
 }
 
 export interface UpdateCardStatsInterface {

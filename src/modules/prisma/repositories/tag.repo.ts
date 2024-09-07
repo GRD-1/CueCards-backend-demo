@@ -9,14 +9,14 @@ import {
 } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
-import { appConfig } from '@/config/configs';
+import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class TagRepo {
   constructor(
-    @Inject(appConfig.KEY)
-    private appConf: ConfigType<typeof appConfig>,
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -55,7 +55,7 @@ export class TagRepo {
     const { authorId, byUser, name, partOfName } = args;
     const searchConditions: FindManyTagsConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? authorId : { in: [authorId, this.appConf.defaultUserId] };
+    searchConditions.authorId = byUser ? authorId : { in: [authorId, this.userConf.defaultUserId] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };

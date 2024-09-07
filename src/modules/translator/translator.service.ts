@@ -1,8 +1,8 @@
-import { Injectable, Query } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TranslatorService {
-  async findOne(@Query('lang') lang: string, @Query('value') value: string): Promise<string> {
-    return 'word/phrase translation';
+  async findOne(lang?: string, value?: string): Promise<string> {
+    return `lang = ${lang}, value = ${value}, translation = ...`;
   }
 }

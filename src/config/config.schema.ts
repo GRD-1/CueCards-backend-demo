@@ -8,7 +8,6 @@ export const validationSchema = Joi.object({
   APP_PORT: Joi.number().required(),
   APP_DOMAIN: Joi.string().required(),
   APP_LOG_LEVEL: Joi.string().valid(...Object.values(AppLogLevel)),
-  APP_DEFAULT_USER: Joi.string(),
   NODE_ENV: Joi.string()
     .valid(...Object.values(Environment))
     .required(),
@@ -42,5 +41,12 @@ export const validationSchema = Joi.object({
   EMAIL_TTL: Joi.number().required(),
   AWS_ACCESS_KEY_ID: Joi.string().required(),
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
-  AWS_SES_REGION: Joi.string().required()
+  AWS_SES_REGION: Joi.string().required(),
+  DEFAULT_USER_ID: Joi.string().uuid().required(),
+  DEFAULT_USER_EMAIL: Joi.string().required(),
+  DEFAULT_USER_PASSWORD: Joi.string().required(),
+  TEST_USER_ID: Joi.string().uuid(),
+  TEST_USER_EMAIL: Joi.string(),
+  TEST_USER_PASSWORD: Joi.string(),
+  TEST_USER_JTI: Joi.string(),
 });
