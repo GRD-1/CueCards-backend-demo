@@ -4,8 +4,9 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { CustomJwtPayload, TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
 import { RequestInterface } from '@/types/request.type';
-import { appConfig, nodeConfig, userConfig } from '@/config/configs';
+import { appConfig, jwtConfig, nodeConfig, userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,6 +18,8 @@ export class AuthGuard implements CanActivate {
     private appConf: ConfigType<typeof appConfig>,
     @Inject(userConfig.KEY)
     private userConf: ConfigType<typeof userConfig>,
+    @Inject(jwtConfig.KEY)
+    private jwtConf: ConfigType<typeof jwtConfig>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -51,11 +54,11 @@ export class AuthGuard implements CanActivate {
     const tokenPayload: CustomJwtPayload = {
       iss: this.appConf.id,
       sub: this.userConf.testUserId,
-      exp: 0,
-      jti: this.userConf.testUserJti,
+      exp: this.jwtConf.access.time,
+      jti: v4(),
       version: 1,
     };
-    request.user = { id: tokenPayload.sub };
+    request.user = { id: this.userConf.testUserId };
     request.tokenPayload = tokenPayload;
   }
 }

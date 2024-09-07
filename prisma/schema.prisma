@@ -78,7 +78,7 @@ model Card {
   createdAt         DateTime         @default(now()) @db.Timestamp(6)
   updatedAt         DateTime         @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark        Boolean          @default(false)
-  users             User?            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users             User?            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   fsLang            Language?        @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
   bsLang            Language?        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
   tags              CardTag[]
@@ -95,7 +95,7 @@ model Dictionary {
   createdAt  DateTime        @default(now()) @db.Timestamp(6)
   updatedAt  DateTime        @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark Boolean         @default(false)
-  users      User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   tags       DictionaryTag[]
   statistics Statistics[]    @relation("DictionaryRelation")
 
@@ -109,7 +109,7 @@ model Tag {
   createdAt     DateTime        @default(now()) @db.Timestamp(6)
   updatedAt     DateTime        @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark    Boolean         @default(false)
-  users         User?           @relation("AuthorRelation", fields: [authorId], references: [id])
+  users         User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   CardTag       CardTag[]
   DictionaryTag DictionaryTag[]
 

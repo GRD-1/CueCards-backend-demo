@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { appConfig, emailConfig } from '@/config/configs';
+import { emailConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { ITemplatedCodeMail, ITemplatedData, ITemplatedLinkMail, ITemplates } from '@/modules/mailer/mailer.interfaces';
 import { readFileSync } from 'fs';
@@ -17,8 +17,6 @@ export class MailerService {
   private readonly logger = new Logger(MailerService.name);
 
   constructor(
-    @Inject(appConfig.KEY)
-    private appConf: ConfigType<typeof appConfig>,
     @Inject(emailConfig.KEY)
     private emailConf: ConfigType<typeof emailConfig>,
   ) {

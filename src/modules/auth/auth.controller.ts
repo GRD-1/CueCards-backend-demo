@@ -126,7 +126,6 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a new couple of tokens' })
-  @ApiBody({ type: UpdatePasswordDto })
   @ApiOkResponse({ description: 'The tokens have been refreshed' })
   @ApiUnauthorizedResponse({ description: '... Token expired', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   async refreshTokens(@TokenPayload() tokenPayload: CustomJwtPayload): Promise<TokensDto> {

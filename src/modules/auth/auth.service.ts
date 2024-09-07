@@ -6,6 +6,7 @@ import { IUserWithPassword } from '@/modules/user/user.interface';
 import {
   EMAIL_MSG,
   EMAIL_OCCUPIED_MSG,
+  FORBIDDEN_ACTION_ERR_MSG,
   INVALID_CODE_ERR_MSG,
   INVALID_CREDENTIALS_ERR_MSG,
   LOGOUT_MSG,
@@ -20,7 +21,7 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { MailerService } from '@/modules/mailer/mailer.service';
-import { emailConfig } from '@/config/configs';
+import { emailConfig, nodeConfig, userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
 
@@ -33,6 +34,10 @@ export class AuthService {
     private readonly cacheManager: Cache,
     @Inject(emailConfig.KEY)
     private emailConf: ConfigType<typeof emailConfig>,
+    @Inject(nodeConfig.KEY)
+    private nodeConf: ConfigType<typeof nodeConfig>,
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly userRepo: UserRepo,
@@ -117,7 +122,8 @@ export class AuthService {
   }
 
   public async resetPassword(email: string): Promise<string> {
-    await this.userRepo.findOneWithCredentialsByEmail(email);
+    const { id } = await this.userRepo.findOneWithCredentialsByEmail(email);
+    this.checkUserAccess(id);
     await this.sendCode(email, EmailType.Reset);
 
     return RESET_PASS_EMAIL_MSG;
@@ -128,6 +134,7 @@ export class AuthService {
     const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Reset}:${email}`);
 
+    this.checkUserAccess(userId);
     await this.validatePassword(storedPassword, password, true);
     const newPasswordHash = await this.validatePassword(storedLastPassword, password, true);
 
@@ -144,6 +151,8 @@ export class AuthService {
     const { accessToken: currentAccToken, refreshToken: currentRefToken, currentPassword, newPassword } = args;
     const { sub: userId, tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(currentAccToken);
     const { tokenId: refreshId, exp: refExp } = await this.jwtService.decodeJwt(currentRefToken);
+
+    this.checkUserAccess(userId);
 
     const { credentials } = await this.userRepo.findOneByIdOrThrow(userId);
     const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
@@ -188,5 +197,12 @@ export class AuthService {
     }
 
     return this.generateAuthTokens({ userId, version });
+  }
+
+  private checkUserAccess(userId: string): void {
+    const forbiddenId = [this.userConf.testUserId, this.userConf.defaultUserId].includes(userId);
+    if (this.nodeConf.mode === 'development' && forbiddenId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, FORBIDDEN_ACTION_ERR_MSG);
+    }
   }
 }

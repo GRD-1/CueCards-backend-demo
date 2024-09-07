@@ -48,5 +48,4 @@ export const validationSchema = Joi.object({
   TEST_USER_ID: Joi.string().uuid(),
   TEST_USER_EMAIL: Joi.string(),
   TEST_USER_PASSWORD: Joi.string(),
-  TEST_USER_JTI: Joi.string(),
 });
