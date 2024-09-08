@@ -1,3 +1,9 @@
+import { IUser } from '@/modules/user/user.interface';
+
+export interface IUserWithPassword extends IUser {
+  password: string;
+}
+
 export enum EmailType {
   Confirmation = 'confirm',
   Reset = 'reset',

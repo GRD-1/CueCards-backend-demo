@@ -4,6 +4,7 @@ export interface IUser {
   avatar: string | null;
 }
 
-export interface IUserWithPassword extends IUser {
-  password: string;
+export interface IUpdateUser {
+  nickname: string;
+  avatar: string | null;
 }

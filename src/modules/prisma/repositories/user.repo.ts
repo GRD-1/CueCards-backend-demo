@@ -5,7 +5,8 @@ import {
   USER_WITH_CREDENTIALS_SELECT_OPTIONS,
 } from '@/modules/prisma/repositories/select-options/user.select-options';
 import { CredentialsEntity, UserEntity, UserWithCredentialsEntity } from '@/modules/user/user.entity';
-import { IUser, IUserWithPassword } from '@/modules/user/user.interface';
+import { IUpdateUser } from '@/modules/user/user.interface';
+import { IUserWithPassword } from '@/modules/auth/auth.interfaces';
 
 @Injectable()
 export class UserRepo {
@@ -66,7 +67,7 @@ export class UserRepo {
     });
   }
 
-  async update(id: string, payload: Partial<IUser>): Promise<UserEntity> {
+  async update(id: string, payload: IUpdateUser): Promise<UserEntity> {
     return this.prisma.user.update({
       select: USER_SELECT_OPTIONS,
       data: payload,

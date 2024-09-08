@@ -11,10 +11,16 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, HttpCode, HttpStatus, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Patch, Post, UseGuards } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
-import { EMAIL_MSG, SIGNUP_MSG } from '@/modules/auth/auth.constants';
+import {
+  DELETE_USER_MSG,
+  EMAIL_MSG,
+  LOGOUT_MSG,
+  RESET_PASS_EMAIL_MSG,
+  SIGNUP_MSG,
+} from '@/modules/auth/auth.constants';
 import {
   ConfirmDto,
   ConfirmResetDto,
@@ -28,6 +34,7 @@ import {
 import { AuthGuard } from '@/guards/auth.guard';
 import { TokenPayload } from '@/decorators/token-payload.decorator';
 import { CustomJwtPayload } from '@/modules/jwt/jwt.interfaces';
+import { UserId } from '@/decorators/user-id.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -83,7 +90,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Log out of the system' })
   @ApiBody({ type: TokensDto })
-  @ApiOkResponse({ description: 'The user has been logged out' })
+  @ApiOkResponse({ description: 'The user has been logged out', schema: { example: LOGOUT_MSG } })
   @ApiUnauthorizedResponse({ description: '... Token expired', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   @ApiBadRequestResponse({ description: 'Bad request. Invalid token', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async logout(@Body() payload: TokensDto): Promise<string> {
@@ -94,7 +101,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset a user password' })
   @ApiBody({ type: EmailDto })
-  @ApiOkResponse({ description: 'The email with a password reset code has been sent' })
+  @ApiOkResponse({ description: '... reset code has been sent', schema: { example: RESET_PASS_EMAIL_MSG } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiBadRequestResponse({ description: 'Bad request...', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async resetPassword(@Body() payload: EmailDto): Promise<string> {
@@ -105,7 +112,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Confirm a password reset' })
   @ApiBody({ type: ConfirmResetDto })
-  @ApiOkResponse({ description: 'The password has been reset' })
+  @ApiOkResponse({ description: 'The password has been reset', type: TokensDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiUnauthorizedResponse({ description: '... Invalid reset code', schema: { example: CCBK_ERR_TO_HTTP.CCBK02 } })
   async confirmReset(@Body() payload: ConfirmResetDto): Promise<TokensDto> {
@@ -115,7 +122,7 @@ export class AuthController {
   @Patch('update-password')
   @ApiOperation({ summary: 'Update a user password' })
   @ApiBody({ type: UpdatePasswordDto })
-  @ApiOkResponse({ description: 'The user password has been updated' })
+  @ApiOkResponse({ description: 'The user password has been updated', type: TokensDto })
   @ApiUnauthorizedResponse({ description: 'Invalid password', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   async updatePassword(@Body() payload: UpdatePasswordDto): Promise<TokensDto> {
     return this.authService.updatePassword(payload);
@@ -126,9 +133,18 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a new couple of tokens' })
-  @ApiOkResponse({ description: 'The tokens have been refreshed' })
+  @ApiOkResponse({ description: 'The tokens have been refreshed', type: TokensDto })
   @ApiUnauthorizedResponse({ description: '... Token expired', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   async refreshTokens(@TokenPayload() tokenPayload: CustomJwtPayload): Promise<TokensDto> {
     return this.authService.refreshTokens(tokenPayload);
+  }
+
+  @Delete('delete-user')
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Delete user' })
+  @ApiOkResponse({ description: 'The user has been deleted', schema: { example: DELETE_USER_MSG } })
+  @ApiUnauthorizedResponse({ description: 'Authorization is required', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
+  async delete(@UserId() userId: string): Promise<string> {
+    return this.authService.delete(userId);
   }
 }

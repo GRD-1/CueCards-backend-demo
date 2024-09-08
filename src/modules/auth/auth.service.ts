@@ -1,9 +1,15 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@/modules/jwt/jwt.service';
 import { CustomJwtPayload, TokenTypeEnum } from '@/modules/jwt/jwt.interfaces';
-import { EmailType, IAuthResult, IGenerateTokenArgs, IUpdatePasswordArgs } from '@/modules/auth/auth.interfaces';
-import { IUserWithPassword } from '@/modules/user/user.interface';
 import {
+  EmailType,
+  IAuthResult,
+  IGenerateTokenArgs,
+  IUpdatePasswordArgs,
+  IUserWithPassword,
+} from '@/modules/auth/auth.interfaces';
+import {
+  DELETE_USER_MSG,
   EMAIL_MSG,
   EMAIL_OCCUPIED_MSG,
   FORBIDDEN_ACTION_ERR_MSG,
@@ -197,6 +203,12 @@ export class AuthService {
     }
 
     return this.generateAuthTokens({ userId, version });
+  }
+
+  public async delete(userId: string): Promise<string> {
+    this.checkUserAccess(userId);
+
+    return DELETE_USER_MSG;
   }
 
   private checkUserAccess(userId: string): void {

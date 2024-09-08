@@ -1,6 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { PartialType } from "@nestjs/mapped-types";
 import { Transform } from "class-transformer";
 
 export class UserDto {
@@ -39,4 +38,15 @@ export class UserRespDto {
   readonly confirmed: boolean;
 }
 
-export class UpdateUserDto extends PartialType(UserDto) {}
+export class UpdateUserDto {
+  @ApiProperty({ description: 'user nickname', nullable: false })
+  @IsString()
+  @Length(1, 150)
+  @IsOptional()
+  readonly nickname: string;
+
+  @ApiProperty({ description: 'path to avatar image', nullable: true, example: '~/path/to/avatar.png' })
+  @IsString()
+  @IsOptional()
+  readonly avatar: string | null;
+}
