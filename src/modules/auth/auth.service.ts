@@ -17,7 +17,6 @@ import {
   INVALID_CREDENTIALS_ERR_MSG,
   LOGOUT_MSG,
   RESET_PASS_EMAIL_MSG,
-  SIGNUP_MSG,
   SUSPICIOUS_TOKEN_ERR_MSG,
   UNCONFIRMED_EMAIL_ERR_MSG,
   USED_PASSWORD_ERR_MSG,
@@ -58,10 +57,10 @@ export class AuthService {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, EMAIL_OCCUPIED_MSG);
     }
 
-    await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
+    const user = await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
     await this.sendCode(userData.email, EmailType.Confirmation);
 
-    return SIGNUP_MSG;
+    return user.id;
   }
 
   public async sendEmail(email: string, type: EmailType): Promise<string> {
@@ -207,6 +206,7 @@ export class AuthService {
 
   public async delete(userId: string): Promise<string> {
     this.checkUserAccess(userId);
+    await this.userRepo.delete(userId);
 
     return DELETE_USER_MSG;
   }

@@ -2,7 +2,6 @@ export const PASSWORD_REGEX = /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z
 
 export const USER_ID_EXAMPLE = '530350e2-cc3f-40fb-b82e-7e4241a3c03b';
 
-export const SIGNUP_MSG = 'The user has been created. Check you email to finish the registration';
 export const EMAIL_OCCUPIED_MSG = 'This email address is already occupied';
 export const EMAIL_MSG = 'The email has been sent';
 export const CONFIRM_EMAIL_MSG = 'A new confirmation email has been sent';

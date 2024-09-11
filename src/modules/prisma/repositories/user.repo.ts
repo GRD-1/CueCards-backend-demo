@@ -101,11 +101,11 @@ export class UserRepo {
   }
 
   async delete(id: string): Promise<string> {
-    const userId = await this.prisma.user.delete({
+    const user = await this.prisma.user.delete({
       select: { id: true },
       where: { id },
     });
 
-    return userId.id;
+    return user.id;
   }
 }

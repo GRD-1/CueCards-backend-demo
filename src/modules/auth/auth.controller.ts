@@ -19,7 +19,7 @@ import {
   EMAIL_MSG,
   LOGOUT_MSG,
   RESET_PASS_EMAIL_MSG,
-  SIGNUP_MSG,
+  USER_ID_EXAMPLE,
 } from '@/modules/auth/auth.constants';
 import {
   ConfirmDto,
@@ -44,7 +44,7 @@ export class AuthController {
   @Post('sign-up')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: SignUpDto })
-  @ApiCreatedResponse({ description: 'The new user has been created', schema: { example: SIGNUP_MSG } })
+  @ApiCreatedResponse({ description: 'The new user has been created', schema: { example: USER_ID_EXAMPLE } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   async signUp(@Body() payload: SignUpDto): Promise<string> {
