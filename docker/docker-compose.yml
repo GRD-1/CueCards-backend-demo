@@ -16,6 +16,17 @@ services:
     volumes:
       - '../db/${NODE_ENV}/data:/var/lib/postgresql/data'
 
+  redis:
+    image: redis
+    container_name: 'cuecards-redis'
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT_EXTERNAL}:${REDIS_PORT_INTERNAL}'
+    logging:
+      driver: local
+    volumes:
+      - '../db/${NODE_ENV}/redis:/data'
+
   backup:
     build: .
     image: ghcr.io/mentos1386/postgres-cron-backup

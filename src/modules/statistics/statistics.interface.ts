@@ -1,7 +1,7 @@
 import { StatisticsEntity } from '@/modules/statistics/statistics.entity';
 
 export interface StatsInterface {
-  userId: number;
+  userId: string;
   dictionaryId: number;
   totalAnswers: number;
   correctAnswers: number;
@@ -10,7 +10,7 @@ export interface StatsInterface {
 }
 
 export interface FindManyStatsInterface {
-  userId: number;
+  userId: string;
   page?: number;
   pageSize?: number;
   dictionaryId?: number;
@@ -30,11 +30,11 @@ export interface FindManyStatsFullRespInterface extends FindManyStatsRespInterfa
 }
 
 export interface SearchConditionsArgsInterface extends Omit<FindManyStatsInterface, 'page' | 'pageSize'> {
-  userId: number;
+  userId: string;
 }
 
 export interface FindManyStatsConditionsInterface {
-  userId?: number;
+  userId?: string;
   dictionaryId?: number;
   createdAt?: {
     gte?: Date;
@@ -43,6 +43,6 @@ export interface FindManyStatsConditionsInterface {
 }
 
 export interface GetLastResultsArgsInterface extends Pick<FindManyStatsInterface, 'userId' | 'dictionaryId'> {
-  userId: number;
+  userId: string;
   dictionaryId?: number;
 }

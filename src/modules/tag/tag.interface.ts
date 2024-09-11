@@ -8,7 +8,7 @@ export interface FindManyTagsInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  authorId: number;
+  authorId: string;
   name?: string;
   partOfName?: string;
 }
@@ -27,6 +27,6 @@ export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface
 }
 
 export interface FindManyTagsConditionsInterface {
-  authorId?: number | { in: number[] };
+  authorId?: string | { in: string[] };
   name?: { contains: string } | string;
 }

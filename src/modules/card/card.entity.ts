@@ -3,7 +3,7 @@ import { CardStatisticsEntity } from '@/modules/card-statistics/card-statistics.
 
 export class CardEntity {
   id: number;
-  authorId: number;
+  authorId: string;
   fsLanguage: string;
   fsValue: string;
   fsDescription: string | null;
@@ -33,7 +33,7 @@ export class CardWitTagsEntity extends CardEntity {
 
 export class CardListEntity {
   id: number;
-  authorId: number;
+  authorId: string;
   fsLanguage: string;
   fsValue: string;
   bsLanguage: string;

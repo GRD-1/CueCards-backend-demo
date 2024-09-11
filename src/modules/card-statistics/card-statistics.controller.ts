@@ -1,6 +1,7 @@
-import { Body, Controller, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import { Body, Controller, Param, ParseIntPipe, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -14,10 +15,11 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CardStatisticsService } from '@/modules/card-statistics/card-statistics.service';
 import { UpdateStatsDto } from '@/modules/card-statistics/card-statistics.dto';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 
 @ApiTags('card-statistics')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('card-statistics')
 export class CardStatsController {
   constructor(private readonly cardStatsService: CardStatisticsService) {}
@@ -33,7 +35,7 @@ export class CardStatsController {
   async updateCardStatistics(
     @Param('cardId', ParseIntPipe) cardId: number,
     @Body() payload: UpdateStatsDto,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<void> {
     if (!userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'user is not authorised');

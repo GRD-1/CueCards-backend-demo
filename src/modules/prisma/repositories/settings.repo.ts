@@ -8,14 +8,14 @@ import { SETTINGS_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-op
 export class SettingsRepo {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getSettings(userId: number): Promise<SettingsEntity | null> {
+  async getSettings(userId: string): Promise<SettingsEntity | null> {
     return this.prisma.settings.findFirst({
       select: SETTINGS_SELECT_OPTIONS,
       where: { userId },
     });
   }
 
-  async updateSettings(userId: number, payload: Partial<SettingsInterface>): Promise<SettingsEntity> {
+  async updateSettings(userId: string, payload: Partial<SettingsInterface>): Promise<SettingsEntity> {
     console.log('\nrepo payload:', payload, '\n');
 
     return this.prisma.settings.update({
@@ -27,7 +27,7 @@ export class SettingsRepo {
     });
   }
 
-  async resetSettings(userId: number): Promise<SettingsEntity> {
+  async resetSettings(userId: string): Promise<SettingsEntity> {
     return this.prisma.$transaction(async (prisma) => {
       await prisma.settings.delete({
         where: { userId },

@@ -1,21 +1,13 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-// import { ExpressRequestInterface } from '@/types/express-request.type';
+import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { RequestInterface } from '@/types/request.type';
 
-export const UserId = createParamDecorator((data: string, ctx: ExecutionContext): number => {
-  return 1;
+export const UserId = createParamDecorator((data: string, ctx: ExecutionContext): string => {
+  const request = ctx.switchToHttp().getRequest<RequestInterface>();
+  if (!request.user || !request.user.id) {
+    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+  }
 
-  // const request = ctx.switchToHttp().getRequest();
-  // // if (!request.user) {
-  // //   request.user = undefined;
-  // // }
-  // // const userData: { [key: string]: any } = request.user;
-  // // if (data) {
-  // //   return userData[data];
-  // // }
-
-  // // return request.user?.id;
-
-  // const request = ctx.switchToHttp().getRequest();
-
-  // return request.user?.id;
+  return request.user.id;
 });

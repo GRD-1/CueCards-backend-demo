@@ -30,7 +30,7 @@ export class StatisticsRespDto extends StatisticsDto {
   readonly id: number | null;
 
   @ApiProperty({ description: 'user id', nullable: false, type: Number })
-  readonly userId: number;
+  readonly userId: string;
 }
 
 export class GetManyStatsDto {

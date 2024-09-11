@@ -1,5 +1,5 @@
 export class TagEntity {
   id: number;
-  authorId: number | null;
+  authorId: string | null;
   name: string;
 }

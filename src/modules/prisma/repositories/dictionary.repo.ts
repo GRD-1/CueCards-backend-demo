@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
@@ -17,12 +17,18 @@ import {
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { DICTIONARY_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/dictionary.select-options';
+import { userConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class DictionaryRepo {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(payload: DictionaryAndTagsInterface, authorId: number): Promise<number> {
+  async create(payload: DictionaryAndTagsInterface, authorId: string): Promise<number> {
     const { tags, ...newDictionaryData } = payload;
     let newDictionary: Dictionary;
 
@@ -91,7 +97,7 @@ export class DictionaryRepo {
     const { userId, byUser, name, partOfName } = args;
     const searchConditions: FindManyDictConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? userId : { in: [userId, 0] };
+    searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };
@@ -132,7 +138,7 @@ export class DictionaryRepo {
     return data[0];
   }
 
-  async getCustomizedDictionary(id: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+  async getCustomizedDictionary(id: number, userId: string): Promise<DictionaryWithTagsAndCardsEntity> {
     const data: DictionaryWithTagsAndCardsEntity[] = await this.prisma.$queryRaw`
         SELECT
             d.id,
@@ -163,7 +169,7 @@ export class DictionaryRepo {
     return data[0];
   }
 
-  async getDictionaryWithSettings(id: number, userId: number): Promise<DicWithTagsAndCardSettingsEntity> {
+  async getDictionaryWithSettings(id: number, userId: string): Promise<DicWithTagsAndCardSettingsEntity> {
     const data: DicWithTagsAndCardSettingsEntity[] = await this.prisma.$queryRaw`
         SELECT
             d.id,

@@ -16,7 +16,7 @@ export interface GetDictListInterface {
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  userId: number;
+  userId: string;
   name?: string;
   partOfName?: string;
 }
@@ -55,6 +55,6 @@ export interface UpdateDictionaryInterface {
 }
 
 export interface FindManyDictConditionsInterface {
-  authorId?: number | { in: number[] };
+  authorId?: string | { in: string[] };
   name?: { contains: string } | string;
 }

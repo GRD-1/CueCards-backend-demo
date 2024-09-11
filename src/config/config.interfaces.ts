@@ -1,21 +1,29 @@
 export enum Environment {
-  Development = 'dev',
-  Production = 'prod',
+  Development = 'development',
+  Production = 'production',
   Test = 'test',
-  Debug = 'debug'
+  Staging = 'staging',
 }
 
-export enum LogLevel {
+export enum AppLogLevel {
   Error = 'error',
   Warn = 'warn',
   Log = 'log',
   Verbose = 'verbose',
-  Debug = 'debug'
+  Debug = 'debug',
 }
 
 export enum PrismaLogLevel {
   Query = 'query',
   Info = 'info',
   Warn = 'warn',
-  Error = 'error'
+  Error = 'error',
+}
+
+export interface IRedisConfig {
+  host: string;
+  portInternal: number;
+  portExternal: number;
+  url: string;
+  password: string;
 }

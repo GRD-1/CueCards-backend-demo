@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -18,11 +19,12 @@ import {
   LanguageDto,
   LanguageRespDto,
 } from '@/modules/language/language.dto';
+import { AuthGuard } from '@/guards/auth.guard';
 import { LanguageService } from './language.service';
 
 @ApiTags('languages')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('languages')
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) {}

@@ -37,3 +37,14 @@ services:
       - '${POSTGRES_PORT_EXTERNAL}:${POSTGRES_PORT_INTERNAL}'
     volumes:
       - '../db/${NODE_ENV}/data:/var/lib/postgresql/data'
+
+  redis:
+    image: redis
+    container_name: 'cuecards-redis'
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT_EXTERNAL}:${REDIS_PORT_INTERNAL}'
+    logging:
+      driver: local
+    volumes:
+      - '../db/${NODE_ENV}/redis:/data'

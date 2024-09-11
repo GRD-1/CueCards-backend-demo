@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -18,11 +19,12 @@ import {
   StatisticsRespDto,
 } from '@/modules/statistics/statistics.dto';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 import { StatisticsService } from './statistics.service';
 
 @ApiTags('statistics')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('statistics')
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
@@ -33,7 +35,7 @@ export class StatisticsController {
   @ApiCreatedResponse({ description: 'The new statistics record has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async create(@Body() payload: StatisticsDto, @UserId() userId: number): Promise<number> {
+  async create(@Body() payload: StatisticsDto, @UserId() userId: string): Promise<number> {
     return this.statisticsService.create({ ...payload, userId });
   }
 
@@ -46,7 +48,7 @@ export class StatisticsController {
   @ApiQuery({ name: 'selectionEnd', required: false, type: Date, description: 'end of selection' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyStatsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyStatsDto, @UserId() userId: number): Promise<GetManyStatsRespDto> {
+  async findMany(@Query() query: GetManyStatsDto, @UserId() userId: string): Promise<GetManyStatsRespDto> {
     return this.statisticsService.findMany({ ...query, userId });
   }
 
@@ -55,7 +57,7 @@ export class StatisticsController {
   @ApiQuery({ name: 'dictionaryId', required: false, type: Number, description: 'dictionary id' })
   @ApiOkResponse({ description: 'Successful request', type: [StatisticsRespDto] })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getLastResults(@Query() query: GetLastResultsDto, @UserId() userId: number): Promise<StatisticsRespDto[]> {
+  async getLastResults(@Query() query: GetLastResultsDto, @UserId() userId: string): Promise<StatisticsRespDto[]> {
     return this.statisticsService.getLastResults({ ...query, userId });
   }
 }

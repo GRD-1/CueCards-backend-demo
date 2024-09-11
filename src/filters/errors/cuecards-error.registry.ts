@@ -10,6 +10,8 @@ export const CCBK_ERROR_CODES = {
   UNIQUE_VIOLATION: 'CCBK06',
   BAD_REQUEST: 'CCBK07',
   INVALID_CREDENTIALS: 'CCBK08',
+  ENV_VALIDATION_ERROR: 'CCBK09',
+  UNCONFIRMED_EMAIL: 'CCBK10',
 };
 
 export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
@@ -52,5 +54,15 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     error: true,
     statusCode: HttpStatus.UNAUTHORIZED,
     errorMsg: 'Authorization failed',
+  },
+  [CCBK_ERROR_CODES.ENV_VALIDATION_ERROR]: {
+    error: true,
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Env validation failed',
+  },
+  [CCBK_ERROR_CODES.UNCONFIRMED_EMAIL]: {
+    error: true,
+    statusCode: HttpStatus.UNAUTHORIZED,
+    errorMsg: 'Unconfirmed email',
   },
 };

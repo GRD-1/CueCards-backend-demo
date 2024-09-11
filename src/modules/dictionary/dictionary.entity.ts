@@ -3,7 +3,7 @@ import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
 
 export class DictionaryEntity {
   id: number;
-  authorId: number | null;
+  authorId: string | null;
   name: string;
 }
 

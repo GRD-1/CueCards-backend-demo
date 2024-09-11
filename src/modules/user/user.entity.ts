@@ -1,10 +1,19 @@
 export class UserEntity {
-  id: number;
-  nickname: string;
+  id: string;
   email: string;
+  nickname: string;
   avatar: string | null;
+  confirmed: boolean;
 }
 
-export class UserWithPasswordEntity extends UserEntity {
+export class CredentialsEntity {
+  userId: string;
+  version = 0;
   password: string;
+  lastPassword: string;
+  updatedAt: Date;
+}
+
+export class UserWithCredentialsEntity extends UserEntity {
+  credentials: CredentialsEntity | null;
 }

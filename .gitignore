@@ -1,26 +1,14 @@
-# compiled output
+/.idea
 /dist
 /node_modules
-
-# Logs
 logs
 *.log
 npm-debug.log*
-
-# Tests
 test/coverage
-
-# IDEs and editors
-/.idea
-
-# database
 /db
-
-#
 package-lock.json
-.env
 documentation
 tsconfig.build.tsbuildinfo
-
-# certificates
+.env
 /certificates
+/keys

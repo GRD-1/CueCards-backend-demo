@@ -20,7 +20,7 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 export class DictionaryService {
   constructor(private readonly dictionaryRepo: DictionaryRepo) {}
 
-  async create(payload: DictionaryAndTagsInterface, userId: number): Promise<number> {
+  async create(payload: DictionaryAndTagsInterface, userId: string): Promise<number> {
     const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.name);
     if (existingDictionaryId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A dictionary with that name already exists');
@@ -74,11 +74,11 @@ export class DictionaryService {
     return { ...list, firstDictionary };
   }
 
-  async getCustomizedDictionary(dictionaryId: number, userId: number): Promise<DictionaryWithTagsAndCardsEntity> {
+  async getCustomizedDictionary(dictionaryId: number, userId: string): Promise<DictionaryWithTagsAndCardsEntity> {
     return this.dictionaryRepo.getCustomizedDictionary(dictionaryId, userId);
   }
 
-  async getDictionaryWithSettings(dictionaryId: number, userId: number): Promise<DicWithTagsAndCardSettingsEntity> {
+  async getDictionaryWithSettings(dictionaryId: number, userId: string): Promise<DicWithTagsAndCardSettingsEntity> {
     return this.dictionaryRepo.getDictionaryWithSettings(dictionaryId, userId);
   }
 
@@ -86,7 +86,7 @@ export class DictionaryService {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
-  async updateOneById(dictId: number, payload: Partial<DictionaryAndTagsInterface>, userId: number): Promise<number> {
+  async updateOneById(dictId: number, payload: Partial<DictionaryAndTagsInterface>, userId: string): Promise<number> {
     const { tags: newTags, ...dictionaryData } = payload;
     let tagIdToDeleteArr: number[];
     let newTagsArr: DictionaryTagInterface[];
@@ -108,13 +108,13 @@ export class DictionaryService {
     return this.dictionaryRepo.updateOneById(args);
   }
 
-  async delete(dictionaryId: number, userId: number): Promise<number> {
+  async delete(dictionaryId: number, userId: string): Promise<number> {
     await this.checkEditingRights(dictionaryId, userId);
 
     return this.dictionaryRepo.delete(dictionaryId);
   }
 
-  async checkEditingRights(dictionaryId: number, userId: number): Promise<void> {
+  async checkEditingRights(dictionaryId: number, userId: string): Promise<void> {
     const dictionary = await this.dictionaryRepo.findOneById(dictionaryId);
     if (dictionary.authorId !== userId) {
       throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');

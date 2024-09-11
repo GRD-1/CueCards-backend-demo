@@ -8,23 +8,35 @@ datasource db {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  email          String           @unique @db.VarChar(100)
+  id             String           @id @default(uuid()) @db.Uuid
+  email          String           @unique @db.VarChar(255)
   nickname       String           @db.VarChar
   avatar         String?          @db.VarChar
-  password       String           @db.VarChar
+  confirmed      Boolean          @default(false)
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
   updatedAt      DateTime         @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark     Boolean          @default(false)
+  credentials    Credentials?     @relation("UserRelation")
+  settings       Settings?        @relation("UserRelation")
   cards          Card[]           @relation("AuthorRelation")
   dictionaries   Dictionary[]     @relation("AuthorRelation")
   tags           Tag[]            @relation("AuthorRelation")
   cardStatistics CardStatistics[] @relation("UserRelation")
   cardIsHidden   CardIsHidden[]   @relation("UserRelation")
-  settings       Settings[]       @relation("UserRelation")
   statistics     Statistics[]     @relation("UserRelation")
 
   @@map("users")
+}
+
+model Credentials {
+  userId       String   @id @db.Uuid
+  password     String   @db.VarChar
+  version      Int      @default(1)
+  lastPassword String   @default("") @db.VarChar
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  users        User     @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("credentials")
 }
 
 model Language {
@@ -44,7 +56,7 @@ model Language {
 
 model Card {
   id                Int              @id @default(autoincrement())
-  authorId          Int
+  authorId          String           @db.Uuid
   fsLanguage        String
   fsValue           String           @unique @db.VarChar
   fsDescription     String?          @default("") @db.VarChar
@@ -66,7 +78,7 @@ model Card {
   createdAt         DateTime         @default(now()) @db.Timestamp(6)
   updatedAt         DateTime         @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark        Boolean          @default(false)
-  users             User?            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users             User?            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   fsLang            Language?        @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym])
   bsLang            Language?        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym])
   tags              CardTag[]
@@ -78,12 +90,12 @@ model Card {
 
 model Dictionary {
   id         Int             @id() @default(autoincrement())
-  authorId   Int
+  authorId   String          @db.Uuid
   name       String          @unique @db.VarChar
   createdAt  DateTime        @default(now()) @db.Timestamp(6)
   updatedAt  DateTime        @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark Boolean         @default(false)
-  users      User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   tags       DictionaryTag[]
   statistics Statistics[]    @relation("DictionaryRelation")
 
@@ -92,12 +104,12 @@ model Dictionary {
 
 model Tag {
   id            Int             @id @default(autoincrement())
-  authorId      Int
+  authorId      String          @db.Uuid
   name          String          @unique @db.VarChar
   createdAt     DateTime        @default(now()) @db.Timestamp(6)
   updatedAt     DateTime        @default(now()) @updatedAt @db.Timestamp(6)
   deleteMark    Boolean         @default(false)
-  users         User?           @relation("AuthorRelation", fields: [authorId], references: [id])
+  users         User?           @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   CardTag       CardTag[]
   DictionaryTag DictionaryTag[]
 
@@ -126,13 +138,13 @@ model DictionaryTag {
 
 model CardStatistics {
   cardId           Int
-  userId           Int
+  userId           String @db.Uuid
   fsTotalAnswers   Int
   fsCorrectAnswers Int
   bsTotalAnswers   Int
   bsCorrectAnswers Int
-  card             Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users            User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  card             Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users            User   @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([cardId, userId], map: "card_user_unique_constraint")
   @@map("card_statistics")
@@ -140,17 +152,16 @@ model CardStatistics {
 
 model CardIsHidden {
   cardId Int
-  userId Int
-  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  users  User @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @db.Uuid
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  users  User   @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([cardId, userId], map: "card_user_constraint")
   @@map("card_is_hidden")
 }
 
 model Settings {
-  id               Int      @id @default(autoincrement())
-  userId           Int      @unique @db.Integer
+  userId           String   @id @db.Uuid
   appLanguage      String   @default("ru")
   trainingLanguage String   @default("en")
   notifications    Boolean  @default(true)
@@ -163,13 +174,12 @@ model Settings {
   appLang          Language @relation("AppLanguageRelation", fields: [appLanguage], references: [acronym])
   trainingLang     Language @relation("TrainingLanguageRelation", fields: [trainingLanguage], references: [acronym])
 
-  @@index([userId], map: "SettingsUserId")
   @@map("settings")
 }
 
 model Statistics {
   id             Int        @id @default(autoincrement())
-  userId         Int        @db.Integer
+  userId         String     @db.Uuid
   dictionaryId   Int
   totalAnswers   Int
   correctAnswers Int

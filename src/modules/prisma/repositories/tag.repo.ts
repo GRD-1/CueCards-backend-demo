@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
   FindManyTagsConditionsInterface,
@@ -9,12 +9,18 @@ import {
 } from '@/modules/tag/tag.interface';
 import { TagEntity } from '@/modules/tag/tag.entity';
 import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
+import { userConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class TagRepo {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(name: string, authorId: number): Promise<number> {
+  async create(name: string, authorId: string): Promise<number> {
     const newTag = await this.prisma.tag.create({
       data: {
         name,
@@ -49,7 +55,7 @@ export class TagRepo {
     const { authorId, byUser, name, partOfName } = args;
     const searchConditions: FindManyTagsConditionsInterface = {};
 
-    searchConditions.authorId = byUser ? authorId : { in: [authorId, 0] };
+    searchConditions.authorId = byUser ? authorId : { in: [authorId, this.userConf.defaultUserId] };
 
     if (partOfName) {
       searchConditions.name = { contains: partOfName };

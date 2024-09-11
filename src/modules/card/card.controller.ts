@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -23,11 +37,12 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { UserId } from '@/decorators/user-id.decorator';
+import { AuthGuard } from '@/guards/auth.guard';
 import { CardService } from './card.service';
 
 @ApiTags('cards')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard)
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('cards')
 export class CardController {
   constructor(private readonly cardService: CardService) {}
@@ -38,7 +53,7 @@ export class CardController {
   @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: CreateCardDto, @UserId() userId: number): Promise<number> {
+  async create(@Body() payload: CreateCardDto, @UserId() userId: string): Promise<number> {
     return this.cardService.create(payload, userId);
   }
 
@@ -51,7 +66,7 @@ export class CardController {
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
   @ApiOkResponse({ description: 'Successful request', type: GetCardListRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getList(@Query() query: GetCardListDto, @UserId() userId: number): Promise<GetCardListRespDto> {
+  async getList(@Query() query: GetCardListDto, @UserId() userId: string): Promise<GetCardListRespDto> {
     const data = await this.cardService.getList({ ...query, userId });
 
     return plainToInstance(GetCardListRespDto, data, { enableImplicitConversion: true });
@@ -66,7 +81,7 @@ export class CardController {
   @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search by part of card value' })
   @ApiOkResponse({ description: 'Successful request', type: GetCardListWithFRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async getListWithFirst(@Query() query: GetCardListDto, @UserId() userId: number): Promise<GetCardListWithFRespDto> {
+  async getListWithFirst(@Query() query: GetCardListDto, @UserId() userId: string): Promise<GetCardListWithFRespDto> {
     const data = await this.cardService.getListWithFirst({ ...query, userId });
 
     return plainToInstance(GetCardListWithFRespDto, data, { enableImplicitConversion: true });
@@ -95,7 +110,7 @@ export class CardController {
   async update(
     @Param('cardId', ParseIntPipe) cardId: number,
     @Body() payload: UpdateCardDto,
-    @UserId() userId: number,
+    @UserId() userId: string,
   ): Promise<number> {
     return this.cardService.updateOneById(cardId, payload, userId);
   }
@@ -106,25 +121,27 @@ export class CardController {
   @ApiOkResponse({ description: 'The card has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
-  async delete(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+  async delete(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: string): Promise<number> {
     return this.cardService.delete(cardId, userId);
   }
 
   @Post(':cardId/hide')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Hide a card from the training list' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card has been hidden. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async hide(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+  async hide(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: string): Promise<number> {
     return this.cardService.hide(cardId, userId);
   }
 
   @Post(':cardId/display')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Display a card in the training list' })
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card is now displayed in the training list. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async show(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: number): Promise<number> {
+  async show(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: string): Promise<number> {
     return this.cardService.display(cardId, userId);
   }
 }
