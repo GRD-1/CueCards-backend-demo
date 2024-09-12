@@ -14,13 +14,7 @@ import {
 import { Body, Controller, Delete, HttpCode, HttpStatus, Patch, Post, UseGuards } from '@nestjs/common';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { AuthService } from '@/modules/auth/auth.service';
-import {
-  DELETE_USER_MSG,
-  EMAIL_MSG,
-  LOGOUT_MSG,
-  RESET_PASS_EMAIL_MSG,
-  USER_ID_EXAMPLE,
-} from '@/modules/auth/auth.constants';
+import { DELETE_USER_MSG, EMAIL_MSG, LOGOUT_MSG, RESET_PASS_EMAIL_MSG } from '@/constants/messages.constants';
 import {
   ConfirmDto,
   ConfirmResetDto,
@@ -44,7 +38,7 @@ export class AuthController {
   @Post('sign-up')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: SignUpDto })
-  @ApiCreatedResponse({ description: 'The new user has been created', schema: { example: USER_ID_EXAMPLE } })
+  @ApiCreatedResponse({ description: 'User created', schema: { example: '530350e2-cc3f-40fb-b82e-7e4241a3c03b' } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   async signUp(@Body() payload: SignUpDto): Promise<string> {
@@ -78,9 +72,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign in a user' })
   @ApiBody({ type: SignInDto })
   @ApiOkResponse({ description: 'The user is logged in', type: TokensDto })
-  @ApiForbiddenResponse({ description: '... Unconfirmed email', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   @ApiUnauthorizedResponse({ description: 'Authorisation failed', schema: { example: CCBK_ERR_TO_HTTP.CCBK08 } })
-  @ApiBadRequestResponse({ description: 'Bad request...', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   async signIn(@Body() payload: SignInDto): Promise<TokensDto> {
     return this.authService.signIn(payload.email, payload.password);
@@ -91,8 +85,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Log out of the system' })
   @ApiBody({ type: TokensDto })
   @ApiOkResponse({ description: 'The user has been logged out', schema: { example: LOGOUT_MSG } })
-  @ApiUnauthorizedResponse({ description: '... Token expired', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
-  @ApiBadRequestResponse({ description: 'Bad request. Invalid token', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiUnauthorizedResponse({ description: 'Invalid token', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   async logout(@Body() payload: TokensDto): Promise<string> {
     return this.authService.logout(payload.accessToken, payload.refreshToken);
   }
@@ -101,9 +94,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset a user password' })
   @ApiBody({ type: EmailDto })
-  @ApiOkResponse({ description: '... reset code has been sent', schema: { example: RESET_PASS_EMAIL_MSG } })
+  @ApiOkResponse({ description: 'The reset code has been sent', schema: { example: RESET_PASS_EMAIL_MSG } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  @ApiBadRequestResponse({ description: 'Bad request...', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async resetPassword(@Body() payload: EmailDto): Promise<string> {
     return this.authService.resetPassword(payload.email);
   }
@@ -114,7 +107,8 @@ export class AuthController {
   @ApiBody({ type: ConfirmResetDto })
   @ApiOkResponse({ description: 'The password has been reset', type: TokensDto })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  @ApiUnauthorizedResponse({ description: '... Invalid reset code', schema: { example: CCBK_ERR_TO_HTTP.CCBK02 } })
+  @ApiUnauthorizedResponse({ description: 'Invalid reset code', schema: { example: CCBK_ERR_TO_HTTP.CCBK02 } })
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async confirmReset(@Body() payload: ConfirmResetDto): Promise<TokensDto> {
     return this.authService.confirmReset(payload.email, payload.code, payload.password);
   }
@@ -124,6 +118,7 @@ export class AuthController {
   @ApiBody({ type: UpdatePasswordDto })
   @ApiOkResponse({ description: 'The user password has been updated', type: TokensDto })
   @ApiUnauthorizedResponse({ description: 'Invalid password', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async updatePassword(@Body() payload: UpdatePasswordDto): Promise<TokensDto> {
     return this.authService.updatePassword(payload);
   }
@@ -134,7 +129,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a new couple of tokens' })
   @ApiOkResponse({ description: 'The tokens have been refreshed', type: TokensDto })
-  @ApiUnauthorizedResponse({ description: '... Token expired', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
+  @ApiUnauthorizedResponse({ description: 'Invalid token', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
   async refreshTokens(@TokenPayload() tokenPayload: CustomJwtPayload): Promise<TokensDto> {
     return this.authService.refreshTokens(tokenPayload);
   }
@@ -144,6 +139,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Delete user' })
   @ApiOkResponse({ description: 'The user has been deleted', schema: { example: DELETE_USER_MSG } })
   @ApiUnauthorizedResponse({ description: 'Authorization is required', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
+  @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
   async delete(@UserId() userId: string): Promise<string> {
     return this.authService.delete(userId);
   }

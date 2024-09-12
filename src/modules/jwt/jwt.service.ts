@@ -15,6 +15,7 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { v4 } from 'uuid';
 import dayjs from 'dayjs';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { INVALID_TOKEN_ERR_MSG, TOKEN_EXPIRED_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class JwtService {
@@ -58,10 +59,10 @@ export class JwtService {
 
     return JwtService.verifyJwt({ token, secret, options }).catch((err) => {
       if (err instanceof jwt.TokenExpiredError) {
-        throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Token expired');
+        throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, TOKEN_EXPIRED_ERR_MSG);
       }
       if (err instanceof jwt.JsonWebTokenError) {
-        throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+        throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, INVALID_TOKEN_ERR_MSG);
       }
       throw err;
     });
@@ -71,7 +72,7 @@ export class JwtService {
     const jwtPayload = jwt.decode(token);
 
     if (typeof jwtPayload === 'string' || jwtPayload === null) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, INVALID_TOKEN_ERR_MSG);
     }
 
     return jwtPayload as CustomJwtPayload;
@@ -126,7 +127,7 @@ export class JwtService {
     const tokenValue = await this.cacheManager.get(`blacklist:${tokenId}`);
 
     if (tokenValue) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, INVALID_TOKEN_ERR_MSG);
     }
   }
 }

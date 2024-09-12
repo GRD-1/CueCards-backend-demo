@@ -7,6 +7,7 @@ import { RequestInterface } from '@/types/request.type';
 import { appConfig, jwtConfig, nodeConfig, userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { v4 } from 'uuid';
+import { UNAUTHORIZED_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -27,7 +28,7 @@ export class AuthGuard implements CanActivate {
     const authorizationHeader = request.headers.authorization;
 
     if (!authorizationHeader) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, UNAUTHORIZED_ERR_MSG);
     }
 
     const parts = authorizationHeader.split(' ');
@@ -47,7 +48,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     }
-    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, UNAUTHORIZED_ERR_MSG);
   }
 
   useDeveloperSettings(request: RequestInterface): void {

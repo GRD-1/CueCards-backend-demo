@@ -15,6 +15,7 @@ import {
 } from '@/modules/dictionary/dictionary.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class DictionaryService {
@@ -23,7 +24,7 @@ export class DictionaryService {
   async create(payload: DictionaryAndTagsInterface, userId: string): Promise<number> {
     const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.name);
     if (existingDictionaryId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A dictionary with that name already exists');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
     return this.dictionaryRepo.create(payload, userId);
@@ -117,7 +118,7 @@ export class DictionaryService {
   async checkEditingRights(dictionaryId: number, userId: string): Promise<void> {
     const dictionary = await this.dictionaryRepo.findOneById(dictionaryId);
     if (dictionary.authorId !== userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, ACCESS_VIOLATION_ERR_MSG);
     }
   }
 }

@@ -19,6 +19,12 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
+import {
+  INVALID_DATA_ERR_MSG,
+  INVALID_RELATION_ERR_MSG,
+  NOT_FOUND_ERR_MSG,
+  UNIQUE_VIOLATION_ERR_MSG,
+} from '@/constants/messages.constants';
 
 @Injectable()
 export class CardRepo {
@@ -52,13 +58,9 @@ export class CardRepo {
         })
         .catch((err) => {
           if (!newCard) {
-            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a card!', err);
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_DATA_ERR_MSG, err);
           } else {
-            throw new CueCardsError(
-              CCBK_ERROR_CODES.INVALID_DATA,
-              "failed to link the tags. The card wasn't created!",
-              err,
-            );
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG, err);
           }
         });
     } else {
@@ -163,11 +165,11 @@ export class CardRepo {
         .catch((err) => {
           switch (err.code) {
             case 'P2025':
-              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG, err);
             case 'P2002':
-              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This card value already exists', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG, err);
             case 'P2003':
-              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The tag was not found!', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG, err);
             default:
               throw err;
           }
@@ -215,7 +217,7 @@ export class CardRepo {
       })
       .catch((err) => {
         if (err.code === 'P2003') {
-          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG, err);
         }
         throw err;
       });

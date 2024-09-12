@@ -12,6 +12,7 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { StatisticsEntity } from '@/modules/statistics/statistics.entity';
 import { STATISTICS_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/statistics.select-options';
+import { INVALID_RELATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class StatisticsRepo {
@@ -24,7 +25,7 @@ export class StatisticsRepo {
       })
       .catch((err) => {
         if (err.code === 'P2003') {
-          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The dictionary was not found!', err);
+          throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG);
         }
         throw err;
       });
