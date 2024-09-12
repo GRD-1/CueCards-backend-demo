@@ -27,7 +27,7 @@ export class AuthGuard implements CanActivate {
     const authorizationHeader = request.headers.authorization;
 
     if (!authorizationHeader) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED);
     }
 
     const parts = authorizationHeader.split(' ');
@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     }
-    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED);
   }
 
   useDeveloperSettings(request: RequestInterface): void {

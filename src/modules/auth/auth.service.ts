@@ -11,16 +11,17 @@ import {
 import {
   DELETE_USER_MSG,
   EMAIL_MSG,
-  EMAIL_OCCUPIED_MSG,
+  EMAIL_OCCUPIED_ERR_MSG,
   FORBIDDEN_ACTION_ERR_MSG,
   INVALID_CODE_ERR_MSG,
   INVALID_CREDENTIALS_ERR_MSG,
+  INVALID_TOKEN_ERR_MSG,
   LOGOUT_MSG,
   RESET_PASS_EMAIL_MSG,
   SUSPICIOUS_TOKEN_ERR_MSG,
   UNCONFIRMED_EMAIL_ERR_MSG,
   USED_PASSWORD_ERR_MSG,
-} from '@/modules/auth/auth.constants';
+} from '@/constants/messages.constants';
 import { compare, hash } from 'bcrypt';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
@@ -55,7 +56,7 @@ export class AuthService {
 
     const emailIsOccupied = await this.userRepo.findOneByEmail(email);
     if (emailIsOccupied) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, EMAIL_OCCUPIED_MSG);
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, EMAIL_OCCUPIED_ERR_MSG);
     }
 
     const user = await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
@@ -121,7 +122,7 @@ export class AuthService {
 
   private checkCredentialsExistence(value: CredentialsEntity | null): asserts value is CredentialsEntity {
     if (!value) {
-      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The record not found!');
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
     }
   }
 
@@ -205,11 +206,11 @@ export class AuthService {
     const user = await this.userRepo.findOneById(userId);
     if (!user || !user.credentials) {
       this.logger.error(SUSPICIOUS_TOKEN_ERR_MSG);
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, INVALID_TOKEN_ERR_MSG);
     }
     if (user.credentials.version !== version) {
       await this.jwtService.blacklistToken(jti, exp);
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'Invalid token');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, INVALID_TOKEN_ERR_MSG);
     }
 
     return this.generateAuthTokens({ userId, version });

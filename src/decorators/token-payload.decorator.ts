@@ -7,7 +7,7 @@ import { CustomJwtPayload } from '@/modules/jwt/jwt.interfaces';
 export const TokenPayload = createParamDecorator((data: string, ctx: ExecutionContext): CustomJwtPayload => {
   const request = ctx.switchToHttp().getRequest<RequestInterface>();
   if (!request.tokenPayload) {
-    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'User is not authorised');
+    throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED);
   }
 
   return request.tokenPayload;

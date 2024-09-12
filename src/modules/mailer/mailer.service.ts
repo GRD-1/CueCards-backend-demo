@@ -8,7 +8,7 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import Handlebars from 'handlebars';
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
-import { CONFIRM_EMAIL_MSG, EMAIL_ERR_MSG, EMAIL_MSG, REST_EMAIL_MSG } from '@/modules/auth/auth.constants';
+import { CONFIRM_EMAIL_MSG, EMAIL_ERR_MSG, EMAIL_MSG, REST_EMAIL_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class MailerService {

@@ -38,7 +38,7 @@ export class CardStatsController {
     @UserId() userId: string,
   ): Promise<void> {
     if (!userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, 'user is not authorised');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED);
     }
 
     return this.cardStatsService.updateCardStatistics(cardId, userId, payload);

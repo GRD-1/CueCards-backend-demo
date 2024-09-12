@@ -19,6 +19,7 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
+import { INVALID_RELATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class CardRepo {
@@ -33,34 +34,29 @@ export class CardRepo {
     let newCard: Card;
 
     if (tags.length > 0) {
-      newCard = await this.prisma
-        .$transaction(async (prisma) => {
-          newCard = await prisma.card.create({
-            data: {
-              ...newCardData,
-              authorId,
-            },
-          });
-
-          const cardTags = tags.map((id) => ({ cardId: newCard.id, tagId: id }));
-
-          await prisma.cardTag.createManyAndReturn({
-            data: cardTags,
-          });
-
-          return newCard;
-        })
-        .catch((err) => {
-          if (!newCard) {
-            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, 'failed to create a card!', err);
-          } else {
-            throw new CueCardsError(
-              CCBK_ERROR_CODES.INVALID_DATA,
-              "failed to link the tags. The card wasn't created!",
-              err,
-            );
-          }
+      newCard = await this.prisma.$transaction(async (prisma) => {
+        newCard = await prisma.card.create({
+          data: {
+            ...newCardData,
+            authorId,
+          },
         });
+
+        const cardTags = tags.map((id) => ({ cardId: newCard.id, tagId: id }));
+
+        await prisma.cardTag.createManyAndReturn({
+          data: cardTags,
+        });
+
+        return newCard;
+      });
+      // .catch((err) => {
+      //   if (!newCard) {
+      //     throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA);
+      //   } else {
+      //     throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG);
+      //   }
+      // });
     } else {
       newCard = await this.prisma.card.create({
         data: {
@@ -163,11 +159,11 @@ export class CardRepo {
         .catch((err) => {
           switch (err.code) {
             case 'P2025':
-              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
             case 'P2002':
-              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'This card value already exists', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION);
             case 'P2003':
-              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The tag was not found!', err);
+              throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG);
             default:
               throw err;
           }
@@ -215,7 +211,7 @@ export class CardRepo {
       })
       .catch((err) => {
         if (err.code === 'P2003') {
-          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The card was not found!', err);
+          throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
         }
         throw err;
       });

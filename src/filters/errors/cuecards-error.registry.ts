@@ -43,12 +43,12 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [CCBK_ERROR_CODES.UNIQUE_VIOLATION]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'Unique key violation',
+    errorMsg: 'The record with that value already exists',
   },
   [CCBK_ERROR_CODES.BAD_REQUEST]: {
     error: true,
     statusCode: HttpStatus.BAD_REQUEST,
-    errorMsg: 'Bad Request Exception',
+    errorMsg: 'Bad Request',
   },
   [CCBK_ERROR_CODES.INVALID_CREDENTIALS]: {
     error: true,

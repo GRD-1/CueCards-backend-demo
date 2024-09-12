@@ -8,6 +8,7 @@ import {
   LanguageInterface,
 } from '@/modules/language/language.interface';
 import { LanguageEntity } from '@/modules/language/language.entity';
+import { UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class LanguageService {
@@ -16,7 +17,7 @@ export class LanguageService {
   async create(name: string, acronym: string): Promise<number> {
     const existingLanguageId = await this.languageRepo.getIdByNameOrAcronym(name, acronym);
     if (existingLanguageId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A language with that name or acronym already exists');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
     return this.languageRepo.create(name, acronym);

@@ -11,6 +11,7 @@ import {
 import { CardWitTagsEntity } from '@/modules/card/card.entity';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
+import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class CardService {
@@ -19,7 +20,7 @@ export class CardService {
   async create(payload: CardAndTagsInterface, userId: string): Promise<number> {
     const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
     if (existingCardId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, 'A card with that value already exists');
+      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
     return this.cardRepo.create(payload, userId);
@@ -81,7 +82,7 @@ export class CardService {
   async checkEditingRights(cardId: number, userId: string): Promise<void> {
     const card = await this.cardRepo.findOneById(cardId);
     if (card.authorId !== userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, 'You can only change your own records.');
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, ACCESS_VIOLATION_ERR_MSG);
     }
   }
 

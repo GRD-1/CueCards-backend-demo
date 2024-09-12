@@ -3,7 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { UserDto } from '@/modules/user/user.dto';
 import { EmailType } from '@/modules/auth/auth.interfaces';
-import { INVALID_PASSWORD_ERR_MSG, PASSWORD_REGEX } from '@/modules/auth/auth.constants';
+import { INVALID_PASSWORD_ERR_MSG } from '@/constants/messages.constants';
+import { PASSWORD_REGEX } from "@/constants/regexp.constants";
 
 export class SignUpDto extends UserDto {
   @ApiProperty({ description: 'application domain', nullable: true })
