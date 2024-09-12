@@ -20,7 +20,7 @@ export class PrismaService extends PrismaClient {
   async onInit(): Promise<void> {
     this.replicas = this.$extends(
       readReplicas({
-        url: this.postgresConf.url!,
+        url: this.postgresConf.url,
       }),
     );
 

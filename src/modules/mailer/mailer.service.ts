@@ -21,10 +21,10 @@ export class MailerService {
     private emailConf: ConfigType<typeof emailConfig>,
   ) {
     this.sesClient = new SESClient({
-      region: this.emailConf.awsRegion!,
+      region: this.emailConf.awsRegion,
       credentials: {
-        accessKeyId: this.emailConf.awsAccessKey!,
-        secretAccessKey: this.emailConf.awsSecretAccessKey!,
+        accessKeyId: this.emailConf.awsAccessKey,
+        secretAccessKey: this.emailConf.awsSecretAccessKey,
       },
     });
 
@@ -59,7 +59,7 @@ export class MailerService {
           Data: subject,
         },
       },
-      Source: this.emailConf.user!,
+      Source: this.emailConf.user,
     };
 
     try {

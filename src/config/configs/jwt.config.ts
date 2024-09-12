@@ -9,10 +9,10 @@ export const jwtConfig = registerAs('jwt', () => {
     publicKey,
     privateKey,
     access: {
-      time: process.env.JWT_ACCESS_TTL ? parseInt(process.env.JWT_ACCESS_TTL, 10) : 600,
+      time: (process.env.JWT_ACCESS_TTL ? parseInt(process.env.JWT_ACCESS_TTL, 10) : 600) as number,
     },
     refresh: {
-      time: process.env.JWT_REFRESH_TTL ? parseInt(process.env.JWT_REFRESH_TTL, 10) : 604800,
+      time: (process.env.JWT_REFRESH_TTL ? parseInt(process.env.JWT_REFRESH_TTL, 10) : 604800) as number,
     },
   };
 });
