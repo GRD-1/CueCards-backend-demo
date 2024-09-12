@@ -51,7 +51,7 @@ export class JwtService {
     const secret = this.jwtConf.publicKey;
     const options: jwt.VerifyOptions = {
       issuer: this.appConf.id,
-      audience: new RegExp(this.appConf.domain!),
+      audience: new RegExp(this.appConf.domain),
       maxAge: this.jwtConf[tokenType].time,
       algorithms: ['RS256'],
     };

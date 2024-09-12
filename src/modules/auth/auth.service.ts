@@ -29,6 +29,7 @@ import { MailerService } from '@/modules/mailer/mailer.service';
 import { emailConfig, nodeConfig, userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
 import { UserRepo } from '@/modules/prisma/repositories/user.repo';
+import { CredentialsEntity } from '@/modules/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -77,15 +78,17 @@ export class AuthService {
       throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, INVALID_CODE_ERR_MSG);
     }
     const { id, credentials } = await this.userRepo.confirm(email);
+    this.checkCredentialsExistence(credentials);
 
-    return this.generateAuthTokens({ userId: id, version: credentials!.version });
+    return this.generateAuthTokens({ userId: id, version: credentials.version });
   }
 
   public async signIn(email: string, password: string, domain?: string): Promise<IAuthResult> {
     const { id, confirmed, credentials } = await this.userRepo.findOneWithCredentialsByEmail(email);
-    const version = credentials!.version;
+    this.checkCredentialsExistence(credentials);
+    const version = credentials.version;
 
-    await this.validatePassword(credentials!.password, password);
+    await this.validatePassword(credentials.password, password);
     if (!confirmed) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNCONFIRMED_EMAIL, UNCONFIRMED_EMAIL_ERR_MSG);
     }
@@ -116,6 +119,12 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  private checkCredentialsExistence(value: CredentialsEntity | null): asserts value is CredentialsEntity {
+    if (!value) {
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, 'The record not found!');
+    }
+  }
+
   public async logout(accessToken: string, refreshToken: string): Promise<string> {
     const { tokenId: refreshId, exp: refExp } = await this.jwtService.verifyToken(refreshToken, TokenTypeEnum.REFRESH);
     const { tokenId: accessId, exp: accExp } = await this.jwtService.decodeJwt(accessToken);
@@ -136,7 +145,8 @@ export class AuthService {
 
   public async confirmReset(email: string, code: string, password: string): Promise<IAuthResult> {
     const { id: userId, credentials } = await this.userRepo.findOneWithCredentialsByEmail(email);
-    const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
+    this.checkCredentialsExistence(credentials);
+    const { password: storedPassword, lastPassword: storedLastPassword } = credentials;
     const cachedCode = await this.cacheManager.get(`code:${EmailType.Reset}:${email}`);
 
     this.checkUserAccess(userId);
@@ -160,7 +170,8 @@ export class AuthService {
     this.checkUserAccess(userId);
 
     const { credentials } = await this.userRepo.findOneByIdOrThrow(userId);
-    const { password: storedPassword, lastPassword: storedLastPassword } = credentials!;
+    this.checkCredentialsExistence(credentials);
+    const { password: storedPassword, lastPassword: storedLastPassword } = credentials;
 
     const oldPasswordHash = await this.validatePassword(storedPassword, currentPassword);
     const newPasswordHash = await this.validatePassword(storedLastPassword, newPassword, true);
