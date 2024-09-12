@@ -17,6 +17,7 @@ import {
   INVALID_CREDENTIALS_ERR_MSG,
   INVALID_TOKEN_ERR_MSG,
   LOGOUT_MSG,
+  NOT_FOUND_ERR_MSG,
   RESET_PASS_EMAIL_MSG,
   SUSPICIOUS_TOKEN_ERR_MSG,
   UNCONFIRMED_EMAIL_ERR_MSG,
@@ -122,7 +123,7 @@ export class AuthService {
 
   private checkCredentialsExistence(value: CredentialsEntity | null): asserts value is CredentialsEntity {
     if (!value) {
-      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG);
     }
   }
 

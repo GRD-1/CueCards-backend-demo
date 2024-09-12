@@ -10,8 +10,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { CCBK_ERR_TO_HTTP, CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { CueCardsError } from '@/filters/errors/error.types';
+import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { CardStatisticsService } from '@/modules/card-statistics/card-statistics.service';
 import { UpdateStatsDto } from '@/modules/card-statistics/card-statistics.dto';
 import { UserId } from '@/decorators/user-id.decorator';
@@ -37,10 +36,6 @@ export class CardStatsController {
     @Body() payload: UpdateStatsDto,
     @UserId() userId: string,
   ): Promise<void> {
-    if (!userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED);
-    }
-
     return this.cardStatsService.updateCardStatistics(cardId, userId, payload);
   }
 }

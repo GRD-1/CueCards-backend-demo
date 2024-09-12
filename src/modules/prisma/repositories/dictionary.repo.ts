@@ -19,7 +19,7 @@ import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { DICTIONARY_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/dictionary.select-options';
 import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
-import { INVALID_RELATION_ERR_MSG } from '@/constants/messages.constants';
+import { INVALID_RELATION_ERR_MSG, NOT_FOUND_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class DictionaryRepo {
@@ -34,29 +34,30 @@ export class DictionaryRepo {
     let newDictionary: Dictionary;
 
     if (tags.length > 0) {
-      newDictionary = await this.prisma.$transaction(async (prisma) => {
-        newDictionary = await prisma.dictionary.create({
-          data: {
-            ...newDictionaryData,
-            authorId,
-          },
+      newDictionary = await this.prisma
+        .$transaction(async (prisma) => {
+          newDictionary = await prisma.dictionary.create({
+            data: {
+              ...newDictionaryData,
+              authorId,
+            },
+          });
+
+          const dictionaryTags = tags.map((id) => ({ dictionaryId: newDictionary.id, tagId: id }));
+
+          await prisma.dictionaryTag.createManyAndReturn({
+            data: dictionaryTags,
+          });
+
+          return newDictionary;
+        })
+        .catch((err) => {
+          if (!newDictionary) {
+            throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG, err);
+          } else {
+            throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG, err);
+          }
         });
-
-        const dictionaryTags = tags.map((id) => ({ dictionaryId: newDictionary.id, tagId: id }));
-
-        await prisma.dictionaryTag.createManyAndReturn({
-          data: dictionaryTags,
-        });
-
-        return newDictionary;
-      });
-      // .catch((err) => {
-      //   if (!newDictionary) {
-      //     throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA);
-      //   } else {
-      //     throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG);
-      //   }
-      // });
     } else {
       newDictionary = await this.prisma.dictionary.create({
         data: {
@@ -128,7 +129,7 @@ export class DictionaryRepo {
     `;
 
     if (!data[0]) {
-      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG);
     }
 
     return data[0];
@@ -159,7 +160,7 @@ export class DictionaryRepo {
     `;
 
     if (!data[0]) {
-      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG);
     }
 
     return data[0];
@@ -198,7 +199,7 @@ export class DictionaryRepo {
     `;
 
     if (!data[0]) {
-      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
+      throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG);
     }
 
     return data[0];
@@ -246,11 +247,11 @@ export class DictionaryRepo {
         .catch((err) => {
           switch (err.code) {
             case 'P2025':
-              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND);
+              throw new CueCardsError(CCBK_ERROR_CODES.RECORD_NOT_FOUND, NOT_FOUND_ERR_MSG, err);
             case 'P2002':
-              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION);
+              throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG, err);
             case 'P2003':
-              throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG);
+              throw new CueCardsError(CCBK_ERROR_CODES.INVALID_DATA, INVALID_RELATION_ERR_MSG, err);
             default:
               throw err;
           }

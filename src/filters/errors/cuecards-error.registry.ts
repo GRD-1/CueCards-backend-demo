@@ -23,7 +23,7 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [CCBK_ERROR_CODES.UNAUTHORIZED]: {
     error: true,
     statusCode: HttpStatus.UNAUTHORIZED,
-    errorMsg: 'Authorization is required',
+    errorMsg: 'Unauthorized',
   },
   [CCBK_ERROR_CODES.FORBIDDEN]: {
     error: true,
@@ -38,12 +38,12 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
   [CCBK_ERROR_CODES.RECORD_NOT_FOUND]: {
     error: true,
     statusCode: HttpStatus.NOT_FOUND,
-    errorMsg: 'The record was not found',
+    errorMsg: 'Not found',
   },
   [CCBK_ERROR_CODES.UNIQUE_VIOLATION]: {
     error: true,
     statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    errorMsg: 'The record with that value already exists',
+    errorMsg: 'Unique key violation',
   },
   [CCBK_ERROR_CODES.BAD_REQUEST]: {
     error: true,
