@@ -34,32 +34,35 @@ export class AuthGuard implements CanActivate {
     const parts = authorizationHeader.split(' ');
     const token = parts.length === 2 && parts[0].toLowerCase() === 'bearer' ? parts[1] : null;
 
-    if (this.nodeConf.mode === 'development' && token === this.userConf.testUserPassword) {
-      this.useDeveloperSettings(request);
-
-      return true;
-    }
-
     if (token) {
-      const tokenPayload = await this.jwtService.verifyToken(token, TokenTypeEnum.ACCESS);
-      await this.jwtService.isTokenBlacklisted(tokenPayload.jti);
-      request.user = { id: tokenPayload.sub };
-      request.tokenPayload = tokenPayload;
+      const defaultUser = token === this.userConf.defaultUserPassword;
+      const testUser = token === this.userConf.testUserPassword;
+      if (this.nodeConf.mode === 'development' && (defaultUser || testUser)) {
+        this.useDeveloperSettings(request, defaultUser);
 
-      return true;
+        return true;
+      } else {
+        const tokenPayload = await this.jwtService.verifyToken(token, TokenTypeEnum.ACCESS);
+        await this.jwtService.isTokenBlacklisted(tokenPayload.jti);
+        request.user = { id: tokenPayload.sub };
+        request.tokenPayload = tokenPayload;
+
+        return true;
+      }
     }
     throw new CueCardsError(CCBK_ERROR_CODES.UNAUTHORIZED, UNAUTHORIZED_ERR_MSG);
   }
 
-  useDeveloperSettings(request: RequestInterface): void {
+  useDeveloperSettings(request: RequestInterface, defaultUser: boolean): void {
+    const userId = defaultUser ? this.userConf.defaultUserId : this.userConf.testUserId;
     const tokenPayload: CustomJwtPayload = {
       iss: this.appConf.id,
-      sub: this.userConf.testUserId,
+      sub: userId,
       exp: this.jwtConf.access.time,
       jti: v4(),
       version: 1,
     };
-    request.user = { id: this.userConf.testUserId };
+    request.user = { id: userId };
     request.tokenPayload = tokenPayload;
   }
 }
