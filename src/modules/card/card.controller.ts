@@ -141,7 +141,7 @@ export class CardController {
   @ApiParam({ name: 'cardId', required: true, description: 'Card id' })
   @ApiOkResponse({ description: 'The card is now displayed in the training list. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async show(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: string): Promise<number> {
+  async display(@Param('cardId', ParseIntPipe) cardId: number, @UserId() userId: string): Promise<number> {
     return this.cardService.display(cardId, userId);
   }
 }

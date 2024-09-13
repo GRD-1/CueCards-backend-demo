@@ -1,6 +1,16 @@
-import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 
 export class LanguageDto {
   @ApiProperty({ description: 'language name', nullable: false, example: 'italian' })
@@ -31,6 +41,11 @@ export class GetManyLanguagesDto {
   @IsInt()
   @Min(1)
   readonly pageSize?: number;
+
+  @ApiProperty({ description: 'search for records by user' })
+  @IsOptional()
+  @IsBoolean()
+  readonly byUser?: boolean;
 
   @ApiProperty({ description: 'language name' })
   @IsOptional()

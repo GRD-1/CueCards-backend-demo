@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import { LanguageEntity } from '@/modules/language/language.entity';
 import {
@@ -9,16 +9,23 @@ import {
   SearchConditionsArgsType,
 } from '@/modules/language/language.interface';
 import { LANGUAGE_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/language.select-options';
+import { userConfig } from '@/config/configs';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class LanguageRepo {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(userConfig.KEY)
+    private userConf: ConfigType<typeof userConfig>,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  async create(name: string, acronym: string): Promise<number> {
+  async create(name: string, acronym: string, userId: string): Promise<number> {
     const newLanguage = await this.prisma.language.create({
       data: {
         name,
         acronym,
+        authorId: userId,
       },
     });
 
@@ -46,9 +53,10 @@ export class LanguageRepo {
   }
 
   getLanguageSearchConditions(args: SearchConditionsArgsType): FindManyLangConditionsInterface {
-    const { name, partOfName } = args;
+    const { userId, byUser, name, partOfName } = args;
     const searchConditions: FindManyLangConditionsInterface = {};
 
+    searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
     if (partOfName) {
       searchConditions.name = { contains: partOfName };
     } else if (name) {
