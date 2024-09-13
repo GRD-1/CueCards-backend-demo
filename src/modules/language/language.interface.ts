@@ -8,6 +8,8 @@ export interface LanguageInterface {
 export interface FindManyLanguagesInterface {
   page?: number;
   pageSize?: number;
+  byUser?: boolean;
+  userId: string;
   name?: string;
   partOfName?: string;
 }
@@ -26,6 +28,6 @@ export interface FindManyLangFullRespInterface extends FindManyLanguagesRespInte
 }
 
 export interface FindManyLangConditionsInterface {
-  authorId?: number | { in: number[] };
+  authorId?: string | { in: string[] };
   name?: { contains: string } | string;
 }

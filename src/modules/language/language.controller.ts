@@ -21,6 +21,7 @@ import {
 } from '@/modules/language/language.dto';
 import { AuthGuard } from '@/guards/auth.guard';
 import { LanguageService } from './language.service';
+import { UserId } from '@/decorators/user-id.decorator';
 
 @ApiTags('languages')
 @ApiBearerAuth()
@@ -35,20 +36,21 @@ export class LanguageController {
   @ApiCreatedResponse({ description: 'The new language has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: LanguageDto): Promise<number> {
-    return this.languageService.create(payload.name, payload.acronym);
+  async create(@Body() payload: LanguageDto, @UserId() userId: string): Promise<number> {
+    return this.languageService.create(payload.name, payload.acronym, userId);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get languages according to the conditions' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
+  @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for records created by user' })
   @ApiQuery({ name: 'name', required: false, type: String, description: 'language name' })
   @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyLanguagesRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  async findMany(@Query() query: GetManyLanguagesDto): Promise<GetManyLanguagesRespDto> {
-    return this.languageService.findMany(query);
+  async findMany(@Query() query: GetManyLanguagesDto, @UserId() userId: string): Promise<GetManyLanguagesRespDto> {
+    return this.languageService.findMany({ ...query, userId });
   }
 
   @Get(':languageId/get-one')
@@ -68,8 +70,12 @@ export class LanguageController {
   @ApiBadRequestResponse({ description: 'Invalid language data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async update(@Param('languageId') languageId: number, @Body() payload: LanguageDto): Promise<number> {
-    return this.languageService.updateOneById(languageId, payload);
+  async update(
+    @Param('languageId') languageId: number,
+    @Body() payload: LanguageDto,
+    @UserId() userId: string,
+  ): Promise<number> {
+    return this.languageService.updateOneById(languageId, payload, userId);
   }
 
   @Delete(':languageId/delete')
@@ -77,7 +83,7 @@ export class LanguageController {
   @ApiParam({ name: 'languageId', required: true, description: 'Language id' })
   @ApiOkResponse({ description: 'The language has been deleted. The id:', schema: { example: 123 } })
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
-  async delete(@Param('languageId') languageId: number): Promise<number> {
-    return this.languageService.delete(languageId);
+  async delete(@Param('languageId') languageId: number, @UserId() userId: string): Promise<number> {
+    return this.languageService.delete(languageId, userId);
   }
 }

@@ -8,19 +8,19 @@ import {
   LanguageInterface,
 } from '@/modules/language/language.interface';
 import { LanguageEntity } from '@/modules/language/language.entity';
-import { UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
+import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
 
 @Injectable()
 export class LanguageService {
   constructor(private readonly languageRepo: LanguageRepo) {}
 
-  async create(name: string, acronym: string): Promise<number> {
+  async create(name: string, acronym: string, userId: string): Promise<number> {
     const existingLanguageId = await this.languageRepo.getIdByNameOrAcronym(name, acronym);
     if (existingLanguageId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
-    return this.languageRepo.create(name, acronym);
+    return this.languageRepo.create(name, acronym, userId);
   }
 
   async findMany(args: FindManyLanguagesInterface): Promise<FindManyLangFullRespInterface> {
@@ -36,11 +36,22 @@ export class LanguageService {
     return this.languageRepo.findOneById(languageId);
   }
 
-  async updateOneById(languageId: number, payload: LanguageInterface): Promise<number> {
+  async updateOneById(languageId: number, payload: LanguageInterface, userId: string): Promise<number> {
+    await this.checkEditingRights(languageId, userId);
+
     return this.languageRepo.updateOneById(languageId, payload);
   }
 
-  async delete(languageId: number): Promise<number> {
+  async delete(languageId: number, userId: string): Promise<number> {
+    await this.checkEditingRights(languageId, userId);
+
     return this.languageRepo.delete(languageId);
+  }
+
+  async checkEditingRights(languageId: number, userId: string): Promise<void> {
+    const language = await this.languageRepo.findOneById(languageId);
+    if (language.authorId !== userId) {
+      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, ACCESS_VIOLATION_ERR_MSG);
+    }
   }
 }
