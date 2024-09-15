@@ -10,13 +10,13 @@ import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/
 export class TagService {
   constructor(private readonly tagRepo: TagRepo) {}
 
-  async create(name: string, userId: string): Promise<number> {
-    const existingTagId = await this.tagRepo.getIdByName(name);
+  async create(args: TagInterface): Promise<number> {
+    const existingTagId = await this.tagRepo.getIdByName(args.name);
     if (existingTagId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
-    return this.tagRepo.create(name, userId);
+    return this.tagRepo.create(args);
   }
 
   async findMany(args: FindManyTagsInterface): Promise<FindManyTagsFullRespInterface> {

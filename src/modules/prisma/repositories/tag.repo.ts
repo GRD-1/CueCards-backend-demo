@@ -20,12 +20,9 @@ export class TagRepo {
     private readonly prisma: PrismaService,
   ) {}
 
-  async create(name: string, authorId: string): Promise<number> {
+  async create(args: TagInterface): Promise<number> {
     const newTag = await this.prisma.tag.create({
-      data: {
-        name,
-        authorId,
-      },
+      data: args,
     });
 
     return newTag.id;
@@ -52,8 +49,8 @@ export class TagRepo {
   }
 
   getTagSearchConditions(args: SearchConditionsArgsType): FindManyTagsConditionsInterface {
-    const { authorId, byUser, name, partOfName } = args;
-    const searchConditions: FindManyTagsConditionsInterface = {};
+    const { authorId, byUser, name, partOfName, fsLanguage, bsLanguage } = args;
+    const searchConditions: FindManyTagsConditionsInterface = { fsLanguage, bsLanguage };
 
     searchConditions.authorId = byUser ? authorId : { in: [authorId, this.userConf.defaultUserId] };
 

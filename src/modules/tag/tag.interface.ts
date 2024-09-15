@@ -1,14 +1,19 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
 
 export interface TagInterface {
+  authorId: string;
   name: string;
+  fsLanguage: string;
+  bsLanguage: string;
 }
 
 export interface FindManyTagsInterface {
+  authorId: string;
+  fsLanguage: string;
+  bsLanguage: string;
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  authorId: string;
   name?: string;
   partOfName?: string;
 }
@@ -29,4 +34,6 @@ export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface
 export interface FindManyTagsConditionsInterface {
   authorId?: string | { in: string[] };
   name?: { contains: string } | string;
+  fsLanguage: string;
+  bsLanguage: string;
 }

@@ -2,7 +2,19 @@ import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, Valida
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-export class TagDto {
+export class TagLanguages {
+  @ApiProperty({ description: 'A tag front side language', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  readonly fsLanguage: string;
+
+  @ApiProperty({ description: 'A tag back side language', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  readonly bsLanguage: string;
+}
+
+export class TagDto extends TagLanguages {
   @ApiProperty({ description: 'tag name', nullable: false })
   @IsString()
   @IsNotEmpty()
@@ -13,11 +25,11 @@ export class TagRespDto extends TagDto {
   @ApiProperty({ description: 'tag id', nullable: false, type: Number })
   readonly id: number;
   
-  @ApiProperty({ description: 'user id', nullable: true, type: Number })
-  readonly authorId?: string | null;
+  @ApiProperty({ description: 'user id', nullable: true, type: String })
+  readonly authorId: string;
 }
 
-export class GetManyTagsDto {
+export class GetManyTagsDto extends TagLanguages {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()

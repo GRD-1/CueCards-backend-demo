@@ -1,5 +1,7 @@
 export class TagEntity {
   id: number;
-  authorId: string | null;
+  authorId: string;
   name: string;
+  fsLanguage: string;
+  bsLanguage: string;
 }
