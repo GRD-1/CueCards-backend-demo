@@ -1,16 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
-  FindManyTagsConditionsInterface,
-  FindManyTagsInterface,
-  FindManyTagsRespInterface,
-  SearchConditionsArgsType,
-  TagInterface,
+  IFindManyTags,
+  IFindManyTagsConditions,
+  IFindManyTagsResp,
+  ISearchConditionsArgs,
+  ITag,
 } from '@/modules/tag/tag.interface';
-import { TagEntity } from '@/modules/tag/tag.entity';
-import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
 import { userConfig } from '@/config/configs';
 import { ConfigType } from '@nestjs/config';
+import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
+import { TagEntity } from '@/modules/tag/tag.entity';
 
 @Injectable()
 export class TagRepo {
@@ -20,20 +20,17 @@ export class TagRepo {
     private readonly prisma: PrismaService,
   ) {}
 
-  async create(name: string, authorId: string): Promise<number> {
+  async create(args: ITag): Promise<number> {
     const newTag = await this.prisma.tag.create({
-      data: {
-        name,
-        authorId,
-      },
+      data: args,
     });
 
     return newTag.id;
   }
 
-  async findMany(args: FindManyTagsInterface): Promise<FindManyTagsRespInterface> {
+  async findMany(args: IFindManyTags): Promise<IFindManyTagsResp> {
     const { page = 1, pageSize = 20 } = args;
-    const searchConditions: FindManyTagsConditionsInterface = this.getTagSearchConditions(args);
+    const searchConditions: IFindManyTagsConditions = this.getTagSearchConditions(args);
 
     const tags = await this.prisma.tag.findMany({
       select: TAG_SELECT_OPTIONS,
@@ -45,22 +42,22 @@ export class TagRepo {
     return { page, pageSize, tags };
   }
 
-  async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
-    const searchConditions: FindManyTagsConditionsInterface = this.getTagSearchConditions(args);
+  async getTotalCount(args: ISearchConditionsArgs): Promise<number> {
+    const searchConditions: IFindManyTagsConditions = this.getTagSearchConditions(args);
 
     return this.prisma.tag.count({ where: searchConditions });
   }
 
-  getTagSearchConditions(args: SearchConditionsArgsType): FindManyTagsConditionsInterface {
-    const { authorId, byUser, name, partOfName } = args;
-    const searchConditions: FindManyTagsConditionsInterface = {};
+  getTagSearchConditions(args: ISearchConditionsArgs): IFindManyTagsConditions {
+    const { authorId, byUser, value, partOfValue, fsLanguage, bsLanguage } = args;
+    const searchConditions: IFindManyTagsConditions = { fsLanguage, bsLanguage };
 
     searchConditions.authorId = byUser ? authorId : { in: [authorId, this.userConf.defaultUserId] };
 
-    if (partOfName) {
-      searchConditions.name = { contains: partOfName };
-    } else if (name) {
-      searchConditions.name = name;
+    if (partOfValue) {
+      searchConditions.value = { contains: partOfValue };
+    } else if (value) {
+      searchConditions.value = value;
     }
 
     return searchConditions;
@@ -73,20 +70,21 @@ export class TagRepo {
     });
   }
 
-  async getIdByName(name: string): Promise<number | null> {
-    const tag = await this.prisma.tag.findFirst({
+  async getIdByValue(fsValue: string, bsValue: string): Promise<number | null> {
+    const card = await this.prisma.card.findFirst({
       select: { id: true },
-      where: { name },
+      where: {
+        OR: [{ fsValue }, { bsValue }],
+      },
     });
 
-    return tag?.id || null;
+    return card?.id || null;
   }
 
-  async updateOneById(id: number, payload: TagInterface): Promise<number> {
-    const { name } = payload;
+  async updateOneById(id: number, data: Partial<ITag>): Promise<number> {
     const updatedTag = await this.prisma.tag.update({
       where: { id },
-      data: { name },
+      data,
     });
 
     return updatedTag.id;

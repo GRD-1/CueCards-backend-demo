@@ -1,3 +1,5 @@
+import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options/tag.select-options';
+
 export const CARD_SELECT_OPTIONS = {
   id: true,
   authorId: true,
@@ -25,11 +27,7 @@ export const CARD_SELECT_OPTIONS = {
   tags: {
     select: {
       tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
+        select: TAG_SELECT_OPTIONS,
       },
     },
   },
@@ -45,11 +43,7 @@ export const CARD_LIST_SELECT_OPTIONS = {
   tags: {
     select: {
       tag: {
-        select: {
-          id: true,
-          authorId: true,
-          name: true,
-        },
+        select: TAG_SELECT_OPTIONS,
       },
     },
   },

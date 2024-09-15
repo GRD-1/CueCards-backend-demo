@@ -1,23 +1,41 @@
-import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { PartialType } from "@nestjs/mapped-types";
 
-export class TagDto {
-  @ApiProperty({ description: 'tag name', nullable: false })
+export class TagLanguages {
+  @ApiProperty({ description: 'A tag front side language', nullable: false, example: 'ru' })
   @IsString()
   @IsNotEmpty()
-  readonly name: string;
+  readonly fsLanguage: string;
+
+  @ApiProperty({ description: 'A tag back side language', nullable: false, example: 'en' })
+  @IsString()
+  @IsNotEmpty()
+  readonly bsLanguage: string;
+}
+
+export class TagDto extends TagLanguages {
+  @ApiProperty({ description: 'tag front side value', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  readonly fsValue: string;
+
+  @ApiProperty({ description: 'tag back side value', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  readonly bsValue: string;
 }
 
 export class TagRespDto extends TagDto {
   @ApiProperty({ description: 'tag id', nullable: false, type: Number })
   readonly id: number;
   
-  @ApiProperty({ description: 'user id', nullable: true, type: Number })
-  readonly authorId?: string | null;
+  @ApiProperty({ description: 'user id', nullable: true, type: String })
+  readonly authorId: string;
 }
 
-export class GetManyTagsDto {
+export class GetManyTagsDto extends TagLanguages {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()
@@ -34,13 +52,13 @@ export class GetManyTagsDto {
   @IsOptional()
   readonly byUser?: boolean;
 
-  @ApiProperty({ description: 'tag name' })
+  @ApiProperty({ description: 'tag value' })
   @IsOptional()
-  readonly name?: string;
+  readonly value?: string;
 
-  @ApiProperty({ description: 'part of the tag name' })
+  @ApiProperty({ description: 'part of the tag value' })
   @IsOptional()
-  readonly partOfName?: string;
+  readonly partOfValue?: string;
 }
 
 export class GetManyTagsRespDto {
@@ -66,3 +84,5 @@ export class GetManyTagsRespDto {
   @Type(() => TagRespDto)
   readonly tags: TagRespDto[];
 }
+
+export class UpdTagDto extends PartialType(TagDto) {}

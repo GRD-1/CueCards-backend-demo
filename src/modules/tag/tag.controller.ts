@@ -13,7 +13,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetManyTagsDto, GetManyTagsRespDto, TagDto, TagRespDto } from '@/modules/tag/tag.dto';
+import { GetManyTagsDto, GetManyTagsRespDto, TagDto, TagRespDto, UpdTagDto } from '@/modules/tag/tag.dto';
 import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
 import { UserId } from '@/decorators/user-id.decorator';
 import { AuthGuard } from '@/guards/auth.guard';
@@ -32,17 +32,19 @@ export class TagController {
   @ApiCreatedResponse({ description: 'The new tag has been created. The id:', schema: { example: 123 } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: TagDto, @UserId() userId: string): Promise<number> {
-    return this.tagService.create(payload.name, userId);
+  async create(@Body() payload: TagDto, @UserId() authorId: string): Promise<number> {
+    return this.tagService.create({ ...payload, authorId });
   }
 
   @Get()
   @ApiOperation({ summary: 'Get tags according to the conditions' })
+  @ApiQuery({ name: 'fsLanguage', required: true, type: Boolean, description: 'front side tag language' })
+  @ApiQuery({ name: 'bsLanguage', required: true, type: Boolean, description: 'back side tag ' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })
-  @ApiQuery({ name: 'name', required: false, type: String, description: 'tag name' })
-  @ApiQuery({ name: 'partOfName', required: false, type: String, description: 'search for records by name part' })
+  @ApiQuery({ name: 'value', required: false, type: String, description: 'search for records by tag value' })
+  @ApiQuery({ name: 'partOfValue', required: false, type: String, description: 'search for records by value part' })
   @ApiOkResponse({ description: 'Successful request', type: GetManyTagsRespDto })
   @ApiBadRequestResponse({ description: 'Invalid request params', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   async findMany(@Query() query: GetManyTagsDto, @UserId() authorId: string): Promise<GetManyTagsRespDto> {
@@ -67,8 +69,8 @@ export class TagController {
   @ApiNotFoundResponse({ description: 'The record was not found', schema: { example: CCBK_ERR_TO_HTTP.CCBK05 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
   @ApiForbiddenResponse({ description: 'Access denied', schema: { example: CCBK_ERR_TO_HTTP.CCBK03 } })
-  async update(@Param('tagId') tagId: number, @Body() payload: TagDto, @UserId() userId: string): Promise<number> {
-    return this.tagService.updateOneById(tagId, payload, userId);
+  async update(@Param('tagId') tagId: number, @Body() payload: UpdTagDto, @UserId() authorId: string): Promise<number> {
+    return this.tagService.updateOneById({ tagId, ...payload, authorId });
   }
 
   @Delete(':tagId/delete')

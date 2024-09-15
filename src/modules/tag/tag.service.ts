@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { FindManyTagsFullRespInterface, FindManyTagsInterface, TagInterface } from '@/modules/tag/tag.interface';
-import { TagEntity } from '@/modules/tag/tag.entity';
+import { IFindManyTags, IFindManyTagsFullResp, ITag, ITagWithId } from '@/modules/tag/tag.interface';
 import { TagRepo } from '@/modules/prisma/repositories/tag.repo';
 import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
+import { TagEntity } from '@/modules/tag/tag.entity';
 
 @Injectable()
 export class TagService {
   constructor(private readonly tagRepo: TagRepo) {}
 
-  async create(name: string, userId: string): Promise<number> {
-    const existingTagId = await this.tagRepo.getIdByName(name);
+  async create(args: ITag): Promise<number> {
+    const existingTagId = await this.tagRepo.getIdByValue(args.fsValue, args.bsValue);
     if (existingTagId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
 
-    return this.tagRepo.create(name, userId);
+    return this.tagRepo.create(args);
   }
 
-  async findMany(args: FindManyTagsInterface): Promise<FindManyTagsFullRespInterface> {
+  async findMany(args: IFindManyTags): Promise<IFindManyTagsFullResp> {
     const [{ page, pageSize, tags }, totalRecords] = await Promise.all([
       this.tagRepo.findMany(args),
       this.tagRepo.getTotalCount(args),
@@ -32,10 +32,11 @@ export class TagService {
     return this.tagRepo.findOneById(tagId);
   }
 
-  async updateOneById(tagId: number, payload: TagInterface, userId: string): Promise<number> {
-    await this.checkEditingRights(tagId, userId);
+  async updateOneById(args: ITagWithId): Promise<number> {
+    const { tagId, authorId, ...data } = args;
+    await this.checkEditingRights(tagId, authorId);
 
-    return this.tagRepo.updateOneById(tagId, payload);
+    return this.tagRepo.updateOneById(tagId, data);
   }
 
   async delete(tagId: number, userId: string): Promise<number> {
