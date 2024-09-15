@@ -1,39 +1,45 @@
 import { TagEntity } from '@/modules/tag/tag.entity';
 
-export interface TagInterface {
+export interface ITag {
   authorId: string;
-  name: string;
+  fsValue: string;
+  bsValue: string;
   fsLanguage: string;
   bsLanguage: string;
 }
 
-export interface FindManyTagsInterface {
+export interface ITagWithId extends Partial<ITag> {
+  tagId: number;
+  authorId: string;
+}
+
+export interface IFindManyTags {
   authorId: string;
   fsLanguage: string;
   bsLanguage: string;
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  name?: string;
-  partOfName?: string;
+  value?: string;
+  partOfValue?: string;
 }
 
-export type SearchConditionsArgsType = Omit<FindManyTagsInterface, 'page' | 'pageSize'>;
+export type ISearchConditionsArgs = Omit<IFindManyTags, 'page' | 'pageSize'>;
 
-export interface FindManyTagsRespInterface {
+export interface IFindManyTagsResp {
   page: number;
   pageSize: number;
   tags: TagEntity[];
 }
 
-export interface FindManyTagsFullRespInterface extends FindManyTagsRespInterface {
+export interface IFindManyTagsFullResp extends IFindManyTagsResp {
   records: number;
   totalRecords: number;
 }
 
-export interface FindManyTagsConditionsInterface {
+export interface IFindManyTagsConditions {
   authorId?: string | { in: string[] };
-  name?: { contains: string } | string;
+  value?: { contains: string } | string;
   fsLanguage: string;
   bsLanguage: string;
 }
