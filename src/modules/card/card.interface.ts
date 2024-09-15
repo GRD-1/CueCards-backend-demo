@@ -26,10 +26,12 @@ export interface CardAndTagsInterface extends CardInterface {
 }
 
 export interface GetCardListInterface {
+  userId: string;
+  fsLanguage: string;
+  bsLanguage: string;
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  userId: string;
   value?: string;
   partOfValue?: string;
 }
@@ -68,4 +70,6 @@ export interface UpdateCardInterface {
 export interface GetCardListConditionsInterface {
   authorId?: string | { in: string[] };
   OR?: ({ fsValue: { contains: string } | string } | { bsValue: { contains: string } | string })[];
+  fsLanguage: string;
+  bsLanguage: string;
 }
