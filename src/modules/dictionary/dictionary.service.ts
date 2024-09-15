@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
-  DictionaryAndTagsInterface,
-  DictionaryTagInterface,
-  GetDictListFullRespInterface,
-  GetDictListInterface,
-  GetListWithFirstRespInterface,
-  GetSettingsWithFRespInterface,
-  UpdateDictionaryInterface,
+  IDictionaryAndTags,
+  IDictionaryTag,
+  IGetDictList,
+  IGetDictListFullResp,
+  IGetListWithFirstResp,
+  IGetSettingsWithFResp,
+  IUpdateDictionary,
 } from '@/modules/dictionary/dictionary.interface';
 import { DictionaryRepo } from '@/modules/prisma/repositories/dictionary.repo';
 import {
@@ -21,8 +21,8 @@ import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/
 export class DictionaryService {
   constructor(private readonly dictionaryRepo: DictionaryRepo) {}
 
-  async create(payload: DictionaryAndTagsInterface, userId: string): Promise<number> {
-    const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.name);
+  async create(payload: IDictionaryAndTags, userId: string): Promise<number> {
+    const existingDictionaryId = await this.dictionaryRepo.getIdByName(payload.fsName, payload.bsName);
     if (existingDictionaryId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
@@ -30,7 +30,7 @@ export class DictionaryService {
     return this.dictionaryRepo.create(payload, userId);
   }
 
-  async getList(args: GetDictListInterface): Promise<GetDictListFullRespInterface> {
+  async getList(args: IGetDictList): Promise<IGetDictListFullResp> {
     const [{ page, pageSize, dictionaries }, totalRecords] = await Promise.all([
       this.dictionaryRepo.getList(args),
       this.dictionaryRepo.getTotalCount(args),
@@ -39,7 +39,7 @@ export class DictionaryService {
     return { page, pageSize, records: dictionaries.length, totalRecords, dictionaries };
   }
 
-  async getListWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
+  async getListWithFirst(args: IGetDictList): Promise<IGetListWithFirstResp> {
     let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
 
     const list = await this.getList(args);
@@ -51,7 +51,7 @@ export class DictionaryService {
     return { ...list, firstDictionary };
   }
 
-  async getCustomizedWithFirst(args: GetDictListInterface): Promise<GetListWithFirstRespInterface> {
+  async getCustomizedWithFirst(args: IGetDictList): Promise<IGetListWithFirstResp> {
     let firstDictionary: DictionaryWithTagsAndCardsEntity | null = null;
 
     const list = await this.getList(args);
@@ -63,7 +63,7 @@ export class DictionaryService {
     return { ...list, firstDictionary };
   }
 
-  async getSettingsWithFirst(args: GetDictListInterface): Promise<GetSettingsWithFRespInterface> {
+  async getSettingsWithFirst(args: IGetDictList): Promise<IGetSettingsWithFResp> {
     let firstDictionary: DicWithTagsAndCardSettingsEntity | null = null;
 
     const list = await this.getList(args);
@@ -87,11 +87,11 @@ export class DictionaryService {
     return this.dictionaryRepo.findOneById(dictionaryId);
   }
 
-  async updateOneById(dictId: number, payload: Partial<DictionaryAndTagsInterface>, userId: string): Promise<number> {
+  async updateOneById(dictId: number, payload: Partial<IDictionaryAndTags>, userId: string): Promise<number> {
     const { tags: newTags, ...dictionaryData } = payload;
     let tagIdToDeleteArr: number[];
-    let newTagsArr: DictionaryTagInterface[];
-    let args: UpdateDictionaryInterface = { dictionaryId: dictId, dictionaryData };
+    let newTagsArr: IDictionaryTag[];
+    let args: IUpdateDictionary = { dictionaryId: dictId, dictionaryData };
 
     await this.checkEditingRights(dictId, userId);
 

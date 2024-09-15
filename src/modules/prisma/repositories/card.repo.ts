@@ -98,8 +98,8 @@ export class CardRepo {
   }
 
   getCardSearchConditions(args: SearchConditionsArgsType): GetCardListConditionsInterface {
-    const { userId, byUser, value, partOfValue } = args;
-    const searchConditions: GetCardListConditionsInterface = {};
+    const { userId, byUser, value, partOfValue, fsLanguage, bsLanguage } = args;
+    const searchConditions: GetCardListConditionsInterface = { fsLanguage, bsLanguage };
 
     searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
     if (partOfValue) {

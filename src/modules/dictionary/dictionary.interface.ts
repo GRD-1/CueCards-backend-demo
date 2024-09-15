@@ -4,57 +4,64 @@ import {
   DicWithTagsAndCardSettingsEntity,
 } from '@/modules/dictionary/dictionary.entity';
 
-export interface DictionaryInterface {
-  name: string;
+export interface IDictionary {
+  fsName: string;
+  bsName: string;
+  fsLanguage: string;
+  bsLanguage: string;
 }
 
-export interface DictionaryAndTagsInterface extends DictionaryInterface {
+export interface IDictionaryAndTags extends IDictionary {
   tags: number[];
 }
 
-export interface GetDictListInterface {
+export interface IGetDictList {
+  userId: string;
+  fsLanguage: string;
+  bsLanguage: string;
   page?: number;
   pageSize?: number;
   byUser?: boolean;
-  userId: string;
   name?: string;
   partOfName?: string;
 }
 
-export type SearchConditionsArgsType = Omit<GetDictListInterface, 'page' | 'pageSize'>;
+export type SearchConditionsArgsType = Omit<IGetDictList, 'page' | 'pageSize'>;
 
-export interface GetDictListRespInterface {
+export interface IGetDictListResp {
   page: number;
   pageSize: number;
   dictionaries: DictionaryWithTagsPrismaEntity[];
 }
 
-export interface GetDictListFullRespInterface extends GetDictListRespInterface {
+export interface IGetDictListFullResp extends IGetDictListResp {
   records: number;
   totalRecords: number;
 }
 
-export interface GetListWithFirstRespInterface extends GetDictListFullRespInterface {
+export interface IGetListWithFirstResp extends IGetDictListFullResp {
   firstDictionary: DictionaryWithTagsAndCardsEntity | null;
 }
 
-export interface GetSettingsWithFRespInterface extends GetDictListFullRespInterface {
+export interface IGetSettingsWithFResp extends IGetDictListFullResp {
   firstDictionary: DicWithTagsAndCardSettingsEntity | null;
 }
 
-export interface DictionaryTagInterface {
+export interface IDictionaryTag {
   dictionaryId: number;
   tagId: number;
 }
 
-export interface UpdateDictionaryInterface {
+export interface IUpdateDictionary {
   dictionaryId: number;
-  dictionaryData: Partial<DictionaryInterface>;
+  dictionaryData: Partial<IDictionary>;
   tagIdToDeleteArr?: number[];
-  newTagsArr?: DictionaryTagInterface[];
+  newTagsArr?: IDictionaryTag[];
 }
 
-export interface FindManyDictConditionsInterface {
+export interface IFindManyDictConditions {
   authorId?: string | { in: string[] };
-  name?: { contains: string } | string;
+  OR?: ({ fsName: { contains: string } | string } | { bsName: { contains: string } | string })[];
+  fsLanguage: string;
+  bsLanguage: string;
 }

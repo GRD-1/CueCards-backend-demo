@@ -38,8 +38,8 @@ export class TagController {
 
   @Get()
   @ApiOperation({ summary: 'Get tags according to the conditions' })
-  @ApiQuery({ name: 'fsLanguage', required: true, type: Boolean, description: 'front side tag language' })
-  @ApiQuery({ name: 'bsLanguage', required: true, type: Boolean, description: 'back side tag ' })
+  @ApiQuery({ name: 'fsLanguage', required: true, type: Boolean, description: 'the tag front side  language' })
+  @ApiQuery({ name: 'bsLanguage', required: true, type: Boolean, description: 'the tag front side language' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search records by user' })

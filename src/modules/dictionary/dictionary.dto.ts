@@ -1,17 +1,30 @@
-import { IsArray, IsInt, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { PartialType } from '@nestjs/mapped-types';
-import { TagRespDto } from '@/modules/tag/tag.dto';
-import { CardDto, CardWithSettingsDto } from '@/modules/card/card.dto';
+import { IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { Transform, Type } from "class-transformer";
+import { PartialType } from "@nestjs/mapped-types";
+import { TagRespDto } from "@/modules/tag/tag.dto";
+import { CardDto, CardWithSettingsDto } from "@/modules/card/card.dto";
 
-export class DictionaryDto {
-  @ApiProperty({ description: 'user id', nullable: true })
-  readonly authorId: string | null;
-
-  @ApiProperty({ description: 'dictionary name', nullable: false })
+export class DictLanguagesDto {
+  @ApiProperty({ description: 'A dictionary front side language', nullable: false, example: 'ru' })
   @IsString()
-  readonly name: string;
+  @IsNotEmpty()
+  readonly fsLanguage: string;
+
+  @ApiProperty({ description: 'A dictionary back side language', nullable: false, example: 'en' })
+  @IsString()
+  @IsNotEmpty()
+  readonly bsLanguage: string;
+}
+
+export class DictionaryDto extends DictLanguagesDto {
+  @ApiProperty({ description: 'A front side dictionary name', nullable: false })
+  @IsString()
+  readonly fsName: string;
+
+  @ApiProperty({ description: 'A back side dictionary name', nullable: false })
+  @IsString()
+  readonly bsName: string;
 }
 
 export class CreateDictionaryDto extends DictionaryDto {
@@ -65,7 +78,7 @@ export class WithTagsAndCardSettingsRespDto extends DictionaryRespDto {
   readonly cards: CardWithSettingsDto[];
 }
 
-export class GetListDto {
+export class GetListDto extends DictLanguagesDto {
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()

@@ -59,6 +59,8 @@ export class CardController {
 
   @Get('list')
   @ApiOperation({ summary: 'Get a card list according to the conditions' })
+  @ApiQuery({ name: 'fsLanguage', required: true, type: Boolean, description: 'the card front side  language' })
+  @ApiQuery({ name: 'bsLanguage', required: true, type: Boolean, description: 'the card back side language' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })
@@ -74,6 +76,8 @@ export class CardController {
 
   @Get('list-with-first')
   @ApiOperation({ summary: 'Get a card list  and the first card' })
+  @ApiQuery({ name: 'fsLanguage', required: true, type: Boolean, description: 'the card front side  language' })
+  @ApiQuery({ name: 'bsLanguage', required: true, type: Boolean, description: 'the card back side language' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'page number' })
   @ApiQuery({ name: 'pageSize', required: false, type: Number, description: 'number of records per page' })
   @ApiQuery({ name: 'byUser', required: false, type: Boolean, description: 'search for cards created by user' })

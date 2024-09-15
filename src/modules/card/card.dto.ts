@@ -2,13 +2,13 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
-  IsInt,
+  IsInt, IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
   ValidateNested,
-} from 'class-validator';
+} from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
@@ -161,6 +161,16 @@ export class CardWithTagsRespDto extends CardRespDto {
 }
 
 export class GetCardListDto {
+  @ApiProperty({ description: 'A card front side language', nullable: false, example: 'ru' })
+  @IsString()
+  @IsNotEmpty()
+  readonly fsLanguage: string;
+
+  @ApiProperty({ description: 'A card back side language', nullable: false, example: 'en' })
+  @IsString()
+  @IsNotEmpty()
+  readonly bsLanguage: string;
+
   @ApiProperty({ description: 'page number' })
   @IsOptional()
   @IsInt()

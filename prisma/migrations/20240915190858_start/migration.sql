@@ -69,7 +69,8 @@ CREATE TABLE "cards" (
 CREATE TABLE "dictionaries" (
     "id" SERIAL NOT NULL,
     "authorId" UUID NOT NULL,
-    "name" VARCHAR NOT NULL,
+    "fsName" VARCHAR NOT NULL,
+    "bsName" VARCHAR NOT NULL,
     "fsLanguage" TEXT NOT NULL DEFAULT 'ru',
     "bsLanguage" TEXT NOT NULL DEFAULT 'en',
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -83,7 +84,8 @@ CREATE TABLE "dictionaries" (
 CREATE TABLE "tags" (
     "id" SERIAL NOT NULL,
     "authorId" UUID NOT NULL,
-    "name" VARCHAR NOT NULL,
+    "fsValue" VARCHAR NOT NULL,
+    "bsValue" VARCHAR NOT NULL,
     "fsLanguage" TEXT NOT NULL DEFAULT 'ru',
     "bsLanguage" TEXT NOT NULL DEFAULT 'en',
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -176,10 +178,16 @@ CREATE UNIQUE INDEX "cards_fsValue_key" ON "cards"("fsValue");
 CREATE UNIQUE INDEX "cards_bsValue_key" ON "cards"("bsValue");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "dictionaries_name_key" ON "dictionaries"("name");
+CREATE UNIQUE INDEX "dictionaries_fsName_key" ON "dictionaries"("fsName");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "tags_name_key" ON "tags"("name");
+CREATE UNIQUE INDEX "dictionaries_bsName_key" ON "dictionaries"("bsName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tags_fsValue_key" ON "tags"("fsValue");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tags_bsValue_key" ON "tags"("bsValue");
 
 -- CreateIndex
 CREATE INDEX "statistics_userId_dictionaryId_createdAt_idx" ON "statistics"("userId", "dictionaryId", "createdAt");
@@ -194,28 +202,28 @@ ALTER TABLE "languages" ADD CONSTRAINT "languages_authorId_fkey" FOREIGN KEY ("a
 ALTER TABLE "cards" ADD CONSTRAINT "cards_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "cards" ADD CONSTRAINT "cards_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "cards" ADD CONSTRAINT "cards_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE "cards" ADD CONSTRAINT "cards_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "cards" ADD CONSTRAINT "cards_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "dictionaries" ADD CONSTRAINT "dictionaries_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "dictionaries" ADD CONSTRAINT "dictionaries_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "dictionaries" ADD CONSTRAINT "dictionaries_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE "dictionaries" ADD CONSTRAINT "dictionaries_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "dictionaries" ADD CONSTRAINT "dictionaries_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "tags" ADD CONSTRAINT "tags_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "tags" ADD CONSTRAINT "tags_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tags" ADD CONSTRAINT "tags_fsLanguage_fkey" FOREIGN KEY ("fsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
-ALTER TABLE "tags" ADD CONSTRAINT "tags_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tags" ADD CONSTRAINT "tags_bsLanguage_fkey" FOREIGN KEY ("bsLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "card_tags" ADD CONSTRAINT "card_tags_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES "cards"("id") ON DELETE CASCADE ON UPDATE CASCADE;

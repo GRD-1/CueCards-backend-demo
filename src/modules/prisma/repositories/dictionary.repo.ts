@@ -2,13 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Dictionary } from '@prisma/client';
 import { PrismaService } from '@/modules/prisma/prisma.service';
 import {
-  DictionaryAndTagsInterface,
-  DictionaryTagInterface,
-  FindManyDictConditionsInterface,
-  GetDictListInterface,
-  GetDictListRespInterface,
+  IDictionaryAndTags,
+  IDictionaryTag,
+  IFindManyDictConditions,
+  IGetDictList,
+  IGetDictListResp,
+  IUpdateDictionary,
   SearchConditionsArgsType,
-  UpdateDictionaryInterface,
 } from '@/modules/dictionary/dictionary.interface';
 import {
   DictionaryWithTagsAndCardsEntity,
@@ -29,7 +29,7 @@ export class DictionaryRepo {
     private readonly prisma: PrismaService,
   ) {}
 
-  async create(payload: DictionaryAndTagsInterface, authorId: string): Promise<number> {
+  async create(payload: IDictionaryAndTags, authorId: string): Promise<number> {
     const { tags, ...newDictionaryData } = payload;
     let newDictionary: Dictionary;
 
@@ -70,9 +70,9 @@ export class DictionaryRepo {
     return newDictionary.id;
   }
 
-  async getList(args: GetDictListInterface): Promise<GetDictListRespInterface> {
+  async getList(args: IGetDictList): Promise<IGetDictListResp> {
     const { page = 1, pageSize = 20 } = args;
-    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
+    const searchConditions: IFindManyDictConditions = this.getDictSearchConditions(args);
 
     const dictionaries = await this.prisma.dictionary.findMany({
       select: DICTIONARY_SELECT_OPTIONS,
@@ -85,21 +85,21 @@ export class DictionaryRepo {
   }
 
   async getTotalCount(args: SearchConditionsArgsType): Promise<number> {
-    const searchConditions: FindManyDictConditionsInterface = this.getDictSearchConditions(args);
+    const searchConditions: IFindManyDictConditions = this.getDictSearchConditions(args);
 
     return this.prisma.dictionary.count({ where: searchConditions });
   }
 
-  getDictSearchConditions(args: SearchConditionsArgsType): FindManyDictConditionsInterface {
-    const { userId, byUser, name, partOfName } = args;
-    const searchConditions: FindManyDictConditionsInterface = {};
+  getDictSearchConditions(args: SearchConditionsArgsType): IFindManyDictConditions {
+    const { userId, byUser, name, partOfName, fsLanguage, bsLanguage } = args;
+    const searchConditions: IFindManyDictConditions = { fsLanguage, bsLanguage };
 
     searchConditions.authorId = byUser ? userId : { in: [userId, this.userConf.defaultUserId] };
 
     if (partOfName) {
-      searchConditions.name = { contains: partOfName };
+      searchConditions.OR = [{ fsName: { contains: partOfName } }, { bsName: { contains: partOfName } }];
     } else if (name) {
-      searchConditions.name = name;
+      searchConditions.OR = [{ fsName: name }, { bsName: name }];
     }
 
     return searchConditions;
@@ -110,13 +110,16 @@ export class DictionaryRepo {
       SELECT
             d.id,
             d."authorId",
-            d.name,
+            d."fsName",
+            d."bsName",
             COALESCE(
               json_agg(DISTINCT row_to_json(c)::jsonb)
               FILTER (WHERE c.id IS NOT NULL), '[]'
             ) AS cards,
             COALESCE(
-              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              json_agg(DISTINCT jsonb_build_object(
+                'id', t.id, 'authorId', t."authorId", 'fsValue', t."fsValue", 'bsValue', t."bsValue"
+              ))
               FILTER (WHERE t.id IS NOT NULL), '[]'
             ) AS tags
           FROM dictionaries d
@@ -125,7 +128,7 @@ export class DictionaryRepo {
           LEFT JOIN cards c ON c.id = ct."cardId"
           LEFT JOIN tags t ON t.id = dt."tagId"
           WHERE d.id = ${id}
-          GROUP BY d.id, d."authorId", d.name;
+          GROUP BY d.id, d."authorId", d."fsName", d."bsName";
     `;
 
     if (!data[0]) {
@@ -140,23 +143,26 @@ export class DictionaryRepo {
         SELECT
             d.id,
             d."authorId",
-            d.name,
+            d."fsName",
+            d."bsName",
             COALESCE(
               json_agg(DISTINCT row_to_json(c)::jsonb)
               FILTER (WHERE c.id IS NOT NULL), '[]'
             ) AS cards,
             COALESCE(
-              json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+              json_agg(DISTINCT jsonb_build_object(
+                'id', t.id, 'authorId', t."authorId", 'fsValue', t."fsValue", 'bsValue', t."bsValue"
+              ))
               FILTER (WHERE t.id IS NOT NULL), '[]'
             ) AS tags
           FROM dictionaries d
           LEFT JOIN dictionary_tags dt ON dt."dictionaryId" = d.id
           LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
           LEFT JOIN cards c ON c.id = ct."cardId"
-          LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = ${userId}
+          LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = CAST(${userId} AS uuid)
           LEFT JOIN tags t ON t.id = dt."tagId"
           WHERE d.id = ${id} AND ch."cardId" IS NULL
-          GROUP BY d.id, d."authorId", d.name;
+          GROUP BY d.id, d."authorId", d."fsName", d."bsName";
     `;
 
     if (!data[0]) {
@@ -171,7 +177,8 @@ export class DictionaryRepo {
         SELECT
             d.id,
             d."authorId",
-            d.name,
+            d."fsName",
+            d."bsName",
             COALESCE(
                 json_agg(DISTINCT jsonb_build_object(
                     'id', c.id,
@@ -184,7 +191,9 @@ export class DictionaryRepo {
                 FILTER (WHERE c.id IS NOT NULL), '[]'
             ) AS cards,
             COALESCE(
-                json_agg(DISTINCT jsonb_build_object('id', t.id, 'authorId', t."authorId", 'name', t.name))
+                json_agg(DISTINCT jsonb_build_object(
+                  'id', t.id, 'authorId', t."authorId", 'fsValue', t."fsValue", 'bsValue', t."bsValue"
+                ))
                 FILTER (WHERE t.id IS NOT NULL), '[]'
             ) AS tags
         FROM dictionaries d
@@ -192,10 +201,10 @@ export class DictionaryRepo {
         LEFT JOIN card_tags ct ON ct."tagId" = dt."tagId"
         LEFT JOIN cards c ON c.id = ct."cardId"
         LEFT JOIN tags t ON t.id = dt."tagId"
-        LEFT JOIN card_statistics cs ON cs."cardId" = c.id AND cs."userId" = ${userId}
-        LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = ${userId}
+        LEFT JOIN card_statistics cs ON cs."cardId" = c.id AND cs."userId" = CAST(${userId} AS uuid)
+        LEFT JOIN card_is_hidden ch ON ch."cardId" = c.id AND ch."userId" = CAST(${userId} AS uuid)
         WHERE d.id = ${id}
-        GROUP BY d.id, d."authorId", d.name;
+        GROUP BY d.id, d."authorId", d."fsName", d."bsName";
     `;
 
     if (!data[0]) {
@@ -205,16 +214,18 @@ export class DictionaryRepo {
     return data[0];
   }
 
-  async getIdByName(name: string): Promise<number | null> {
+  async getIdByName(fsName: string, bsName: string): Promise<number | null> {
     const dictionary = await this.prisma.dictionary.findFirst({
       select: { id: true },
-      where: { name },
+      where: {
+        OR: [{ fsName }, { bsName }],
+      },
     });
 
     return dictionary?.id || null;
   }
 
-  async updateOneById(args: UpdateDictionaryInterface): Promise<number> {
+  async updateOneById(args: IUpdateDictionary): Promise<number> {
     const { dictionaryId, dictionaryData, tagIdToDeleteArr, newTagsArr } = args;
 
     if (tagIdToDeleteArr || newTagsArr) {
@@ -276,7 +287,7 @@ export class DictionaryRepo {
     return deletedDictionary.id;
   }
 
-  async getDictionaryTags(dictionaryId: number): Promise<DictionaryTagInterface[]> {
+  async getDictionaryTags(dictionaryId: number): Promise<IDictionaryTag[]> {
     return this.prisma.dictionaryTag.findMany({
       where: { dictionaryId },
     });
