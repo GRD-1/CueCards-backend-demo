@@ -4,7 +4,10 @@ import { CardEntity, CardWithSettingsEntity } from '@/modules/card/card.entity';
 export class DictionaryEntity {
   id: number;
   authorId: string | null;
-  name: string;
+  fsName: string;
+  bsName: string;
+  fsLanguage: string;
+  bsLanguage: string;
 }
 
 export class DictionaryWithTagsEntity extends DictionaryEntity {

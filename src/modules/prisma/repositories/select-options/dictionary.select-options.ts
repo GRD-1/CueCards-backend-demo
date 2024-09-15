@@ -3,7 +3,10 @@ import { TAG_SELECT_OPTIONS } from '@/modules/prisma/repositories/select-options
 export const DICTIONARY_SELECT_OPTIONS = {
   id: true,
   authorId: true,
-  name: true,
+  fsName: true,
+  bsName: true,
+  fsLanguage: true,
+  bsLanguage: true,
   tags: {
     select: {
       tag: {

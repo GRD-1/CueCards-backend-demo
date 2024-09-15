@@ -98,7 +98,8 @@ model Card {
 model Dictionary {
   id         Int             @id() @default(autoincrement())
   authorId   String          @db.Uuid
-  name       String          @unique @db.VarChar
+  fsName     String          @unique @db.VarChar
+  bsName     String          @unique @db.VarChar
   fsLanguage String          @default("ru")
   bsLanguage String          @default("en")
   createdAt  DateTime        @default(now()) @db.Timestamp(6)

@@ -69,7 +69,8 @@ CREATE TABLE "cards" (
 CREATE TABLE "dictionaries" (
     "id" SERIAL NOT NULL,
     "authorId" UUID NOT NULL,
-    "name" VARCHAR NOT NULL,
+    "fsName" VARCHAR NOT NULL,
+    "bsName" VARCHAR NOT NULL,
     "fsLanguage" TEXT NOT NULL DEFAULT 'ru',
     "bsLanguage" TEXT NOT NULL DEFAULT 'en',
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -177,7 +178,10 @@ CREATE UNIQUE INDEX "cards_fsValue_key" ON "cards"("fsValue");
 CREATE UNIQUE INDEX "cards_bsValue_key" ON "cards"("bsValue");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "dictionaries_name_key" ON "dictionaries"("name");
+CREATE UNIQUE INDEX "dictionaries_fsName_key" ON "dictionaries"("fsName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "dictionaries_bsName_key" ON "dictionaries"("bsName");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "tags_fsValue_key" ON "tags"("fsValue");
