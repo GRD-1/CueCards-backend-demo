@@ -8,7 +8,13 @@ import { CueCardsError } from '@/filters/errors/error.types';
 import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
 import Handlebars from 'handlebars';
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
-import { CONFIRM_EMAIL_MSG, EMAIL_ERR_MSG, EMAIL_MSG, REST_EMAIL_MSG } from '@/constants/messages.constants';
+import {
+  CONFIRM_EMAIL_MSG,
+  EMAIL_ERR_MSG,
+  EMAIL_INVALID_MSG,
+  EMAIL_MSG,
+  REST_EMAIL_MSG,
+} from '@/constants/messages.constants';
 
 @Injectable()
 export class MailerService {
@@ -42,7 +48,7 @@ export class MailerService {
     return Handlebars.compile<ITemplatedData>(templateText, { strict: true });
   }
 
-  public async sendEmail(to: string, subject: string, html: string, log?: string): Promise<void> {
+  private async sendEmail(to: string, subject: string, html: string, log?: string): Promise<void> {
     const params = {
       Destination: {
         ToAddresses: [to],
@@ -66,19 +72,26 @@ export class MailerService {
       await this.sesClient.send(new SendEmailCommand(params));
       this.logger.log(log ?? EMAIL_MSG);
     } catch (error) {
-      throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, EMAIL_ERR_MSG, error.stack);
+      if (error.name === 'MessageRejected') {
+        throw new CueCardsError(CCBK_ERROR_CODES.BAD_REQUEST, EMAIL_INVALID_MSG, error.stack);
+      } else if (error.name === 'ServiceUnavailable' || error.name === 'RequestTimeout') {
+        throw new CueCardsError(CCBK_ERROR_CODES.SERVICE_UNAVAILABLE, EMAIL_ERR_MSG, error.stack);
+      } else {
+        throw new CueCardsError(CCBK_ERROR_CODES.INTERNAL_SERVER_ERROR, EMAIL_ERR_MSG, error.stack);
+      }
     }
   }
 
-  public async sendConfirmationEmail(email: string, nickname: string, code: string): Promise<void> {
+  public async sendConfirmationEmail(email: string, code: string, nick?: string): Promise<void> {
     const subject = 'Confirm your email';
+    const nickname = nick || 'User';
     const ttlInMinutes = this.emailConf.ttl / 60;
     const html = this.templates.confirmationCode({ nickname, code, ttlInMinutes });
 
     await this.sendEmail(email, subject, html, CONFIRM_EMAIL_MSG);
   }
 
-  public async sendResetPasswordEmail(email: string, nickname: string, code: string): Promise<void> {
+  public async sendResetPasswordEmail(email: string, code: string, nickname: string): Promise<void> {
     const subject = 'Reset your password';
     const ttlInMinutes = this.emailConf.ttl / 60;
     const html = this.templates.resetPasswordCode({ nickname, code, ttlInMinutes });
