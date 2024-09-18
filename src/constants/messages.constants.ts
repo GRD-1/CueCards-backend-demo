@@ -7,6 +7,7 @@ export const DELETE_USER_MSG = 'The account has been deleted';
 
 export const EMAIL_OCCUPIED_ERR_MSG = 'This email address is already occupied';
 export const EMAIL_ERR_MSG = 'The email was not sent';
+export const EMAIL_INVALID_MSG = 'Invalid email';
 export const INVALID_CODE_ERR_MSG = 'Invalid code';
 export const INVALID_CREDENTIALS_ERR_MSG = 'Invalid credentials';
 export const UNAUTHORIZED_ERR_MSG = 'Authorization is required';

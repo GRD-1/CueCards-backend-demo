@@ -20,7 +20,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         responsePayload = { ...CCBK_ERR_TO_HTTP[(exception as CueCardsError).code] };
         responsePayload.errorMsg = `${responsePayload.errorMsg}: ${(exception as CueCardsError).message}`;
 
-        this.logger.error(exception.stack);
+        this.logger.error(exception.stack, exception.cause);
         break;
 
       case exception instanceof HttpException:

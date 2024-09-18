@@ -60,8 +60,8 @@ export class AuthService {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, EMAIL_OCCUPIED_ERR_MSG);
     }
 
+    await this.sendCode(userData.email, EmailType.Confirmation, nickname);
     const user = await this.userRepo.create({ email, avatar, password: hashedPass, nickname });
-    await this.sendCode(userData.email, EmailType.Confirmation);
 
     return user.id;
   }
@@ -98,14 +98,16 @@ export class AuthService {
     return this.generateAuthTokens({ userId: id, version, domain });
   }
 
-  public async sendCode(email: string, type: EmailType): Promise<void> {
-    const user = await this.userRepo.findOneWithCredentialsByEmail(email);
-    const cacheKey = `code:${type}:${user.email}`;
+  public async sendCode(email: string, type: EmailType, nickname?: string): Promise<void> {
     const cacheValue = Math.floor(1000 + Math.random() * 9000).toString();
+    let cacheKey: string;
 
     if (type === EmailType.Confirmation) {
-      await this.mailerService.sendConfirmationEmail(user.email, user.nickname, cacheValue);
+      cacheKey = `code:${type}:${email}`;
+      await this.mailerService.sendConfirmationEmail(email, cacheValue, nickname);
     } else {
+      const user = await this.userRepo.findOneWithCredentialsByEmail(email);
+      cacheKey = `code:${type}:${user.email}`;
       await this.mailerService.sendResetPasswordEmail(user.email, user.nickname, cacheValue);
     }
 

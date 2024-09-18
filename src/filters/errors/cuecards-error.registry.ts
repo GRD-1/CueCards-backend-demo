@@ -12,6 +12,7 @@ export const CCBK_ERROR_CODES = {
   INVALID_CREDENTIALS: 'CCBK08',
   ENV_VALIDATION_ERROR: 'CCBK09',
   UNCONFIRMED_EMAIL: 'CCBK10',
+  SERVICE_UNAVAILABLE: 'CCBK11',
 };
 
 export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
@@ -64,5 +65,10 @@ export const CCBK_ERR_TO_HTTP: Record<string, ErrorToHttpInterface> = {
     error: true,
     statusCode: HttpStatus.UNAUTHORIZED,
     errorMsg: 'Unconfirmed email',
+  },
+  [CCBK_ERROR_CODES.SERVICE_UNAVAILABLE]: {
+    error: true,
+    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+    errorMsg: 'Internal server error',
   },
 };
