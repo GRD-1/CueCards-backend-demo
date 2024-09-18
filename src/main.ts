@@ -17,6 +17,7 @@ async function bootstrap(): Promise<void> {
   const appLogLevel = configService.get<AppLogLevel>('APP_LOG_LEVEL');
   const appPort = configService.get<number>('APP_PORT');
 
+  app.enableCors({ origin: true });
   app.useLogger([appLogLevel!]);
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(
