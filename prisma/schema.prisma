@@ -9,8 +9,8 @@ datasource db {
 
 model User {
   id             String           @id @default(uuid()) @db.Uuid
-  email          String           @unique @db.VarChar(255)
-  nickname       String           @db.VarChar
+  email          String           @unique @db.VarChar(50)
+  nickname       String           @db.VarChar(20)
   avatar         String?          @db.VarChar
   confirmed      Boolean          @default(false)
   createdAt      DateTime         @default(now()) @db.Timestamp(6)
@@ -61,6 +61,25 @@ model Language {
   @@map("languages")
 }
 
+model Tag {
+  id            Int             @id @default(autoincrement())
+  authorId      String          @db.Uuid
+  fsValue       String          @unique @db.VarChar
+  bsValue       String          @unique @db.VarChar
+  fsLanguage    String          @default("ru")
+  bsLanguage    String          @default("en")
+  createdAt     DateTime        @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime        @default(now()) @updatedAt @db.Timestamp(6)
+  deleteMark    Boolean         @default(false)
+  users         User            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  fsLang        Language        @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym], onDelete: Restrict, onUpdate: Restrict)
+  bsLang        Language        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym], onDelete: Restrict, onUpdate: Restrict)
+  CardTag       CardTag[]
+  DictionaryTag DictionaryTag[]
+
+  @@map("tags")
+}
+
 model Card {
   id                Int              @id @default(autoincrement())
   authorId          String           @db.Uuid
@@ -95,6 +114,16 @@ model Card {
   @@map("cards")
 }
 
+model CardTag {
+  cardId Int
+  tagId  Int
+  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([cardId, tagId], map: "card_tag_unique_constraint")
+  @@map("card_tags")
+}
+
 model Dictionary {
   id         Int             @id() @default(autoincrement())
   authorId   String          @db.Uuid
@@ -112,35 +141,6 @@ model Dictionary {
   statistics Statistics[]    @relation("DictionaryRelation")
 
   @@map("dictionaries")
-}
-
-model Tag {
-  id            Int             @id @default(autoincrement())
-  authorId      String          @db.Uuid
-  fsValue       String          @unique @db.VarChar
-  bsValue       String          @unique @db.VarChar
-  fsLanguage    String          @default("ru")
-  bsLanguage    String          @default("en")
-  createdAt     DateTime        @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime        @default(now()) @updatedAt @db.Timestamp(6)
-  deleteMark    Boolean         @default(false)
-  users         User            @relation("AuthorRelation", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  fsLang        Language        @relation("FsLanguageRelation", fields: [fsLanguage], references: [acronym], onDelete: Restrict, onUpdate: Restrict)
-  bsLang        Language        @relation("BsLanguageRelation", fields: [bsLanguage], references: [acronym], onDelete: Restrict, onUpdate: Restrict)
-  CardTag       CardTag[]
-  DictionaryTag DictionaryTag[]
-
-  @@map("tags")
-}
-
-model CardTag {
-  cardId Int
-  tagId  Int
-  card   Card @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@id([cardId, tagId], map: "card_tag_unique_constraint")
-  @@map("card_tags")
 }
 
 model DictionaryTag {

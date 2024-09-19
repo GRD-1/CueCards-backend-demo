@@ -21,7 +21,7 @@ export class SignUpDto extends UserDto {
 export abstract class EmailDto {
   @ApiProperty({ description: 'user email', nullable: false })
   @IsEmail()
-  @Length(5, 255)
+  @Length(5, 50)
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
 }

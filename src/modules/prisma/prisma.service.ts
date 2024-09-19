@@ -28,7 +28,7 @@ export class PrismaService extends PrismaClient {
     );
 
     await this.$connect();
-    await this.seedWithDefaultUsers();
+    await this.updateDefaultUsers();
   }
 
   async onShutdown(): Promise<void> {
@@ -39,7 +39,7 @@ export class PrismaService extends PrismaClient {
     return this.replicas.$replica();
   }
 
-  async seedWithDefaultUsers(): Promise<void> {
+  async updateDefaultUsers(): Promise<void> {
     const defaultPassHash = await hash(this.userConf.defaultUserPassword, 10);
     await this.user.upsert({
       where: { id: this.userConf.defaultUserId },

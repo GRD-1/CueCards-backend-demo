@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
-    "nickname" VARCHAR NOT NULL,
+    "email" VARCHAR(50) NOT NULL,
+    "nickname" VARCHAR(20) NOT NULL,
     "avatar" VARCHAR,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,

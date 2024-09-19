@@ -22,6 +22,8 @@
     "prisma:pull": "prisma db pull",
     "prisma:push": "prisma db push",
     "prisma:validate": "prisma validate",
+    "prisma:seed": "npx prisma db seed",
+    "prisma:seed-sync": "npx @snaplet/seed sync",
     "migration:create": "prisma migrate dev --create-only --name ",
     "migration:up": "prisma migrate deploy",
     "migration:reset": "prisma migrate reset",
@@ -77,6 +79,8 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@snaplet/copycat": "^5.0.0",
+    "@snaplet/seed": "^0.98.0",
     "@types/cache-manager-redis-store": "^2.0.4",
     "@types/express": "^4.17.13",
     "@types/jest": "29.5.0",
@@ -103,6 +107,13 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.1",
     "typescript": "^5.3.2"
+  },
+  "@snaplet/seed": {
+    "config": "prisma/seed/seed.config.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/seed.ts"
   }
 }
