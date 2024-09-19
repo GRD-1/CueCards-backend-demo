@@ -188,8 +188,8 @@ model Settings {
   createdAt        DateTime @default(now()) @db.Timestamp(6)
   updatedAt        DateTime @default(now()) @updatedAt @db.Timestamp(6)
   users            User     @relation("UserRelation", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  appLang          Language @relation("AppLanguageRelation", fields: [appLanguage], references: [acronym])
-  trainingLang     Language @relation("TrainingLanguageRelation", fields: [trainingLanguage], references: [acronym])
+  appLang          Language @relation("AppLanguageRelation", fields: [appLanguage], references: [acronym], onDelete: Cascade, onUpdate: Cascade)
+  trainingLang     Language @relation("TrainingLanguageRelation", fields: [trainingLanguage], references: [acronym], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("settings")
 }
