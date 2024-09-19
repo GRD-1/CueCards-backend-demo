@@ -60,7 +60,11 @@ $ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
 ``` bash
 $ npm run migration:up
 ```
-7. Run the application using package.json scripts, e.g:
+7. Seed database:
+``` bash
+$ npm run prisma:seed
+```
+8. Run the application using package.json scripts, e.g:
 ``` bash
 $ npm run start:dev
 ```
