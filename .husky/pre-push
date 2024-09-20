@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Testing..."
+{
+  npm run test 1> /dev/null
+} || {
+  echo "Testing failed!"
+  exit 1
+}
+echo "Testing successful!"
