@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
-    "nickname" VARCHAR NOT NULL,
+    "email" VARCHAR(50) NOT NULL,
+    "nickname" VARCHAR(20) NOT NULL,
     "avatar" VARCHAR,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -253,10 +253,10 @@ ALTER TABLE "card_is_hidden" ADD CONSTRAINT "card_is_hidden_userId_fkey" FOREIGN
 ALTER TABLE "settings" ADD CONSTRAINT "settings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "settings" ADD CONSTRAINT "settings_appLanguage_fkey" FOREIGN KEY ("appLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "settings" ADD CONSTRAINT "settings_appLanguage_fkey" FOREIGN KEY ("appLanguage") REFERENCES "languages"("acronym") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "settings" ADD CONSTRAINT "settings_trainingLanguage_fkey" FOREIGN KEY ("trainingLanguage") REFERENCES "languages"("acronym") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "settings" ADD CONSTRAINT "settings_trainingLanguage_fkey" FOREIGN KEY ("trainingLanguage") REFERENCES "languages"("acronym") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "statistics" ADD CONSTRAINT "statistics_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

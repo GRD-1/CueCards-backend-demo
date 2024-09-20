@@ -11,5 +11,5 @@ public/
 README.md
 .huskyrc
 .giignore
-prisma/*
+prisma/schema.prisma
 src/config/config.schema.ts

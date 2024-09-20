@@ -45,9 +45,11 @@ export const validationSchema = Joi.object({
   DEFAULT_USER_ID: Joi.string().uuid().required(),
   DEFAULT_USER_EMAIL: Joi.string().required(),
   DEFAULT_USER_NICKNAME: Joi.string(),
+  DEFAULT_USER_AVATAR: Joi.string(),
   DEFAULT_USER_PASSWORD: Joi.string().required(),
   TEST_USER_ID: Joi.string().uuid(),
   TEST_USER_EMAIL: Joi.string(),
   TEST_USER_NICKNAME: Joi.string(),
+  TEST_USER_AVATAR: Joi.string(),
   TEST_USER_PASSWORD: Joi.string(),
 });

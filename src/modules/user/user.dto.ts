@@ -5,14 +5,14 @@ import { Transform } from "class-transformer";
 export class UserDto {
   @ApiProperty({ description: 'user email', nullable: false })
   @IsEmail()
-  @Length(5, 255)
+  @Length(5, 50)
   @Transform(({ value }) => value.toLowerCase())
   readonly email: string;
 
   @ApiProperty({ description: 'user nickname', nullable: false })
   @IsNotEmpty()
   @IsString()
-  @Length(1, 150)
+  @Length(1, 20)
   readonly nickname: string;
 
   @ApiProperty({ description: 'path to avatar image', nullable: true, example: '~/path/to/avatar.png' })
@@ -41,7 +41,7 @@ export class UserRespDto {
 export class UpdateUserDto {
   @ApiProperty({ description: 'user nickname', nullable: false })
   @IsString()
-  @Length(1, 150)
+  @Length(1, 20)
   @IsOptional()
   readonly nickname: string;
 
