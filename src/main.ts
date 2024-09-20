@@ -14,6 +14,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { httpsOptions });
   const configService = app.get(ConfigService);
   const appConf = configService.get('app');
+  const nodeConf = configService.get('node');
 
   app.enableCors({ origin: appConf.corsDomains });
   app.useLogger([appConf.logLevel]);
@@ -39,15 +40,17 @@ async function bootstrap(): Promise<void> {
   );
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  const params = new DocumentBuilder()
-    .setTitle('CueCards API')
-    .setDescription('An application for learning proverbs in a foreign language')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  if (nodeConf.mode === 'development') {
+    const params = new DocumentBuilder()
+      .setTitle('CueCards API')
+      .setDescription('')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, params);
-  SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, params);
+    SwaggerModule.setup('api', app, document);
+  }
 
   await app.listen(appConf.port);
 }
