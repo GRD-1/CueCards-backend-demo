@@ -101,15 +101,17 @@ $ npm run test
 
 ## CI/CD
 
-The following plugins are used for CI part:
-* Husky
-* @commitlint/cli
-* GitHub actions
-* semantic-release
+The following technologies are used for CI part:
+* <a href="https://github.com/typicode/husky" target="_blank">Husky</a>
+* <a href="https://www.npmjs.com/package/@commitlint/cli" target="_blank">@commitlint/cli</a>
+* <a href="https://docs.github.com/en/actions">GitHub actions</a>
+* <a href="https://semantic-release.gitbook.io/semantic-release">semantic-release</a>
 
 ## Documentation
 ### Swagger API map
-* When the server is running, the API map is available at: https://localhost:3000/api
+* In a development mode you can get access to the API map
+* To switch the project to development mode, in [.env](.env) set NODE_ENV=development
+* The API map will be available at: https://localhost:3000/api
 * To get the API json go to https://localhost:3000/api-json
 
 ### Compodoc
