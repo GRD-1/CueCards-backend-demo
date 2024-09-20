@@ -1,21 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { SettingsRepo } from '@/modules/prisma/repositories/settings.repo';
-import { SettingsEntity } from '@/modules/settings/settings.entity';
-import { SettingsInterface } from '@/modules/settings/settings.interface';
+import { UpdateSettingsDto } from './dto/update-settings.dto';
 
 @Injectable()
 export class SettingsService {
-  constructor(private readonly settingsRepo: SettingsRepo) {}
-
-  async getSettings(userId: string): Promise<SettingsEntity | null> {
-    return this.settingsRepo.getSettings(userId);
+  async findAll(): Promise<string> {
+    return 'settings JSON';
   }
 
-  async updateSettings(userId: string, payload: Partial<SettingsInterface>): Promise<SettingsEntity> {
-    return this.settingsRepo.updateSettings(userId, payload);
-  }
-
-  async resetSettings(userId: string): Promise<SettingsEntity> {
-    return this.settingsRepo.resetSettings(userId);
+  async update(dto: UpdateSettingsDto): Promise<string> {
+    return 'app settings has been updated';
   }
 }

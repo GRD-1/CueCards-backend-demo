@@ -1,96 +1,31 @@
 import { Injectable } from '@nestjs/common';
-import { CardRepo } from '@/modules/prisma/repositories/card.repo';
-import {
-  CardAndTagsInterface,
-  CardTagInterface,
-  GetCardListFullRespInterface,
-  GetCardListInterface,
-  GetListWithFirstRespInterface,
-  UpdateCardInterface,
-} from '@/modules/card/card.interface';
-import { CardWitTagsEntity } from '@/modules/card/card.entity';
-import { CueCardsError } from '@/filters/errors/error.types';
-import { CCBK_ERROR_CODES } from '@/filters/errors/cuecards-error.registry';
-import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/messages.constants';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateCardDto } from './dto/create-card.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { CardEntity } from './entities/card.entity';
 
 @Injectable()
 export class CardService {
-  constructor(private readonly cardRepo: CardRepo) {}
+  constructor(@InjectRepository(CardEntity) private readonly cardRepository: Repository<CardEntity>) {}
 
-  async create(payload: CardAndTagsInterface, userId: string): Promise<number> {
-    const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
-    if (existingCardId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
-    }
-
-    return this.cardRepo.create(payload, userId);
+  async create(dto: CreateCardDto): Promise<string> {
+    return 'A new card has been created!';
   }
 
-  async getList(args: GetCardListInterface): Promise<GetCardListFullRespInterface> {
-    const [{ page, pageSize, cards }, totalRecords] = await Promise.all([
-      this.cardRepo.getList(args),
-      this.cardRepo.getTotalCount(args),
-    ]);
-
-    return { page, pageSize, records: cards.length, totalRecords, cards };
+  async findAll(): Promise<CardEntity[]> {
+    return this.cardRepository.find();
   }
 
-  async getListWithFirst(args: GetCardListInterface): Promise<GetListWithFirstRespInterface> {
-    let firstCard: CardWitTagsEntity | null = null;
-
-    const list = await this.getList(args);
-
-    if (list.cards.length) {
-      firstCard = await this.findOneById(list.cards[0].id);
-    }
-
-    return { ...list, firstCard };
+  async findOne(cardId: number): Promise<CardEntity | null> {
+    return this.cardRepository.findOneBy({ id: cardId });
   }
 
-  async findOneById(cardId: number): Promise<CardWitTagsEntity> {
-    return this.cardRepo.findOneById(cardId);
+  async update(cardId: number, dto: UpdateCardDto): Promise<string> {
+    return `the card with id = ${cardId} has been updated!`;
   }
 
-  async updateOneById(cardId: number, payload: Partial<CardAndTagsInterface>, userId: string): Promise<number> {
-    const { tags: newTags, ...cardData } = payload;
-    let tagIdToDeleteArr: number[];
-    let newTagsArr: CardTagInterface[];
-    let args: UpdateCardInterface = { cardId, cardData };
-
-    await this.checkEditingRights(cardId, userId);
-
-    if (newTags) {
-      const oldTags = await this.cardRepo.getCardTags(cardId);
-      const oldTagIdArr = oldTags.map((item) => item.tagId);
-      const newTagIdSet = new Set(newTags);
-      const uniqueInNewTags = newTags.filter((item) => !oldTagIdArr.includes(item));
-
-      tagIdToDeleteArr = oldTagIdArr.filter((item) => !newTagIdSet.has(item));
-      newTagsArr = uniqueInNewTags.map((tagId) => ({ cardId, tagId }));
-      args = { cardId, cardData, tagIdToDeleteArr, newTagsArr };
-    }
-
-    return this.cardRepo.updateOneById(args);
-  }
-
-  async delete(cardId: number, userId: string): Promise<number> {
-    await this.checkEditingRights(cardId, userId);
-
-    return this.cardRepo.delete(cardId);
-  }
-
-  async checkEditingRights(cardId: number, userId: string): Promise<void> {
-    const card = await this.cardRepo.findOneById(cardId);
-    if (card.authorId !== userId) {
-      throw new CueCardsError(CCBK_ERROR_CODES.FORBIDDEN, ACCESS_VIOLATION_ERR_MSG);
-    }
-  }
-
-  async hide(cardId: number, userId: string): Promise<number> {
-    return this.cardRepo.hide(cardId, userId);
-  }
-
-  async display(cardId: number, userId: string): Promise<number> {
-    return this.cardRepo.display(cardId, userId);
+  async remove(cardId: number): Promise<string> {
+    return `the card with id = ${cardId} has been deleted!`;
   }
 }

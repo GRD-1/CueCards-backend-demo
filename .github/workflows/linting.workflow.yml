@@ -3,89 +3,51 @@ run-name: linting-workflow-runner
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
   linting:
-    runs-on: ubuntu-latest
+    runs-on:
+      ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Staring Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Restore Cache
+      - name: Restoring cache
         uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/npm.lock') }}
 
-      - name: Install Packages
-        run: npm install --legacy-peer-deps
+      - name: Installing packages
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm install
 
-      - name: Get Commit Info
-        id: commit_info
-        run: |
-          echo "GITHUB_SHA: $GITHUB_SHA"
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_HEAD_REF: ${{ github.head_ref }}"
-          echo "GITHUB_BASE_REF: ${{ github.base_ref }}"
-
-      - name: Get Previous Commit
-        id: prev_commit
-        run: |
-          if [ "${{ github.base_ref }}" = "" ]; then
-            echo "::set-output name=sha::0000000000000000000000000000000000000000"
-          else
-            echo "::set-output name=sha::$(git rev-parse ${{ github.base_ref }}~1)"
-          fi
-
-      - name: Check if Base Commit Exists
-        id: check_base_commit
-        run: |
-          if [ "${{ steps.prev_commit.outputs.sha }}" = "0000000000000000000000000000000000000000" ]; then
-            echo "base_commit_not_found=true" >> $GITHUB_ENV
-          else
-            echo "base_commit_not_found=false" >> $GITHUB_ENV
-          fi
-
-      - name: Get File Changes
-        if: env.base_commit_not_found == 'false'
+      - name: Get file changes
         id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
-          githubToken: ${{ secrets.CUECARDS_WORKFLOW_TOKEN }}
+          output: ' '
 
-      - name: Echo File Changes
-        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified || steps.file_changes.outputs.files_removed
+      - name: Echo file changes
+        id: hello
         run: |
-          echo "Added files: ${{ steps.file_changes.outputs.files_added }}"
-          echo "Modified files: ${{ steps.file_changes.outputs.files_modified }}"
-          echo "Removed files: ${{ steps.file_changes.outputs.files_removed }}"
+          echo Added files: ${{ steps.file_changes .outputs.files_added }}
+          echo Changed files: ${{ steps.file_changes .outputs.files_modified }}
+          echo Removed files: ${{ steps.file_changes .outputs.files_removed }}
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
 
-      - name: Format Checking
-        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified
-        run: |
-          echo "Format checking..."
-          if npm run format -- . 'src/**/*.ts' 'test/**/*.ts'; then
-            echo "Format check successful!"
-          else
-            echo "Format check failed."
-            exit 1
-          fi
+      - name: Prettier Checking
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+        run: npm run format ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
 
       - name: ESLint Checking
-        if: steps.file_changes.outputs.files_added || steps.file_changes.outputs.files_modified
-        run: |
-          echo "ESLint checking..."
-          if npm run lint -- . 'src/**/*.ts' 'test/**/*.ts'; then
-            echo "ESLint successful!"
-          else
-            echo "ESLint check failed."
-            exit 1
-          fi
+        if: ${{ always() && (steps.file_changes .outputs.files_added || steps.file_changes .outputs.files_modified) }}
+        run: npm run lint ${{ steps.file_changes .outputs.files_added }} ${{ steps.file_changes .outputs.files_modified }}
+

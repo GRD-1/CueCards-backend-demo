@@ -1,41 +1,61 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiBody,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { UpdateUserDto, UserRespDto } from '@/modules/user/user.dto';
-import { CCBK_ERR_TO_HTTP } from '@/filters/errors/cuecards-error.registry';
-import { UserId } from '@/decorators/user-id.decorator';
-import { AuthGuard } from '@/guards/auth.guard';
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post, Put, UseGuards
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserEntity } from './entities/user.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
+import { UserResponse } from './types/user-response.type';
+import { LoginUserDto } from './dto/login-user.dto';
+import { User } from './decorators/user.decorator';
+import { AuthGuard } from './guards/auth.guard';
+import { LoginUserResponse } from './types/user-login-response.type';
 
 @ApiTags('user')
 @ApiBearerAuth()
-@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Get the current user data' })
-  @ApiOkResponse({ description: 'The user has been found', type: UserRespDto })
-  @ApiUnauthorizedResponse({ description: 'Authorization is required', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
-  async findOneById(@UserId() userId: string): Promise<UserRespDto> {
-    return this.userService.findOneById(userId);
+  @Post()
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Success', type: UserResponse })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  async create(@Body() dto: CreateUserDto): Promise<LoginUserResponse> {
+    return this.userService.create(dto);
   }
 
-  @Patch('update')
-  @ApiOperation({ summary: 'Update a user data' })
-  @ApiBody({ type: UpdateUserDto })
-  @ApiOkResponse({ description: 'The user has been updated', type: UserRespDto })
-  @ApiBadRequestResponse({ description: 'Invalid user data', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
-  @ApiUnauthorizedResponse({ description: 'Authorization is required', schema: { example: [CCBK_ERR_TO_HTTP.CCBK02] } })
-  async update(@UserId() userId: string, @Body() payload: UpdateUserDto): Promise<UserRespDto> {
-    return this.userService.update(userId, payload);
+  @Get()
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get the current user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  async getCurrentUser(@User() user: UserEntity): Promise<UserResponse | null> {
+    return this.userService.findById(user.id);
+  }
+
+  @Put()
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Update the current user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' })
+  async update(@User('id') id: number, @Body() dto: UpdateUserDto): Promise<UserResponse> {
+    return this.userService.update(id, dto);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'login user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: UserResponse })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  async login(@Body() dto: LoginUserDto): Promise<LoginUserResponse | null> {
+    return this.userService.login(dto);
   }
 }
