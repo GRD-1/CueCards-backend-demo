@@ -1,51 +1,23 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES2022",
+    "module": "commonjs",
     "declaration": true,
-    "declarationMap": true,
     "removeComments": true,
-    "inlineSourceMap": true,
-    "moduleResolution": "node",
-    "pretty": true,
-    "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "incremental": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
     "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*", "test/*"]
-    },
+    "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
     "strictNullChecks": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": true,
+    "noImplicitAny": true,
+    "strictPropertyInitialization": false,
+    "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": false,
+    "strict": true
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

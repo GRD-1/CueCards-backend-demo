@@ -10,5 +10,4 @@ app/
 .eslintrc.json
 .eslintignore
 *.dto.ts
-prisma/schema.prisma
-src/config/config.schema.ts
+src/typeorm/migration

@@ -2,11 +2,10 @@ name: tests-workflow
 run-name: tests-workflow-runner
 
 on:
-  pull_request:
+#  push:
+  workflow_dispatch:
     branches:
       - main
-      - develop
-  workflow_dispatch:
 
 jobs:
   tests:
@@ -16,18 +15,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
       - name: Deploy with Docker Compose
         run: |
-          docker-compose -f docker/docker-compose.test.yml --env-file .env.test up -d
+          docker-compose -f devops/docker-compose.yml --env-file env/.env.test up -d
 
       - name: run tests
         run: |
           docker exec cuecards-node-test npm run test
+          docker exec cuecards-node-test npm run test:e2e
 
       - name: stop docker containers and quit
         run: |

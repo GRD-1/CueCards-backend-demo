@@ -1,6 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser';
 
 @Injectable()
 export class RequestLoggingMiddleware implements NestMiddleware {

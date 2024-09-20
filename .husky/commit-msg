@@ -1,44 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-COMMIT_MSG_FILE=$1
-BRANCH_NAME=$(git branch --show-current)
-SHORT_BRANCH_NAME=$(echo "$BRANCH_NAME" | cut -d'/' -f2)
-
-# Read the commit message
-COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
-
-# Extract type and subject from the commit message
-TYPE=$(echo "$COMMIT_MSG" | sed -n 's/^\(\w\+\): .*/\1/p')
-SUBJECT=$(echo "$COMMIT_MSG" | sed -n 's/^\w\+: \(.*\)/\1/p')
-
-# If the commit message does not follow the expected format, use the whole message as the subject
-if [ -z "$TYPE" ] || [ -z "$SUBJECT" ]; then
-    TYPE=""
-    SUBJECT="$COMMIT_MSG"
-fi
-
-# Construct the new commit message with the branch name in the subject
-if [ -n "$SHORT_BRANCH_NAME" ]; then
-    NEW_SUBJECT="[$SHORT_BRANCH_NAME] $SUBJECT"
-else
-    NEW_SUBJECT="$SUBJECT"
-fi
-
-# Combine type and new subject
-if [ -n "$TYPE" ]; then
-    NEW_COMMIT_MSG="$TYPE: $NEW_SUBJECT"
-else
-    NEW_COMMIT_MSG="$NEW_SUBJECT"
-fi
-
-# Update the commit message file if there is a change
-if [ "$NEW_COMMIT_MSG" != "$COMMIT_MSG" ]; then
-    echo "$NEW_COMMIT_MSG" > "$COMMIT_MSG_FILE"
-fi
-
-# Run commitlint
-npx commitlint --config commitlint.config.json -e "$COMMIT_MSG_FILE"
-if [ $? -ne 0 ]; then
-    echo "Commit message does not meet commitlint standards."
-    exit 1
-fi
+npx commitlint --edit -g './commitlint.config.js'
