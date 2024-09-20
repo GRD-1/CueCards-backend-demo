@@ -1,25 +1,14 @@
-# compiled output
+/.idea
 /dist
 /node_modules
-
-# Logs
 logs
 *.log
 npm-debug.log*
-
-# Tests
-/test/coverage
-
-# IDEs and editors
-/.idea
-
-# database
+test/coverage
 /db
-
-#
 package-lock.json
-env
 documentation
-
-# temp dev files
-TODO.txt
+tsconfig.build.tsbuildinfo
+.env
+/certificates
+/keys

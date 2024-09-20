@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { CardRepo } from '@/modules/prisma/repositories/card.repo';
+import { PrismaService } from '@/modules/prisma/prisma.service';
+import { JwtService } from '@/modules/jwt/jwt.service';
 import { CardController } from './card.controller';
 import { CardService } from './card.service';
-import { CardEntity } from './entities/card.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CardEntity])],
   controllers: [CardController],
-  providers: [CardService]
+  providers: [CardService, PrismaService, CardRepo, JwtService],
 })
 export class CardModule {}
