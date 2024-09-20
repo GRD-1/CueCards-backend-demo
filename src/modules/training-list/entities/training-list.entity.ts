@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DictionaryEntity } from '../../dictionary/dictionary.entity';
+import { DictionaryEntity } from '../../dictionary/entities/dictionary.entity';
 
 export class TrainingListEntity {
   constructor(lists: DictionaryEntity[]) {

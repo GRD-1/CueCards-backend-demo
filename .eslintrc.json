@@ -6,7 +6,6 @@
   ],
   "extends": [
     "airbnb",
-    "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript"
@@ -50,12 +49,7 @@
     "prefer-destructuring": "off",
     "no-await-in-loop": "off",
     "max-classes-per-file": "off",
-    "no-use-before-define": "off",
-    "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
-    "padding-line-between-statements": [
-      "error",
-      { "blankLine": "always", "prev": "*", "next": "return" }
-    ],
+//    "no-unused-vars": ["error", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }],
 
     // typescript specific
     "no-underscore-dangle": "off",
@@ -74,10 +68,9 @@
     "import/newline-after-import": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/no-cycle": "off", // disabled due to typeorm relations
 
     // Nest specific
-    "comma-dangle": ["error", "always-multiline"],
+    "comma-dangle": ["error", "never"],
     "arrow-body-style": "off",
     "new-cap": ["error", { "newIsCap": false, "capIsNew": false }]
   }

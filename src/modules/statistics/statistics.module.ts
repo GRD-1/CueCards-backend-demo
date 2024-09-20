@@ -4,6 +4,6 @@ import { StatisticsService } from './statistics.service';
 
 @Module({
   controllers: [StatisticsController],
-  providers: [StatisticsService],
+  providers: [StatisticsService]
 })
 export class StatisticsModule {}

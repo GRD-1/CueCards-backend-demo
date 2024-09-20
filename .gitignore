@@ -8,7 +8,7 @@ logs
 npm-debug.log*
 
 # Tests
-test/coverage
+/test/coverage
 
 # IDEs and editors
 /.idea
@@ -18,6 +18,8 @@ test/coverage
 
 #
 package-lock.json
-.env
+env
 documentation
-tsconfig.build.tsbuildinfo
+
+# temp dev files
+TODO.txt

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch
+} from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TrainingListEntity } from './entities/training-list.entity';
 import { UpdateTrainingListDto } from './dto/update-training-list.dto';

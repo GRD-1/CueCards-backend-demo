@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SettingsEntity {
-  constructor(userId: number, appLanguage: string, trainingLanguage: string, notifications: boolean, voicing: boolean) {
+  constructor(
+    userId: number,
+    appLanguage: string,
+    trainingLanguage: string,
+    notifications: boolean,
+    voicing: boolean
+  ) {
     this.user_id = userId;
     this.app_language = appLanguage;
     this.training_language = trainingLanguage;

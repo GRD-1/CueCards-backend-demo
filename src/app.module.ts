@@ -1,6 +1,8 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { PrismaModule } from '@/modules/prisma/prisma.module';
-import { TagModule } from '@/modules/tag/tag.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { ResponseLoggingMiddleware } from './middleware/response-logging-middlware';
 import { RequestLoggingMiddleware } from './middleware/request-logging-middlware';
 import { TranslatorModule } from './modules/translator/translator.module';
@@ -10,20 +12,27 @@ import { UserModule } from './modules/user/user.module';
 import { CardModule } from './modules/card/card.module';
 import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { TrainingListModule } from './modules/training-list/training-list.module';
+import { PostgresConnectionOptions } from './typeorm/data-source';
 import { AuthMiddleware } from './middleware/auth.middleware';
 
 @Module({
   imports: [
-    PrismaModule,
+    ConfigModule.forRoot({
+      envFilePath: ['env/node.env', 'env/local_project_root.env'],
+      isGlobal: true
+    }),
+    TypeOrmModule.forRoot(PostgresConnectionOptions),
     TranslatorModule,
     CardModule,
     DictionaryModule,
     TrainingListModule,
-    TagModule,
+    TranslatorModule,
     StatisticsModule,
     SettingsModule,
-    UserModule,
+    UserModule
   ],
+  controllers: [AppController],
+  providers: [AppService]
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
