@@ -11,3 +11,4 @@ app/
 .eslintignore
 *.dto.ts
 prisma/schema.prisma
+src/config/config.schema.ts

@@ -19,11 +19,3 @@ export enum PrismaLogLevel {
   Warn = 'warn',
   Error = 'error',
 }
-
-export interface IRedisConfig {
-  host: string;
-  portInternal: number;
-  portExternal: number;
-  url: string;
-  password: string;
-}
