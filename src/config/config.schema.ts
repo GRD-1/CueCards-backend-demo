@@ -8,9 +8,8 @@ export const validationSchema = Joi.object({
   APP_PORT: Joi.number().required(),
   APP_DOMAIN: Joi.string().required(),
   APP_LOG_LEVEL: Joi.string().valid(...Object.values(AppLogLevel)),
-  NODE_ENV: Joi.string()
-    .valid(...Object.values(Environment))
-    .required(),
+  APP_CORS_DOMAINS: Joi.optional(),
+  NODE_ENV: Joi.string().valid(...Object.values(Environment)).required(),
   NODE_PORT_INTERNAL: Joi.number().required(),
   NODE_PORT_EXTERNAL: Joi.number().required(),
   COMPOSE_PROJECT_NAME: Joi.string().required(),
