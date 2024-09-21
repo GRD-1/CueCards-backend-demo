@@ -3,6 +3,9 @@ run-name: commitlint-workflow-runner
 
 on:
   push:
+    branches-ignore:
+      - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
