@@ -3,6 +3,8 @@ run-name: linting-workflow-runner
 
 on:
   push:
+    branches-ignore:
+      - main
   pull_request:
   workflow_dispatch:
 
