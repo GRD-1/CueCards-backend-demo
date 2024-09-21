@@ -1,3 +1,22 @@
+# [3.0.0](https://github.com/GRD-1/CueCards-backend-demo/compare/v2.0.0...v3.0.0) (2024-09-20)
+
+
+### break
+
+* prepare to production (#42) ([eb43eba](https://github.com/GRD-1/CueCards-backend-demo/commit/eb43eba0da4c75ab0ce9197d1e65f301a1891ca8)), closes [#42](https://github.com/GRD-1/CueCards-backend-demo/issues/42) [#2](https://github.com/GRD-1/CueCards-backend-demo/issues/2)
+
+### breaking
+
+* prepare to production (#44) ([0877b08](https://github.com/GRD-1/CueCards-backend-demo/commit/0877b0863e2d8ae0bcc3d4b89a529f4fb22aa81e)), closes [#44](https://github.com/GRD-1/CueCards-backend-demo/issues/44) [#2](https://github.com/GRD-1/CueCards-backend-demo/issues/2)
+
+### chore
+
+* change env file names ([9ae984a](https://github.com/GRD-1/CueCards-backend-demo/commit/9ae984adeee615959b70559bb8191a5fbc5940fc))
+
+### docs
+
+* change README.md ([afcbdca](https://github.com/GRD-1/CueCards-backend-demo/commit/afcbdca8e4f494c045040c0b4829e384947bc2c6))
+
 # [2.0.0](https://github.com/GRD-1/CueCards-demo/compare/v1.1.0...v2.0.0) (2023-12-30)
 
 
