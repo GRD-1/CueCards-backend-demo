@@ -1,0 +1,5127 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/cards/create": {
+      "post": {
+        "operationId": "CardController_create",
+        "summary": "Create a new card",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new card has been created. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/list": {
+      "get": {
+        "operationId": "CardController_getList",
+        "summary": "Get a card list according to the conditions",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the card front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the card back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for cards created by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "value",
+            "required": false,
+            "in": "query",
+            "description": "search for records by card value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfValue",
+            "required": false,
+            "in": "query",
+            "description": "search by part of card value",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCardListRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/list-with-first": {
+      "get": {
+        "operationId": "CardController_getListWithFirst",
+        "summary": "Get a card list  and the first card",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the card front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the card back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for cards created by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "value",
+            "required": false,
+            "in": "query",
+            "description": "search for records by card value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfValue",
+            "required": false,
+            "in": "query",
+            "description": "search by part of card value",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetCardListWithFRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}/get-one": {
+      "get": {
+        "operationId": "CardController_findOneById",
+        "summary": "Get a card with a specific id",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The card has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CardWithTagsRespDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}/update": {
+      "patch": {
+        "operationId": "CardController_update",
+        "summary": "Update a card with a specified id",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCardDto"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The card has been updated. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid card data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}/delete": {
+      "delete": {
+        "operationId": "CardController_delete",
+        "summary": "Delete a card with a specified id",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The card has been deleted. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}/hide": {
+      "post": {
+        "operationId": "CardController_hide",
+        "summary": "Hide a card from the training list",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The card has been hidden. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/cards/{cardId}/display": {
+      "post": {
+        "operationId": "CardController_display",
+        "summary": "Display a card in the training list",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The card is now displayed in the training list. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/card-statistics/{cardId}/update": {
+      "patch": {
+        "operationId": "CardStatsController_updateCardStatistics",
+        "summary": "Update a specific card statistics",
+        "parameters": [
+          {
+            "name": "cardId",
+            "required": true,
+            "in": "path",
+            "description": "Card id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The card statistics has been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 401,
+                    "errorMsg": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "card-statistics"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/create": {
+      "post": {
+        "operationId": "DictionaryController_create",
+        "summary": "Create a new dictionary",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDictionaryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new dictionary has been created. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/list": {
+      "get": {
+        "operationId": "DictionaryController_getList",
+        "summary": "Get a dictionary list according to the conditions",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for records by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "search for records by dictionary name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfName",
+            "required": false,
+            "in": "query",
+            "description": "search for records by name part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/list-with-first": {
+      "get": {
+        "operationId": "DictionaryController_getListWithFirst",
+        "summary": "Get a dictionary list and the first dictionary",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for records by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "search for records by dictionary name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfName",
+            "required": false,
+            "in": "query",
+            "description": "search for records by name part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListWithFirstRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/{dictionaryId}/customized": {
+      "get": {
+        "operationId": "DictionaryController_getCustomizedDictionary",
+        "summary": "Get a customized dictionary without hidden cards",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithTagsAndCardsRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/customized-with-first": {
+      "get": {
+        "operationId": "DictionaryController_getCustomizedWithFirst",
+        "summary": "Get a dictionary list and the first customized dictionary without hidden cards",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for records by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "search for records by dictionary name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfName",
+            "required": false,
+            "in": "query",
+            "description": "search for records by name part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetListWithFirstRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/{dictionaryId}/settings": {
+      "get": {
+        "operationId": "DictionaryController_getDictionaryWithSettings",
+        "summary": "Get a dictionary with card settings",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithTagsAndCardSettingsRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/settings-with-first": {
+      "get": {
+        "operationId": "DictionaryController_getSettingsWithFirst",
+        "summary": "Get a dictionary list and the first dictionary with card settings: hidden, statistics",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the dictionary back side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for records by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "search for records by dictionary name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfName",
+            "required": false,
+            "in": "query",
+            "description": "search for records by name part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSettingsWithFRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/{dictionaryId}/get-one": {
+      "get": {
+        "operationId": "DictionaryController_findOneById",
+        "summary": "Get a dictionary with a specific id",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": true,
+            "in": "path",
+            "description": "Dictionary id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The dictionary has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WithTagsAndCardsRespDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/{dictionaryId}/update": {
+      "patch": {
+        "operationId": "DictionaryController_update",
+        "summary": "Update a dictionary with a specified id",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": true,
+            "in": "path",
+            "description": "Dictionary id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDictionaryDto"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The dictionary has been updated. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dictionary data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/dictionaries/{dictionaryId}/delete": {
+      "delete": {
+        "operationId": "DictionaryController_delete",
+        "summary": "Delete a dictionary with a specified id",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": true,
+            "in": "path",
+            "description": "Dictionary id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The dictionary has been deleted. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "dictionaries"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tags/create": {
+      "post": {
+        "operationId": "TagController_create",
+        "summary": "Create a new tag",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new tag has been created. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tags": {
+      "get": {
+        "operationId": "TagController_findMany",
+        "summary": "Get tags according to the conditions",
+        "parameters": [
+          {
+            "name": "fsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the tag front side  language",
+            "example": "ru",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bsLanguage",
+            "required": true,
+            "in": "query",
+            "description": "the tag front side language",
+            "example": "en",
+            "schema": {
+              "nullable": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search records by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "value",
+            "required": false,
+            "in": "query",
+            "description": "search for records by tag value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfValue",
+            "required": false,
+            "in": "query",
+            "description": "search for records by value part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyTagsRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tags/{tagId}/get-one": {
+      "get": {
+        "operationId": "TagController_findOneById",
+        "summary": "Get a tag with a specific id",
+        "parameters": [
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "path",
+            "description": "Tag id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tag has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagRespDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tags/{tagId}/update": {
+      "patch": {
+        "operationId": "TagController_update",
+        "summary": "Update a tag with a specified id",
+        "parameters": [
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "path",
+            "description": "Tag id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "name": "tag1"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The tag has been updated. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid tag data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/tags/{tagId}/delete": {
+      "delete": {
+        "operationId": "TagController_delete",
+        "summary": "Delete a tag with a specified id",
+        "parameters": [
+          {
+            "name": "tagId",
+            "required": true,
+            "in": "path",
+            "description": "Tag id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tag has been deleted. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "tags"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/statistics/create": {
+      "post": {
+        "operationId": "StatisticsController_create",
+        "summary": "Create a new statistics record",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatisticsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new statistics record has been created. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "statistics"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/statistics": {
+      "get": {
+        "operationId": "StatisticsController_findMany",
+        "summary": "Get the statistics according to the conditions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "dictionaryId",
+            "required": false,
+            "in": "query",
+            "description": "dictionary id",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "selectionStart",
+            "required": false,
+            "in": "query",
+            "description": "start of selection",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "selectionEnd",
+            "required": false,
+            "in": "query",
+            "description": "end of selection",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyStatsRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "statistics"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/statistics/last-results": {
+      "get": {
+        "operationId": "StatisticsController_getLastResults",
+        "summary": "Get the statistics according to the conditions",
+        "parameters": [
+          {
+            "name": "dictionaryId",
+            "required": false,
+            "in": "query",
+            "description": "dictionary id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StatisticsRespDto"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "statistics"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "SettingsController_getSettings",
+        "summary": "Get the application settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsRespDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "SettingsController_updateSettings",
+        "summary": "Update the application settings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsDto"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "notifications": true,
+                    "hints": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The settings have been updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsRespDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/settings/reset": {
+      "put": {
+        "operationId": "SettingsController_resetSettings",
+        "summary": "Reset the application settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The settings have been reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsRespDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/user": {
+      "get": {
+        "operationId": "UserController_findOneById",
+        "summary": "Get the current user data",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The user has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRespDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/user/update": {
+      "patch": {
+        "operationId": "UserController_update",
+        "summary": "Update a user data",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user has been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid user data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/languages/create": {
+      "post": {
+        "operationId": "LanguageController_create",
+        "summary": "Create a new language",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new language has been created. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "languages"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/languages": {
+      "get": {
+        "operationId": "LanguageController_findMany",
+        "summary": "Get languages according to the conditions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "number of records per page",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "byUser",
+            "required": false,
+            "in": "query",
+            "description": "search for records created by user",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "language name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partOfName",
+            "required": false,
+            "in": "query",
+            "description": "search for records by name part",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetManyLanguagesRespDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request params",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "languages"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/languages/{languageId}/get-one": {
+      "get": {
+        "operationId": "LanguageController_findOneById",
+        "summary": "Get a language with a specific id",
+        "parameters": [
+          {
+            "name": "languageId",
+            "required": true,
+            "in": "path",
+            "description": "Language id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The language has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LanguageRespDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "languages"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/languages/{languageId}/update": {
+      "patch": {
+        "operationId": "LanguageController_update",
+        "summary": "Update a language with a specified id",
+        "parameters": [
+          {
+            "name": "languageId",
+            "required": true,
+            "in": "path",
+            "description": "Language id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              },
+              "examples": {
+                "example1": {
+                  "value": {
+                    "name": "italian",
+                    "acronym": "it"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The language has been updated. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid language data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "languages"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/languages/{languageId}/delete": {
+      "delete": {
+        "operationId": "LanguageController_delete",
+        "summary": "Delete a language with a specified id",
+        "parameters": [
+          {
+            "name": "languageId",
+            "required": true,
+            "in": "path",
+            "description": "Language id",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The language has been deleted. The id:",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": 123
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "languages"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/auth/sign-up": {
+      "post": {
+        "operationId": "AuthController_signUp",
+        "summary": "Create a new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": "530350e2-cc3f-40fb-b82e-7e4241a3c03b"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unique key violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 422,
+                    "errorMsg": "Unique key violation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/confirm-email": {
+      "post": {
+        "operationId": "AuthController_confirmEmail",
+        "summary": "Confirm the registration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The registration has been confirmed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/send-email": {
+      "post": {
+        "operationId": "AuthController_sendEmail",
+        "summary": "Send a email with a confirmation code",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendEmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The email has been sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": "The email has been sent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/sign-in": {
+      "post": {
+        "operationId": "AuthController_signIn",
+        "summary": "Sign in a user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user is logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 400,
+                    "errorMsg": "Bad Request"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorisation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 401,
+                    "errorMsg": "Authorization failed"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "Log out of the system",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokensDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user has been logged out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": "User logged out"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "summary": "Reset a user password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The reset code has been sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": "The password reset code has been sent to your email address"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/confirm-reset": {
+      "post": {
+        "operationId": "AuthController_confirmReset",
+        "summary": "Confirm a password reset",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmResetDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The password has been reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid reset code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 401,
+                    "errorMsg": "Unauthorized"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The record was not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 404,
+                    "errorMsg": "Not found"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/update-password": {
+      "patch": {
+        "operationId": "AuthController_updatePassword",
+        "summary": "Update a user password",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user password has been updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/refresh-tokens": {
+      "post": {
+        "operationId": "AuthController_refreshTokens",
+        "summary": "Get a new couple of tokens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The tokens have been refreshed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokensDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/auth/delete-user": {
+      "delete": {
+        "operationId": "AuthController_delete",
+        "summary": "Delete user",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The user has been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": "The account has been deleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "error": true,
+                      "statusCode": 401,
+                      "errorMsg": "Unauthorized"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "error": true,
+                    "statusCode": 403,
+                    "errorMsg": "Access denied"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "CueCards API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateCardDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "front side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "front side value",
+            "nullable": false,
+            "example": "text text text"
+          },
+          "fsDescription": {
+            "type": "object",
+            "description": "description for the front side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "fsMeaningVariants": {
+            "description": "front side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsWrongMeanings": {
+            "description": "front side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsTranscription": {
+            "type": "object",
+            "description": "front side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "fsSynonyms": {
+            "description": "front side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsAudio": {
+            "type": "object",
+            "description": "front side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "fsHint": {
+            "type": "object",
+            "description": "hint that helps to remember the translation",
+            "nullable": true,
+            "example": "hint"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "back side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "back side value",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsDescription": {
+            "type": "object",
+            "description": "description for the back side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "bsMeaningVariants": {
+            "description": "back side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsWrongMeanings": {
+            "description": "back side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsTranscription": {
+            "type": "object",
+            "description": "back side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsSynonyms": {
+            "description": "back side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsAudio": {
+            "type": "object",
+            "description": "back side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "bsHint": {
+            "type": "object",
+            "description": "back side hint which helps to remember the translation",
+            "example": "hint"
+          },
+          "tags": {
+            "description": "array of tags id",
+            "nullable": true,
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "fsValue",
+          "fsDescription",
+          "fsMeaningVariants",
+          "fsWrongMeanings",
+          "fsTranscription",
+          "fsSynonyms",
+          "fsAudio",
+          "fsHint",
+          "bsLanguage",
+          "bsValue",
+          "bsDescription",
+          "bsMeaningVariants",
+          "bsWrongMeanings",
+          "bsTranscription",
+          "bsSynonyms",
+          "bsAudio",
+          "bsHint",
+          "tags"
+        ]
+      },
+      "TagRespDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A tag front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A tag back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "tag front side value",
+            "nullable": false
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "tag back side value",
+            "nullable": false
+          },
+          "id": {
+            "type": "number",
+            "description": "tag id",
+            "nullable": false
+          },
+          "authorId": {
+            "type": "string",
+            "description": "user id",
+            "nullable": true
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsValue",
+          "bsValue",
+          "id",
+          "authorId"
+        ]
+      },
+      "CardListItemRespDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "card id",
+            "nullable": true
+          },
+          "authorId": {
+            "type": "object",
+            "description": "user id",
+            "nullable": true,
+            "example": 1
+          },
+          "fsLanguage": {
+            "type": "string",
+            "description": "front side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "front side value",
+            "nullable": false,
+            "example": "text text text"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "back side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "back side value",
+            "nullable": false,
+            "example": "text"
+          },
+          "tags": {
+            "description": "array of tags",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "fsLanguage",
+          "fsValue",
+          "bsLanguage",
+          "bsValue",
+          "tags"
+        ]
+      },
+      "GetCardListRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of records per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of records",
+            "nullable": false
+          },
+          "cards": {
+            "description": "an array of cards",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardListItemRespDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "cards"
+        ]
+      },
+      "CardWithTagsRespDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "front side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "front side value",
+            "nullable": false,
+            "example": "text text text"
+          },
+          "fsDescription": {
+            "type": "object",
+            "description": "description for the front side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "fsMeaningVariants": {
+            "description": "front side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsWrongMeanings": {
+            "description": "front side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsTranscription": {
+            "type": "object",
+            "description": "front side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "fsSynonyms": {
+            "description": "front side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsAudio": {
+            "type": "object",
+            "description": "front side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "fsHint": {
+            "type": "object",
+            "description": "hint that helps to remember the translation",
+            "nullable": true,
+            "example": "hint"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "back side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "back side value",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsDescription": {
+            "type": "object",
+            "description": "description for the back side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "bsMeaningVariants": {
+            "description": "back side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsWrongMeanings": {
+            "description": "back side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsTranscription": {
+            "type": "object",
+            "description": "back side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsSynonyms": {
+            "description": "back side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsAudio": {
+            "type": "object",
+            "description": "back side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "bsHint": {
+            "type": "object",
+            "description": "back side hint which helps to remember the translation",
+            "example": "hint"
+          },
+          "id": {
+            "type": "number",
+            "description": "card id",
+            "nullable": true
+          },
+          "authorId": {
+            "type": "number",
+            "description": "user id",
+            "nullable": false,
+            "example": 1
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "the date when the card were created",
+            "nullable": false
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "the date when the card were updated",
+            "nullable": false
+          },
+          "deleteMark": {
+            "type": "boolean",
+            "description": "the mark that the card will be deleted",
+            "nullable": false
+          },
+          "tags": {
+            "description": "array of tags",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "fsValue",
+          "fsDescription",
+          "fsMeaningVariants",
+          "fsWrongMeanings",
+          "fsTranscription",
+          "fsSynonyms",
+          "fsAudio",
+          "fsHint",
+          "bsLanguage",
+          "bsValue",
+          "bsDescription",
+          "bsMeaningVariants",
+          "bsWrongMeanings",
+          "bsTranscription",
+          "bsSynonyms",
+          "bsAudio",
+          "bsHint",
+          "id",
+          "authorId",
+          "createdAt",
+          "updatedAt",
+          "deleteMark",
+          "tags"
+        ]
+      },
+      "GetCardListWithFRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of records per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of records",
+            "nullable": false
+          },
+          "cards": {
+            "description": "an array of cards",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardListItemRespDto"
+            }
+          },
+          "firstCard": {
+            "description": "the first card in a list",
+            "nullable": false,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CardWithTagsRespDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "cards",
+          "firstCard"
+        ]
+      },
+      "UpdateCardDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStatsDto": {
+        "type": "object",
+        "properties": {
+          "cardSide": {
+            "type": "string",
+            "description": "the side of card",
+            "nullable": true,
+            "example": "frontSide"
+          },
+          "isAnswerCorrect": {
+            "type": "boolean",
+            "description": "is the answer correct?",
+            "nullable": true,
+            "example": true
+          }
+        },
+        "required": [
+          "cardSide",
+          "isAnswerCorrect"
+        ]
+      },
+      "CreateDictionaryDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A dictionary front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A dictionary back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsName": {
+            "type": "string",
+            "description": "A front side dictionary name",
+            "nullable": false
+          },
+          "bsName": {
+            "type": "string",
+            "description": "A back side dictionary name",
+            "nullable": false
+          },
+          "tags": {
+            "description": "array of tags id",
+            "nullable": true,
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsName",
+          "bsName",
+          "tags"
+        ]
+      },
+      "WithTagsRespDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A dictionary front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A dictionary back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsName": {
+            "type": "string",
+            "description": "A front side dictionary name",
+            "nullable": false
+          },
+          "bsName": {
+            "type": "string",
+            "description": "A back side dictionary name",
+            "nullable": false
+          },
+          "id": {
+            "type": "number",
+            "description": "dictionary id",
+            "nullable": true
+          },
+          "tags": {
+            "description": "Array of tags",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsName",
+          "bsName",
+          "id",
+          "tags"
+        ]
+      },
+      "GetListRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of records per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of records",
+            "nullable": false
+          },
+          "dictionaries": {
+            "description": "an array of dictionaries",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WithTagsRespDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "dictionaries"
+        ]
+      },
+      "CardDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "front side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "front side value",
+            "nullable": false,
+            "example": "text text text"
+          },
+          "fsDescription": {
+            "type": "object",
+            "description": "description for the front side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "fsMeaningVariants": {
+            "description": "front side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsWrongMeanings": {
+            "description": "front side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsTranscription": {
+            "type": "object",
+            "description": "front side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "fsSynonyms": {
+            "description": "front side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fsAudio": {
+            "type": "object",
+            "description": "front side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "fsHint": {
+            "type": "object",
+            "description": "hint that helps to remember the translation",
+            "nullable": true,
+            "example": "hint"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "back side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "back side value",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsDescription": {
+            "type": "object",
+            "description": "description for the back side value: proverb, swearing e.t.c",
+            "example": "text"
+          },
+          "bsMeaningVariants": {
+            "description": "back side value translation variants",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsWrongMeanings": {
+            "description": "back side wrong value meanings",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsTranscription": {
+            "type": "object",
+            "description": "back side value transcription",
+            "nullable": false,
+            "example": "text"
+          },
+          "bsSynonyms": {
+            "description": "back side value synonyms",
+            "nullable": true,
+            "example": [
+              "var1",
+              "var2"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bsAudio": {
+            "type": "object",
+            "description": "back side audio",
+            "nullable": true,
+            "example": "path/to/file"
+          },
+          "bsHint": {
+            "type": "object",
+            "description": "back side hint which helps to remember the translation",
+            "example": "hint"
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "fsValue",
+          "fsDescription",
+          "fsMeaningVariants",
+          "fsWrongMeanings",
+          "fsTranscription",
+          "fsSynonyms",
+          "fsAudio",
+          "fsHint",
+          "bsLanguage",
+          "bsValue",
+          "bsDescription",
+          "bsMeaningVariants",
+          "bsWrongMeanings",
+          "bsTranscription",
+          "bsSynonyms",
+          "bsAudio",
+          "bsHint"
+        ]
+      },
+      "WithTagsAndCardsRespDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A dictionary front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A dictionary back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsName": {
+            "type": "string",
+            "description": "A front side dictionary name",
+            "nullable": false
+          },
+          "bsName": {
+            "type": "string",
+            "description": "A back side dictionary name",
+            "nullable": false
+          },
+          "id": {
+            "type": "number",
+            "description": "dictionary id",
+            "nullable": true
+          },
+          "cards": {
+            "description": "Array of cards",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardDto"
+            }
+          },
+          "tags": {
+            "description": "Array of tags",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsName",
+          "bsName",
+          "id",
+          "cards",
+          "tags"
+        ]
+      },
+      "GetListWithFirstRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of records per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of records",
+            "nullable": false
+          },
+          "dictionaries": {
+            "description": "an array of dictionaries",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WithTagsRespDto"
+            }
+          },
+          "firstDictionary": {
+            "description": "the first dictionary in a list",
+            "nullable": false,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WithTagsAndCardsRespDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "dictionaries",
+          "firstDictionary"
+        ]
+      },
+      "CardStatsDto": {
+        "type": "object",
+        "properties": {
+          "fsTotalAnswers": {
+            "type": "number",
+            "description": "the total number of user answers to a card front side",
+            "nullable": true,
+            "example": 1
+          },
+          "fsCorrectAnswers": {
+            "type": "number",
+            "description": "the number of correct answers to a card front side",
+            "nullable": true,
+            "example": 1
+          },
+          "bsTotalAnswers": {
+            "type": "number",
+            "description": "the total number of user answers to a card back side",
+            "nullable": true,
+            "example": 1
+          },
+          "bsCorrectAnswers": {
+            "type": "number",
+            "description": "the number of correct answers to a card back side",
+            "nullable": true,
+            "example": 1
+          }
+        },
+        "required": [
+          "fsTotalAnswers",
+          "fsCorrectAnswers",
+          "bsTotalAnswers",
+          "bsCorrectAnswers"
+        ]
+      },
+      "CardWithSettingsDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "card id",
+            "nullable": false
+          },
+          "authorId": {
+            "type": "number",
+            "description": "author id",
+            "nullable": false
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "front side value",
+            "nullable": false,
+            "example": "text text text"
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "back side value",
+            "nullable": false,
+            "example": "text"
+          },
+          "statistics": {
+            "description": "the card statistics",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CardStatsDto"
+              }
+            ]
+          },
+          "cardIsHidden": {
+            "type": "boolean",
+            "description": "is the card hidden in the dictionary settings",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "fsValue",
+          "bsValue",
+          "statistics",
+          "cardIsHidden"
+        ]
+      },
+      "WithTagsAndCardSettingsRespDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A dictionary front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A dictionary back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsName": {
+            "type": "string",
+            "description": "A front side dictionary name",
+            "nullable": false
+          },
+          "bsName": {
+            "type": "string",
+            "description": "A back side dictionary name",
+            "nullable": false
+          },
+          "id": {
+            "type": "number",
+            "description": "dictionary id",
+            "nullable": true
+          },
+          "tags": {
+            "description": "Array of tags",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          },
+          "cards": {
+            "description": "Array of cards",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CardWithSettingsDto"
+            }
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsName",
+          "bsName",
+          "id",
+          "tags",
+          "cards"
+        ]
+      },
+      "GetSettingsWithFRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of records per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of records",
+            "nullable": false
+          },
+          "dictionaries": {
+            "description": "an array of dictionaries",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WithTagsRespDto"
+            }
+          },
+          "firstDictionary": {
+            "description": "the first dictionary in a list",
+            "nullable": false,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WithTagsAndCardSettingsRespDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "dictionaries",
+          "firstDictionary"
+        ]
+      },
+      "UpdateDictionaryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TagDto": {
+        "type": "object",
+        "properties": {
+          "fsLanguage": {
+            "type": "string",
+            "description": "A tag front side language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "bsLanguage": {
+            "type": "string",
+            "description": "A tag back side language",
+            "nullable": false,
+            "example": "en"
+          },
+          "fsValue": {
+            "type": "string",
+            "description": "tag front side value",
+            "nullable": false
+          },
+          "bsValue": {
+            "type": "string",
+            "description": "tag back side value",
+            "nullable": false
+          }
+        },
+        "required": [
+          "fsLanguage",
+          "bsLanguage",
+          "fsValue",
+          "bsValue"
+        ]
+      },
+      "GetManyTagsRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of entries per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of entries",
+            "nullable": false
+          },
+          "tags": {
+            "description": "an array of tags",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagRespDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "tags"
+        ]
+      },
+      "StatisticsDto": {
+        "type": "object",
+        "properties": {
+          "dictionaryId": {
+            "type": "number",
+            "description": "dictionary id",
+            "nullable": false
+          },
+          "totalAnswers": {
+            "type": "number",
+            "description": "the total answers number",
+            "nullable": false
+          },
+          "correctAnswers": {
+            "type": "number",
+            "description": "the correct answers number",
+            "nullable": false
+          },
+          "trainingTime": {
+            "type": "number",
+            "description": "the training time in milliseconds",
+            "nullable": false
+          },
+          "hintsCount": {
+            "type": "number",
+            "description": "the number of used hints",
+            "nullable": false
+          }
+        },
+        "required": [
+          "dictionaryId",
+          "totalAnswers",
+          "correctAnswers",
+          "trainingTime",
+          "hintsCount"
+        ]
+      },
+      "StatisticsRespDto": {
+        "type": "object",
+        "properties": {
+          "dictionaryId": {
+            "type": "number",
+            "description": "dictionary id",
+            "nullable": false
+          },
+          "totalAnswers": {
+            "type": "number",
+            "description": "the total answers number",
+            "nullable": false
+          },
+          "correctAnswers": {
+            "type": "number",
+            "description": "the correct answers number",
+            "nullable": false
+          },
+          "trainingTime": {
+            "type": "number",
+            "description": "the training time in milliseconds",
+            "nullable": false
+          },
+          "hintsCount": {
+            "type": "number",
+            "description": "the number of used hints",
+            "nullable": false
+          },
+          "id": {
+            "type": "number",
+            "description": "record id",
+            "nullable": true
+          },
+          "userId": {
+            "type": "number",
+            "description": "user id",
+            "nullable": false
+          }
+        },
+        "required": [
+          "dictionaryId",
+          "totalAnswers",
+          "correctAnswers",
+          "trainingTime",
+          "hintsCount",
+          "id",
+          "userId"
+        ]
+      },
+      "GetManyStatsRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of entries per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of entries",
+            "nullable": false
+          },
+          "statistics": {
+            "description": "an array of statistics",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StatisticsRespDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "statistics"
+        ]
+      },
+      "SettingsRespDto": {
+        "type": "object",
+        "properties": {
+          "appLanguage": {
+            "type": "string",
+            "description": "the application default language",
+            "nullable": false,
+            "example": "ru"
+          },
+          "trainingLanguage": {
+            "type": "string",
+            "description": "training default language",
+            "nullable": false,
+            "example": "en"
+          },
+          "notifications": {
+            "type": "boolean",
+            "description": "enable notifications",
+            "example": "true"
+          },
+          "hints": {
+            "type": "boolean",
+            "description": "enable hints",
+            "example": "true"
+          },
+          "voicing": {
+            "type": "boolean",
+            "description": "enable translation voicing",
+            "example": "true"
+          },
+          "darkMode": {
+            "type": "boolean",
+            "description": "enable the dark mode",
+            "example": "true"
+          },
+          "userId": {
+            "type": "string",
+            "description": "user id",
+            "nullable": true,
+            "example": "00000000-0000-0000-0000-000000000000"
+          }
+        },
+        "required": [
+          "appLanguage",
+          "trainingLanguage",
+          "notifications",
+          "hints",
+          "voicing",
+          "darkMode",
+          "userId"
+        ]
+      },
+      "UpdateSettingsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserRespDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id",
+            "nullable": false
+          },
+          "email": {
+            "type": "string",
+            "description": "email",
+            "nullable": false
+          },
+          "nickname": {
+            "type": "object",
+            "description": "nickname",
+            "nullable": false
+          },
+          "avatar": {
+            "type": "object",
+            "description": "avatar",
+            "nullable": true
+          },
+          "confirmed": {
+            "type": "boolean",
+            "description": "is the registration confirmed",
+            "nullable": false
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "nickname",
+          "avatar",
+          "confirmed"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "nickname": {
+            "type": "string",
+            "description": "user nickname",
+            "nullable": false
+          },
+          "avatar": {
+            "type": "object",
+            "description": "path to avatar image",
+            "nullable": true,
+            "example": "~/path/to/avatar.png"
+          }
+        },
+        "required": [
+          "nickname",
+          "avatar"
+        ]
+      },
+      "LanguageDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "language name",
+            "nullable": false,
+            "example": "italian"
+          },
+          "acronym": {
+            "type": "string",
+            "description": "language name",
+            "nullable": false,
+            "example": "it"
+          }
+        },
+        "required": [
+          "name",
+          "acronym"
+        ]
+      },
+      "LanguageRespDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "language name",
+            "nullable": false,
+            "example": "italian"
+          },
+          "acronym": {
+            "type": "string",
+            "description": "language name",
+            "nullable": false,
+            "example": "it"
+          },
+          "id": {
+            "type": "number",
+            "description": "language id",
+            "nullable": false
+          }
+        },
+        "required": [
+          "name",
+          "acronym",
+          "id"
+        ]
+      },
+      "GetManyLanguagesRespDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "page number",
+            "nullable": false
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "number of entries per page",
+            "nullable": false
+          },
+          "records": {
+            "type": "number",
+            "description": "number of records in the response",
+            "nullable": false
+          },
+          "totalRecords": {
+            "type": "number",
+            "description": "the total number of entries",
+            "nullable": false
+          },
+          "languages": {
+            "description": "an array of languages",
+            "nullable": false,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LanguageRespDto"
+            }
+          }
+        },
+        "required": [
+          "page",
+          "pageSize",
+          "records",
+          "totalRecords",
+          "languages"
+        ]
+      },
+      "SignUpDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "user email",
+            "nullable": false
+          },
+          "nickname": {
+            "type": "string",
+            "description": "user nickname",
+            "nullable": false
+          },
+          "avatar": {
+            "type": "object",
+            "description": "path to avatar image",
+            "nullable": true,
+            "example": "~/path/to/avatar.png"
+          },
+          "domain": {
+            "type": "string",
+            "description": "application domain",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "description": "user password",
+            "nullable": false,
+            "example": "Password88"
+          }
+        },
+        "required": [
+          "email",
+          "nickname",
+          "avatar",
+          "domain",
+          "password"
+        ]
+      },
+      "ConfirmDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "user email",
+            "nullable": false
+          },
+          "code": {
+            "type": "string",
+            "description": "The confirmation code"
+          }
+        },
+        "required": [
+          "email",
+          "code"
+        ]
+      },
+      "TokensDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "access token",
+            "nullable": false
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "refresh token",
+            "nullable": false
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "SendEmailDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "user email",
+            "nullable": false
+          },
+          "type": {
+            "type": "string",
+            "description": "email type",
+            "nullable": false,
+            "enum": [
+              "confirm",
+              "reset"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "type"
+        ]
+      },
+      "SignInDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "email",
+            "nullable": false
+          },
+          "password": {
+            "type": "string",
+            "description": "password",
+            "nullable": false
+          },
+          "domain": {
+            "type": "string",
+            "description": "application domain",
+            "nullable": true
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "domain"
+        ]
+      },
+      "EmailDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "user email",
+            "nullable": false
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ConfirmResetDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "user email",
+            "nullable": false
+          },
+          "code": {
+            "type": "string",
+            "description": "The confirmation code"
+          },
+          "password": {
+            "type": "string",
+            "description": "new password",
+            "nullable": false
+          }
+        },
+        "required": [
+          "email",
+          "code",
+          "password"
+        ]
+      },
+      "UpdatePasswordDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "access token",
+            "nullable": false
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "refresh token",
+            "nullable": false
+          },
+          "currentPassword": {
+            "type": "string",
+            "description": "current password",
+            "nullable": false
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "new password",
+            "nullable": false
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "currentPassword",
+          "newPassword"
+        ]
+      }
+    }
+  }
+}

@@ -8,14 +8,15 @@
     "ts-jest": {
       "useESM": true,
       "isolatedModules": false,
-      "tsconfig": "./tsconfig.jest.json"
+      "tsconfig": "./tsconfig.jest.json",
+      "process.env.NODE_ENV": "test"
     }
   },
   "setupFiles": ["ts-node/register", "dotenv/config"],
   "clearMocks": true,
   "forceExit": true,
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": "./test",
+  "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": "(.*)(\\.spec\\.ts)$",
   "testPathIgnorePatterns": ["coverage/*"],
@@ -23,6 +24,11 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "globalTeardown": "<rootDir>/test/e2e/fixtures/global-teardown.ts",
   "collectCoverageFrom": ["./src"],
-  "reporters": ["default"]
+  "reporters": ["default"],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "moduleDirectories": ["node_modules", "src"]
 }

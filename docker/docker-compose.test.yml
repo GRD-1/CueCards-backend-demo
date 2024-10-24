@@ -40,7 +40,7 @@ services:
 
   redis:
     image: redis
-    container_name: 'cuecards-redis'
+    container_name: 'cuecards-redis-${NODE_ENV}'
     restart: unless-stopped
     ports:
       - '${REDIS_PORT_EXTERNAL}:${REDIS_PORT_INTERNAL}'
