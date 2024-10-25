@@ -1,9 +1,8 @@
+import * as dotenv from 'dotenv';
 import { INestApplication } from '@nestjs/common';
 import supertest from 'supertest';
 import * as process from 'node:process';
 import { TestEnvironment } from './fixtures/test-environment';
-
-import * as dotenv from 'dotenv';
 
 dotenv.config({ path: './.env.test', override: true });
 
@@ -20,7 +19,7 @@ describe('testing tests', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await TestEnvironment.shutdownEnvironment();
   });
 
   it('testing testy test', async () => {

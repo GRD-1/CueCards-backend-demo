@@ -7,7 +7,7 @@
   "globals": {
     "ts-jest": {
       "useESM": true,
-      "isolatedModules": false,
+      "isolatedModules": true,
       "tsconfig": "./tsconfig.jest.json",
       "process.env.NODE_ENV": "test"
     }
@@ -20,11 +20,10 @@
   "testEnvironment": "node",
   "testRegex": "(.*)(\\.spec\\.ts)$",
   "testPathIgnorePatterns": ["coverage/*"],
-  "coverageDirectory": "coverage",
+  "coverageDirectory": "test/coverage",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "globalTeardown": "<rootDir>/test/e2e/fixtures/global-teardown.ts",
   "collectCoverageFrom": ["./src"],
   "reporters": ["default"],
   "moduleNameMapper": {

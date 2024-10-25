@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { execSync } from 'child_process';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
-import { PrismaService } from '@/modules/prisma/prisma.service';
+import { Client } from 'pg';
 
 dotenv.config({ path: './.env.test', override: true });
 
@@ -11,30 +11,34 @@ export class TestEnvironment {
   private static app: INestApplication;
 
   static async prepareEnvironment(): Promise<INestApplication> {
-    process.env.DOTENV_CONFIG_PATH = '.env.test';
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db push`, { stdio: 'inherit' });
+    try {
+      const client = new Client(process.env.POSTGRES_URL);
+      await client.connect();
+      await client.query('DROP SCHEMA IF EXISTS public CASCADE;');
+      await client.query('CREATE SCHEMA public;');
+      await client.end();
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    const app: INestApplication = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api');
-    await app.init();
+      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db push --accept-data-loss`, { stdio: 'inherit' });
+      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx @snaplet/seed sync`, { stdio: 'inherit' });
+      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db seed`, { stdio: 'inherit' });
 
-    const prismaService = app.get(PrismaService);
-    await prismaService.$connect();
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx @snaplet/seed sync`, { stdio: 'inherit' });
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db seed`, { stdio: 'inherit' });
-    this.app = app;
+      if (!this.app) {
+        const moduleFixture: TestingModule = await Test.createTestingModule({
+          imports: [AppModule],
+        }).compile();
+        this.app = moduleFixture.createNestApplication();
+        this.app.setGlobalPrefix('api');
+        await this.app.init();
+      }
 
-    return app;
+      return this.app;
+    } catch (error) {
+      console.error('Error setting up test environment:', error);
+      throw error;
+    }
   }
 
   static async shutdownEnvironment(): Promise<void> {
-    const prismaService = await this.app.get(PrismaService);
-    await prismaService.$queryRaw`delete from cards where id=1`;
     await this.app.close();
-    console.log('RAVOLY!!!');
-    execSync(`docker-compose down`, { stdio: 'inherit' });
   }
 }
