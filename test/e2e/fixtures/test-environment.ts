@@ -1,11 +1,8 @@
-import * as dotenv from 'dotenv';
 import { INestApplication } from '@nestjs/common';
 import { execSync } from 'child_process';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
 import { Client } from 'pg';
-
-dotenv.config({ path: './.env.test', override: true });
 
 export class TestEnvironment {
   private static app: INestApplication;
