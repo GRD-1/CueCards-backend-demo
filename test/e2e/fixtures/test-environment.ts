@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { execSync } from 'child_process';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '@/app.module';
 import { Client } from 'pg';
+import { AppModule } from '@/app.module';
 
 export class TestEnvironment {
   private static app: INestApplication;

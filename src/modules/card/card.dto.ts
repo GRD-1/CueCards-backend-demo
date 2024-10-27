@@ -98,7 +98,7 @@ export class CardListItemRespDto {
   readonly id: number;
 
   @ApiProperty({ description: 'user id', nullable: true, example: 1 })
-  readonly authorId: number | null;
+  readonly authorId: string;
 
   @ApiProperty({ description: 'front side language', nullable: false, example: 'en' })
   @IsString()
@@ -137,7 +137,7 @@ export class CardRespDto extends CardDto {
 
   @ApiProperty({ description: 'user id', nullable: false, example: 1 })
   @IsInt()
-  readonly authorId: number;
+  readonly authorId: string;
 
   @ApiProperty({ description: 'the date when the card were created', nullable: false, type: Date })
   @IsDate()
@@ -234,7 +234,7 @@ export class CardWithSettingsDto {
 
   @ApiProperty({ description: 'author id', nullable: false })
   @IsInt()
-  readonly authorId: number;
+  readonly authorId: string;
 
   @ApiProperty({ description: 'front side value', nullable: false, example: 'text text text' })
   @IsString()
