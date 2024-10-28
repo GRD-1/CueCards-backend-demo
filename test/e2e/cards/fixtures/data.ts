@@ -1,6 +1,6 @@
 import { CardAndTagsInterface } from '@/modules/card/card.interface';
 
-export const NEW_CARD: CardAndTagsInterface = {
+export const CARD_DATA: CardAndTagsInterface = {
   fsLanguage: 'en',
   fsValue: 'card value en',
   fsDescription: 'new card en',
@@ -20,4 +20,26 @@ export const NEW_CARD: CardAndTagsInterface = {
   bsAudio: 'path/to/file',
   bsHint: 'hint ru',
   tags: [1, 3],
+};
+
+export const INVALID_CARD_DATA: { [key: string]: null } = {
+  fsLanguage: null,
+  fsValue: null,
+  fsDescription: null,
+  fsMeaningVariants: null,
+  fsWrongMeanings: null,
+  fsTranscription: null,
+  fsSynonyms: null,
+  fsAudio: null,
+  fsHint: null,
+  bsLanguage: null,
+  bsValue: null,
+  bsDescription: null,
+  bsMeaningVariants: null,
+  bsWrongMeanings: null,
+  bsTranscription: null,
+  bsSynonyms: null,
+  bsAudio: null,
+  bsHint: null,
+  tags: null,
 };

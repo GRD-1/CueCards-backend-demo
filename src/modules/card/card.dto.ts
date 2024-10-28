@@ -87,9 +87,11 @@ export class CardDto {
   readonly bsSynonyms: string[];
 
   @ApiProperty({ description: 'back side audio', nullable: true, example: 'path/to/file' })
+  @IsString()
   readonly bsAudio: string | null;
 
   @ApiProperty({ description: 'back side hint which helps to remember the translation', example: 'hint' })
+  @IsString({ each: true })
   readonly bsHint: string | null;
 }
 

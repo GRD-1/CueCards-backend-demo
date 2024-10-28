@@ -1,30 +1,47 @@
-import { INestApplication } from '@nestjs/common';
-import { execSync } from 'child_process';
+import { BadRequestException, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Client } from 'pg';
 import { AppModule } from '@/app.module';
+import { ConfigService } from '@nestjs/config';
+import { GlobalExceptionFilter } from '@/filters/global-exception.filter';
+import dbHelper from '@/e2e/fixtures/db-helper';
 
 export class TestEnvironment {
   private static app: INestApplication;
 
   static async prepareEnvironment(): Promise<INestApplication> {
     try {
-      const client = new Client(process.env.POSTGRES_URL);
-      await client.connect();
-      await client.query('DROP SCHEMA IF EXISTS public CASCADE;');
-      await client.query('CREATE SCHEMA public;');
-      await client.end();
-
-      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db push --accept-data-loss`, { stdio: 'inherit' });
-      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx @snaplet/seed sync`, { stdio: 'inherit' });
-      execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db seed`, { stdio: 'inherit' });
+      await dbHelper.prepare();
 
       if (!this.app) {
         const moduleFixture: TestingModule = await Test.createTestingModule({
           imports: [AppModule],
         }).compile();
         this.app = moduleFixture.createNestApplication();
+
+        const configService = this.app.get(ConfigService);
+        const appConf = configService.get('app');
+
         this.app.setGlobalPrefix('api');
+        this.app.useLogger([appConf.logLevel]);
+        this.app.useGlobalPipes(
+          new ValidationPipe({
+            transform: true,
+            whitelist: true,
+            transformOptions: {
+              enableImplicitConversion: true,
+            },
+            exceptionFactory: (validationErrors = []): BadRequestException => {
+              const errors = validationErrors.map((error) => ({
+                property: error.property,
+                constraints: Object.values(error.constraints || {}),
+              }));
+
+              return new BadRequestException(JSON.stringify(errors));
+            },
+          }),
+        );
+        this.app.useGlobalFilters(new GlobalExceptionFilter());
+
         await this.app.init();
       }
 
