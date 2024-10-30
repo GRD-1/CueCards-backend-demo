@@ -64,8 +64,7 @@ $ npm run migration:up
 ```
 10. Seed database:
 ``` bash
-$ npm run prisma:seed-sync
-$ npm run prisma:seed
+$ npm run prisma:seed-sync && npm run prisma:seed
 ```
 11. Run the application using package.json scripts, e.g:
 ``` bash

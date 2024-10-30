@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
 import { ConfigService } from '@nestjs/config';
 import { GlobalExceptionFilter } from '@/filters/global-exception.filter';
-import dbHelper from '@/e2e/fixtures/db-helper';
+import dbHelper from '@/e2e/_fixtures/db-helper';
 
 export class TestEnvironment {
   private static app: INestApplication;

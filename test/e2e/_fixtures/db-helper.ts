@@ -35,14 +35,10 @@ class DbHelper {
   }
 
   async prepare(): Promise<void> {
-    const connection = await this.connect();
-    await connection.query('DROP SCHEMA IF EXISTS public CASCADE;');
-    await connection.query('CREATE SCHEMA public;');
-    await this.disconnect();
-
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db push --accept-data-loss`, { stdio: 'inherit' });
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx @snaplet/seed sync`, { stdio: 'inherit' });
-    execSync(`POSTGRES_URL=${process.env.POSTGRES_URL} npx prisma db seed`, { stdio: 'inherit' });
+    const connStr = process.env.POSTGRES_URL;
+    execSync(`POSTGRES_URL=${connStr} npx prisma migrate reset --force --skip-generate`, { stdio: 'inherit' });
+    execSync(`POSTGRES_URL=${connStr} npx @snaplet/seed sync`, { stdio: 'inherit' });
+    execSync(`POSTGRES_URL=${connStr} PRISMA_ENV=test npx prisma db seed`, { stdio: 'inherit' });
   }
 }
 export default DbHelper.getInstance();
