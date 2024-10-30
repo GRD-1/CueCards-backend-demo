@@ -6,7 +6,7 @@ import { CREATE_CARD_DATA, INVALID_CARD_DATA } from '@/e2e/cards/_fixtures/data'
 import { TestEnvironment } from '@/e2e/_fixtures/test-environment';
 import dbHelper from '@/e2e/_fixtures/db-helper';
 import { Client } from 'pg';
-import { ObjectType } from '@/types/type.type';
+import { ObjectType } from '@/_types/types';
 
 dotenv.config({ path: './.env.test', override: true });
 

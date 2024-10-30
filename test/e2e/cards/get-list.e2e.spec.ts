@@ -9,7 +9,7 @@ import { Client } from 'pg';
 import seedWithCards from '@/e2e/cards/_fixtures/seed-with-cards';
 import { CardInterface } from '@/modules/card/card.interface';
 import { CardListEntity } from '@/modules/card/card.entity';
-import { ObjectType } from '@/types/type.type';
+import { ObjectType } from '@/_types/types';
 
 dotenv.config({ path: './.env.test', override: true });
 
