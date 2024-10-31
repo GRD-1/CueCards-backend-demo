@@ -3,15 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
 import { ConfigService } from '@nestjs/config';
 import { GlobalExceptionFilter } from '@/filters/global-exception.filter';
-import dbHelper from '@/e2e/_fixtures/db-helper';
 
-export class TestEnvironment {
+export class TestApp {
   private static app: INestApplication;
 
-  static async prepareEnvironment(): Promise<INestApplication> {
+  static async init(): Promise<INestApplication> {
     try {
-      await dbHelper.prepare();
-
       if (!this.app) {
         const moduleFixture: TestingModule = await Test.createTestingModule({
           imports: [AppModule],
@@ -52,7 +49,7 @@ export class TestEnvironment {
     }
   }
 
-  static async shutdownEnvironment(): Promise<void> {
+  static async shutdown(): Promise<void> {
     await this.app.close();
   }
 }

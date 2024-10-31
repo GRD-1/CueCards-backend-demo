@@ -29,5 +29,6 @@
   "moduleNameMapper": {
     "^@/(.*)$": ["<rootDir>/src/$1", "<rootDir>/test/$1"]
   },
-  "moduleDirectories": ["node_modules", "src"]
+  "moduleDirectories": ["node_modules", "src"],
+  "setupFilesAfterEnv": ["<rootDir>/test/e2e/_fixtures/e2e-before-all.ts"]
 }

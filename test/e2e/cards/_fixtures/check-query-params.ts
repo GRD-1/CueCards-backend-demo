@@ -1,37 +1,33 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 import { CARD_DATA, INVALID_QUERY_PARAMS, QUERY_PARAMS } from '@/e2e/cards/_fixtures/data';
 import process from 'node:process';
 import { CardListEntity } from '@/modules/card/card.entity';
 import { AuthHeaderType, ObjectType } from '@/_types/types';
-import seedWithCards from '@/e2e/cards/_fixtures/seed-with-cards';
 import dbHelper from '@/e2e/_fixtures/db-helper';
 import supertest from 'supertest';
-import { TestEnvironment } from '@/e2e/_fixtures/test-environment';
 import { Client } from 'pg';
-import { CardInterface } from '@/modules/card/card.interface';
 
 export default (authHeader: AuthHeaderType, url: string): void => {
   describe('should check query parameters', () => {
     const { fsLanguage, bsLanguage } = QUERY_PARAMS;
-    let app: INestApplication;
     let req: supertest.SuperTest<supertest.Test>;
     let db: Client;
+    let testCards: ObjectType[];
     let defaultResp: supertest.Response;
     let defaultRespBody: ObjectType;
-    let testCards: CardInterface[];
 
     beforeAll(async () => {
-      app = await TestEnvironment.prepareEnvironment();
-      req = supertest(app.getHttpServer());
-      db = await dbHelper.connect();
-      testCards = await seedWithCards([CARD_DATA], process.env.TEST_USER_ID!);
+      req = global.request;
+      db = global.db;
+
+      testCards = await dbHelper.seed('cards', [{ ...CARD_DATA, authorId: process.env.TEST_USER_ID }]);
       defaultResp = await req.get(url).set(authHeader).query({ fsLanguage, bsLanguage });
       defaultRespBody = defaultResp ? defaultResp.body : {};
     });
 
     afterAll(async () => {
-      await dbHelper.disconnect();
-      await TestEnvironment.shutdownEnvironment();
+      const cardIdArr = testCards.map((item) => item.id as number);
+      await dbHelper.deleteRecords('cards', cardIdArr);
     });
 
     it('should return statusCode = 400 if the required query params are missing', async () => {
@@ -40,7 +36,7 @@ export default (authHeader: AuthHeaderType, url: string): void => {
       expect(resp.statusCode).toBe(HttpStatus.BAD_REQUEST);
     });
 
-    it('should return statusCode = 400 if the query params is invalid', async () => {
+    it('should return statusCode = 400 if the query params are invalid', async () => {
       const resp = await req.get(url).set(authHeader).query(INVALID_QUERY_PARAMS);
 
       const errorArr = JSON.parse(resp.body.errorMsg);
@@ -86,7 +82,7 @@ export default (authHeader: AuthHeaderType, url: string): void => {
     });
 
     it('the query parameters [partOfValue] should limit the selection', async () => {
-      const partOfValue = testCards[0].fsValue;
+      const partOfValue = testCards[0].fsValue as string;
       const resp = await req.get(url).set(authHeader).query({ fsLanguage, bsLanguage, partOfValue });
       const q = `SELECT * FROM cards WHERE "fsValue" LIKE '%'||$1||'%' OR "bsValue" LIKE '%'||$2||'%'`;
       const control = await db.query(q, [partOfValue, partOfValue]);

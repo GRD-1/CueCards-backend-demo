@@ -1,5 +1,5 @@
 import { Client } from 'pg';
-import { execSync } from 'child_process';
+import { ObjectType } from '@/_types/types';
 
 class DbHelper {
   private db: Client;
@@ -34,11 +34,36 @@ class DbHelper {
     await this.db.end();
   }
 
-  async prepare(): Promise<void> {
-    const connStr = process.env.POSTGRES_URL;
-    execSync(`POSTGRES_URL=${connStr} npx prisma migrate reset --force --skip-generate`, { stdio: 'inherit' });
-    execSync(`POSTGRES_URL=${connStr} npx @snaplet/seed sync`, { stdio: 'inherit' });
-    execSync(`POSTGRES_URL=${connStr} PRISMA_ENV=test npx prisma db seed`, { stdio: 'inherit' });
+  async seed<T extends ObjectType>(tableName: string, data: T[]): Promise<ObjectType[]> {
+    return await Promise.all(
+      data.map(async (item) => {
+        const keys = [...Object.keys(item)];
+        const values = [...Object.values(item)];
+        const keyPlaceholder = keys.map((key) => `"${key}"`).join(', ');
+        const valPlaceholder = values.map((_, index) => `$${index + 1}`).join(', ');
+        const q = `INSERT INTO ${tableName} (${keyPlaceholder}) VALUES (${valPlaceholder}) RETURNING *;`;
+
+        const newCard = await this.db.query(q, values);
+
+        return newCard.rows[0];
+      }),
+    );
+  }
+
+  async deleteRecords(tableName: string, idArray: number[]): Promise<void> {
+    await this.db.query(`DELETE FROM "${tableName}" WHERE id = ANY($1)`, [idArray]);
+    await this.db.query(`REINDEX TABLE "${tableName}"`);
+    const query = `DO $$
+                DECLARE 
+                    max_id INT;
+                BEGIN
+                    -- Fetch the maximum ID from the table
+                    SELECT MAX(id) + 1 INTO max_id FROM cards;
+                    
+                    -- Restart the sequence with the new value
+                    EXECUTE format('ALTER SEQUENCE cards_id_seq RESTART WITH %s', max_id);
+                END $$;`;
+    await this.db.query(query);
   }
 }
 export default DbHelper.getInstance();

@@ -74,7 +74,7 @@ $ npm run start:dev
 
 1. Prepare environment:
 ``` bash
-$ docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
+$ npm run prepare-test-env
 ```
 2. Run the specific test set using package.json scripts, or all the tests at once, e.g:
 ``` bash
