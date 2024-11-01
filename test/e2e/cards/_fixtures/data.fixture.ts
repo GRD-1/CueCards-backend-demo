@@ -22,6 +22,12 @@ export const CARD_DATA: CardInterface = {
   bsHint: 'hint en',
 };
 
+export const CARD_DATA_2: CardInterface = {
+  ...CARD_DATA,
+  fsValue: 'card value ru 2',
+  bsValue: 'card value en 2',
+};
+
 export const CREATE_CARD_DATA: CardAndTagsInterface = {
   ...CARD_DATA,
   tags: [1, 3],
