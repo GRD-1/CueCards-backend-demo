@@ -2,6 +2,7 @@ import getListFixture from '@/e2e/cards/_fixtures/get-list.fixture';
 import { CARD_DATA_2, QUERY_PARAMS } from '@/e2e/cards/_fixtures/data.fixture';
 import { ObjectType } from '@/_types/types';
 import dbHelper from '@/e2e/_fixtures/db-helper';
+import '@/e2e/_fixtures/e2e-before-after';
 
 describe('GET /api/cards/list-with-first tests', () => {
   const url = '/api/cards/list-with-first';

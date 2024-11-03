@@ -5,6 +5,7 @@ import { CREATE_CARD_DATA, INVALID_CARD_DATA } from '@/e2e/cards/_fixtures/data.
 import { QueryResult } from 'pg';
 import { ObjectType } from '@/_types/types';
 import dbHelper from '@/e2e/_fixtures/db-helper';
+import '@/e2e/_fixtures/e2e-before-after';
 
 describe('POST /api/cards/create tests', () => {
   const url = '/api/cards/create';
