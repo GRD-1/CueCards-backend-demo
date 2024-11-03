@@ -66,6 +66,7 @@
   "devDependencies": {
     "@commitlint/cli": "^18.6.1",
     "@compodoc/compodoc": "^1.1.23",
+    "@jest/globals": "^29.7.0",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
