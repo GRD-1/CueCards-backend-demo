@@ -3,6 +3,7 @@ import { CARD_DATA_2, QUERY_PARAMS } from '@/e2e/cards/_fixtures/data.fixture';
 import { ObjectType } from '@/_types/types';
 import dbHelper from '@/e2e/_fixtures/db-helper';
 import '@/e2e/_fixtures/e2e-before-after';
+import { CardWitTagsEntity } from '@/modules/card/card.entity';
 
 describe('GET /api/cards/list-with-first tests', () => {
   const url = '/api/cards/list-with-first';
@@ -27,7 +28,7 @@ describe('GET /api/cards/list-with-first tests', () => {
     const queryParamsTwo = { fsLanguage, bsLanguage, pageSize: 1, page: respOne.body.totalRecords };
     const respTwo = await global.request.get(url).set(global.authHeader).query(queryParamsTwo);
 
-    const firstCard = respTwo.body.firstCard;
+    const firstCard: CardWitTagsEntity = respTwo.body.firstCard;
     const { id, authorId, createdAt, updatedAt, deleteMark, tags, ...withoutDefault } = firstCard;
 
     expect(respOne.body.firstCard.id).toEqual(respOne.body.cards[0].id);
