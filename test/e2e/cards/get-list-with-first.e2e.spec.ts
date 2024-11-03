@@ -7,8 +7,8 @@ import '@/e2e/_fixtures/e2e-before-after';
 describe('GET /api/cards/list-with-first tests', () => {
   const url = '/api/cards/list-with-first';
   let testCards: ObjectType[];
-  let fsLanguage = CARD_DATA_2.fsLanguage;
-  let bsLanguage = CARD_DATA_2.bsLanguage;
+  const fsLanguage = CARD_DATA_2.fsLanguage;
+  const bsLanguage = CARD_DATA_2.bsLanguage;
 
   beforeAll(async () => {
     testCards = await dbHelper.seed('cards', [{ ...CARD_DATA_2, authorId: global.testUserId }]);
@@ -22,9 +22,9 @@ describe('GET /api/cards/list-with-first tests', () => {
   getListFixture(url);
 
   it('should return the correct first card data', async () => {
-    let queryParamsOne: typeof QUERY_PARAMS = { fsLanguage, bsLanguage };
+    const queryParamsOne: typeof QUERY_PARAMS = { fsLanguage, bsLanguage };
     const respOne = await global.request.get(url).set(global.authHeader).query(queryParamsOne);
-    let queryParamsTwo = { fsLanguage, bsLanguage, pageSize: 1, page: respOne.body.totalRecords };
+    const queryParamsTwo = { fsLanguage, bsLanguage, pageSize: 1, page: respOne.body.totalRecords };
     const respTwo = await global.request.get(url).set(global.authHeader).query(queryParamsTwo);
 
     const firstCard = respTwo.body.firstCard;

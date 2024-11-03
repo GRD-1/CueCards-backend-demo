@@ -24,7 +24,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "collectCoverageFrom": ["./src"],
+  "collectCoverageFrom": ["./src/*/**"],
   "reporters": ["default"],
   "moduleNameMapper": {
     "^@/(.*)$": ["<rootDir>/src/$1", "<rootDir>/test/$1"]

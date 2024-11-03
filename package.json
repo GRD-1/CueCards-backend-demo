@@ -23,10 +23,11 @@
     "migration:up": "prisma migrate deploy",
     "migration:reset": "prisma migrate reset",
     "prepare-test-env": "ts-node test/e2e/_fixtures/e2e-test-environment.ts",
-    "test": "NODE_OPTIONS='--loader ts-node/esm' jest --runInBand --colors --coverage --config jest.config.json",
+    "test": "NODE_OPTIONS='--loader ts-node/esm' jest --runInBand --colors --config jest.config.json",
     "test:e2e": "npm run test -- --testPathPattern=test/e2e --logHeapUsage",
     "test:integration": "npm run test -- --testPathPattern=test/integration",
     "test:unit": "npm run test -- --testPathPattern=test/unit",
+    "test:coverage": "npm run test -- --coverage",
     "compodoc": "npx compodoc -p tsconfig.doc.json -s",
     "prepare": "husky install"
   },

@@ -13,4 +13,3 @@ README.md
 .giignore
 prisma/schema.prisma
 src/config/config.schema.ts
-*.spec.ts
