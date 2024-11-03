@@ -1,34 +1,53 @@
-name: tests-workflow
-run-name: tests-workflow-runner
+name: Run Tests
 
 on:
+  push:
   pull_request:
-    branches:
-      - main
-      - develop
   workflow_dispatch:
 
 jobs:
-  tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      - name: Deploy with Docker Compose
+      - name: Load environment variables
         run: |
-          docker-compose -f docker/docker-compose.test.yml --env-file .env.test up -d
+          # Export each variable in .env.test to the GitHub environment
+          export $(grep -v '^#' .env.test | xargs -d '\n')
+          cat .env.test | grep -v '^#' >> $GITHUB_ENV
 
-      - name: run tests
-        run: |
-          docker exec cuecards-node-test npm run test
+      - name: Start Docker Compose services
+        run: docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
 
-      - name: stop docker containers and quit
+      - name: Run Prisma migrations
+        env:
+          POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
-          docker stop $(docker ps -aq)
+          npx prisma migrate reset --force --skip-generate
+          npx @snaplet/seed sync
+          PRISMA_ENV=test npx prisma db seed
+
+      - name: Run tests
+        env:
+          POSTGRES_URL: ${{ env.POSTGRES_URL }}
+        run: npm test
+
+      - name: Stop Docker Compose services
+        if: always()
+        run: docker compose -f ./docker/docker-compose.test.yml down
