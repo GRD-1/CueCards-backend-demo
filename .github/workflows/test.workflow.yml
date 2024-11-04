@@ -59,7 +59,7 @@ jobs:
           mkdir -p prisma/seed/.snaplet
           echo '{
             "version": "v1",
-            "adapter": "prisma"
+            "adapter": "prisma",
             "database": {
               "provider": "postgresql",
               "url": "'$POSTGRES_URL'",
