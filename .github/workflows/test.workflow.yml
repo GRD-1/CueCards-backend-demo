@@ -54,9 +54,8 @@ jobs:
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
-          cd prisma/seed
-          npx prisma migrate reset --force --skip-generate
-          cd ../../
+          npx prisma migrate reset --force --skip-generate --schema=prisma/seed/seed.ts
+          PRISMA_ENV=test npx prisma db seed --schema=prisma/seed/seed.ts
 
       - name: Run tests
         env:
