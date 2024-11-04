@@ -58,6 +58,14 @@ jobs:
 
           # Sync Snaplet client
           cd prisma/seed
+          if ! npx @snaplet/seed init; then
+            echo "Error: @snaplet/seed init failed."
+            exit 1
+          fi
+          cd ../../
+
+          # Sync Snaplet client
+          cd prisma/seed
           if ! npx @snaplet/seed sync; then
             echo "Error: @snaplet/seed sync failed."
             exit 1
