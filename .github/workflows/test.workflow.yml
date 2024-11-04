@@ -56,22 +56,18 @@ jobs:
         run: |
           SCHEMA_PATH=prisma/schema.prisma
 
-          # Step 1: Copy schema.prisma to the default location
-          mkdir -p prisma
-          cp $SCHEMA_PATH prisma/schema.prisma
-
-          # Step 2: Initialize Snaplet
+          # Initialize Snaplet
           cd prisma/seed
           npx @snaplet/seed init
           cd ../../
 
-          # Step 3: Run migrations
+          # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
-          # Step 4: Sync Snaplet client
+          # Sync Snaplet client
           npx @snaplet/seed sync
 
-          # Step 5: Run the seed command
+          # Run the seed command
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
 
       - name: Run tests
