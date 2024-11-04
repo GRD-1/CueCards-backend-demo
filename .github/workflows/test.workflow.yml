@@ -59,16 +59,16 @@ jobs:
           # Step 1: Clear any existing Snaplet cache in the seed directory to avoid conflicts
           rm -rf prisma/seed/.snaplet
 
-          # Step 2: Initialize Snaplet in the working directory (forces client setup)
+          # Step 2: Initialize Snaplet with schema path explicitly set
           cd prisma/seed
-          npx @snaplet/seed init
+          npx @snaplet/seed init --schema=../schema.prisma
           cd ../../
 
           # Step 3: Run migrations with the specified schema path
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
-          # Step 4: Synchronize the Snaplet client in the specified working directory
-          npx @snaplet/seed sync --working-directory=prisma/seed
+          # Step 4: Synchronize the Snaplet client with schema path explicitly set
+          npx @snaplet/seed sync --schema=prisma/schema.prisma
 
           # Step 5: Verify the Snaplet client and config are generated
           echo "Contents of prisma/seed after Snaplet init and sync:"
