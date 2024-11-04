@@ -50,50 +50,28 @@ jobs:
             fi
           done
 
+  # ... previous steps remain the same ...
+
       - name: Setup and seed database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
-          NODE_ENV: development  # Add this to ensure full access
         run: |
           # Install dependencies
-          npm install @snaplet/seed @prisma/client
+          npm install @snaplet/seed
           
-          # Generate Prisma client first
-          npx prisma generate
-          
-          # Run migrations
-          npx prisma migrate reset --force --skip-generate --schema=prisma/schema.prisma
-          
-          # Set up Snaplet in the seed directory
-          cd prisma/seed
-          
-          # Clear any existing Snaplet files
-          rm -rf .snaplet/* || true
-          
-          # Create fresh Snaplet configuration
-          mkdir -p .snaplet
+          # Create Snaplet config
+          mkdir -p prisma/seed/.snaplet
           echo '{
-            "version": "v1",
-            "database": {
-              "provider": "postgresql",
-              "url": "'$POSTGRES_URL'",
-              "snapshot": false
-            },
-            "generate": {
-              "directory": "./.snaplet/generated"
-            }
-          }' > .snaplet/config.json
+          "version": "v1",
+          "database": {
+           "provider": "postgresql",
+           "url": "'$POSTGRES_URL'",
+           "schema": "../../prisma/schema.prisma"
+          }
+          }' > prisma/seed/.snaplet/config.json
           
-          # Generate Snaplet client explicitly
-          SNAPLET_DATABASE_URL="$POSTGRES_URL" npx @snaplet/seed generate --force
-          
-          # List generated files for debugging
-          echo "Generated Snaplet files:"
-          ls -la .snaplet/
-          
-          # Return to root and run seed
-          cd ../..
-          PRISMA_ENV=test npx prisma db seed
+          # Run migrations first
+          npx prisma migrate reset --force --skip-generate --schema=prisma/schema.prisma
 
       - name: Run the tests
         env:
