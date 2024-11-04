@@ -36,6 +36,14 @@ jobs:
       - name: Start Docker Compose services
         run: docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            nc -z cuecards-postgres-test 5432 && echo "PostgreSQL is up!" && break
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
       - name: Prepare the database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
