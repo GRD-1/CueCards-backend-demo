@@ -57,12 +57,10 @@ jobs:
           SCHEMA_PATH=prisma/schema.prisma
 
           # Sync Snaplet client
-          cd prisma/seed
-          if ! npx @snaplet/seed init --schema='../schema.prisma'; then
+          if ! npx @snaplet/seed init --schema=SCHEMA_PATH; then
             echo "Error: @snaplet/seed init failed."
             exit 1
           fi
-          cd ../../
 
           # Sync Snaplet client
           cd prisma/seed
