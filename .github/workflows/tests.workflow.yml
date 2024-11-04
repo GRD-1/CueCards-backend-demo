@@ -35,9 +35,10 @@ jobs:
       - name: Start Docker Compose services
         run: docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
 
-      - name: Run Prisma migrations
+      - name: Prepare the database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
+          SNAPLET_WORKING_DIRECTORY: prisma/seed
         run: |
           npx prisma migrate reset --force --skip-generate
           npx @snaplet/seed sync
