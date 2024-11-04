@@ -67,7 +67,8 @@ jobs:
               "provider": "postgresql",
               "url": "'$POSTGRES_URL'",
               "schema": "../../prisma/schema.prisma"
-            }
+            },
+            "adapter": "prisma"
           }' > prisma/seed/.snaplet/config.json
           
           # Sync Snaplet to generate the client
