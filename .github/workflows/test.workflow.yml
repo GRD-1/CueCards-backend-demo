@@ -53,24 +53,30 @@ jobs:
       - name: Prepare the database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
-          SNAPLET_WORKING_DIRECTORY: prisma/seed
         run: |
           SCHEMA_PATH=prisma/schema.prisma
 
           # Step 1: Clear any existing Snaplet cache in the seed directory to avoid conflicts
           rm -rf prisma/seed/.snaplet
 
-          # Step 2: Run migrations with the specified schema path
+          # Step 2: Initialize Snaplet in the working directory (forces client setup)
+          cd prisma/seed
+          npx @snaplet/seed init
+          cd ../../
+
+          # Step 3: Run migrations with the specified schema path
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
-          # Step 3: Synchronize the Snaplet client in the specified working directory
+          # Step 4: Synchronize the Snaplet client in the specified working directory
           npx @snaplet/seed sync --working-directory=prisma/seed
 
-          # Step 4: Verify the Snaplet client was generated successfully
-          echo "Contents of prisma/seed after syncing:"
+          # Step 5: Verify the Snaplet client and config are generated
+          echo "Contents of prisma/seed after Snaplet init and sync:"
           ls -R prisma/seed
-          
-          # Step 5: Run the seed command with PRISMA_ENV set to 'test'
+          echo "Contents of prisma/seed/.snaplet (if exists):"
+          ls -R prisma/seed/.snaplet || echo ".snaplet directory not found"
+
+          # Step 6: Run the seed command with PRISMA_ENV set to 'test'
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
 
       - name: Run tests
