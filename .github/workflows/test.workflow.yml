@@ -50,11 +50,7 @@ jobs:
             fi
           done
 
-  # ... previous steps remain the same ...
-
       - name: Setup and seed database
-        env:
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
           mkdir -p prisma/seed/.snaplet
           echo '{
@@ -72,8 +68,6 @@ jobs:
           PRISMA_ENV=test npx prisma db seed --schema=prisma/schema.prisma         
 
       - name: Run the tests
-        env:
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: npm test
 
       - name: Stop Docker Compose services
