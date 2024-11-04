@@ -60,10 +60,16 @@ jobs:
           # Run migrations with the specified schema path
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
           
-          # Sync the @snaplet/seed client in the specified directory
-          npx @snaplet/seed sync --working-directory prisma/seed
+          # Synchronize the Snaplet client in the specified working directory
+          npx @snaplet/seed sync --working-directory=prisma/seed
           
-          # Run the seed command with the SNAPLET_WORKING_DIRECTORY pointing to prisma/seed
+          # Verify the Snaplet client was generated successfully
+          if [ ! -f "prisma/seed/config.json" ]; then
+            echo "Snaplet client not generated. Exiting."
+            exit 1
+          fi
+          
+          # Run the seed command, now that Snaplet client should be ready
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
 
       - name: Run tests
