@@ -56,26 +56,22 @@ jobs:
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
-          # Install dependencies
-          npm install @snaplet/seed
-          
-          # Create Snaplet config
           mkdir -p prisma/seed/.snaplet
           echo '{
             "version": "v1",
+            "adapter": "prisma"
             "database": {
               "provider": "postgresql",
               "url": "'$POSTGRES_URL'",
               "schema": "../../prisma/schema.prisma"
-            },
-            "adapter": "prisma"
+            }
           }' > prisma/seed/.snaplet/config.json
           
-          # Sync Snaplet to generate the client
-          npx @snaplet/seed sync
+          # Run migrations without seeding
+          npx prisma migrate reset --force --skip-generate --skip-seed --schema=prisma/schema.prisma
           
-          # Run migrations and seeding
-          npx prisma migrate reset --force --skip-generate --schema=prisma/schema.prisma
+          # Generate Snaplet client after migrations
+          npx @snaplet/seed sync
 
       - name: Run the tests
         env:
