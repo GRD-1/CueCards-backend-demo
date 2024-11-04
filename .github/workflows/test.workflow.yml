@@ -62,9 +62,6 @@ jobs:
           # Sync Snaplet client
           npx @snaplet/seed sync
 
-          # Run the seed command
-          PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
-
       - name: Run tests
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
