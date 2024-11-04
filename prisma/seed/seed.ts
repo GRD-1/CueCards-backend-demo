@@ -1,7 +1,3 @@
-/**
- * ! Executing this script will delete all data in your database
- * documentation is here: https://snaplet-seed.netlify.app/seed/getting-started/overview
- */
 import { createSeedClient } from '@snaplet/seed';
 import * as dotenv from 'dotenv';
 import * as process from 'node:process';
