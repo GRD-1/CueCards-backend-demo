@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { readFileSync } from 'fs';
 
 export const jwtConfig = registerAs('jwt', () => {
-  const testMode = process.env.CI === 'true';
+  const testMode = process.env.NODE_ENV === 'test';
   const publicKey = testMode ? 'test-public-key' : readFileSync('keys/public.pem', 'utf-8');
   const privateKey = testMode ? 'test-private-key' : readFileSync('keys/private.pem', 'utf-8');
 
