@@ -50,25 +50,17 @@ jobs:
             fi
           done
 
-      - name: Prepare database structure
+      - name: Setup and seed database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
-          SCHEMA_PATH=prisma/schema.prisma
-          # Run migrations to create tables
-          npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
-
-      - name: Setup Snaplet
-        env:
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
-        run: |
-          # Install snaplet locally
+          # Install dependencies first
           npm install @snaplet/seed
           
-          # Create necessary directories
-          mkdir -p prisma/seed/.snaplet/snapshots
+          # Set up Snaplet structure
+          mkdir -p prisma/seed/.snaplet
           
-          # Create basic config
+          # Create Snaplet config
           echo '{
             "version": "v1",
             "database": {
@@ -77,17 +69,14 @@ jobs:
             }
           }' > prisma/seed/.snaplet/config.json
           
-          # Initialize and sync in the correct directory
+          # Run Prisma migrations
+          npx prisma migrate reset --force --skip-generate
+          
+          # Generate Snaplet client
           cd prisma/seed
-          npx @snaplet/seed init --yes
-          npx @snaplet/seed sync --force
-          cd ../../
-
-      - name: Run database seeding
-        env:
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
-        run: |
-          cd prisma/seed
+          npx @snaplet/seed generate
+          
+          # Run the seed script
           PRISMA_ENV=test npx prisma db seed --schema=../../prisma/schema.prisma
           cd ../../
 
