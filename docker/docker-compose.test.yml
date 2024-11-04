@@ -6,6 +6,11 @@ services:
     image: postgres:16
     container_name: 'cuecards-postgres-${NODE_ENV}'
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
       - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
