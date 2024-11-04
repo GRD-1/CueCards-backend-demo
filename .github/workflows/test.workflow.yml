@@ -58,6 +58,7 @@ jobs:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
           SNAPLET_WORKING_DIRECTORY: prisma/seed
         run: |
+          echo "POSTGRES_URL: $POSTGRES_URL"
           npx prisma migrate reset --force --skip-generate
           npx @snaplet/seed sync
           PRISMA_ENV=test npx prisma db seed
