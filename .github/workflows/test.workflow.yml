@@ -55,15 +55,11 @@ jobs:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
           SCHEMA_PATH=prisma/schema.prisma
-
-          # Sync Snaplet client
-          npm run prisma:seed-sync --schema=$SCHEMA_PATH
-          
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
           # Run the seed command
-          PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
+          PRISMA_ENV=test npm run prisma:seed
 
       - name: Run tests
         env:
