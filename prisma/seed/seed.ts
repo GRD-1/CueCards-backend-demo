@@ -20,5 +20,4 @@ const main = async (): Promise<void> => {
   }
   process.exit();
 };
-
 main();

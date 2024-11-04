@@ -53,6 +53,7 @@ jobs:
       - name: Prepare the database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
+          SNAPLET_WORKING_DIRECTORY: prisma/seed
         run: |
           SCHEMA_PATH=prisma/schema.prisma
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
