@@ -67,11 +67,9 @@ jobs:
             }
           }' > prisma/seed/.snaplet/config.json
           
-          # Run migrations without seeding
           npx prisma migrate reset --force --skip-generate --skip-seed --schema=prisma/schema.prisma
-          
-          # Generate Snaplet client after migrations
           npx @snaplet/seed sync
+          PRISMA_ENV=test npx prisma db seed --schema=prisma/schema.prisma         
 
       - name: Run the tests
         env:
