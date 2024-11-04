@@ -57,7 +57,7 @@ jobs:
           cd prisma/seed
           npx prisma migrate reset --force --skip-generate
           cd ../../
-          PRISMA_ENV=test npx prisma db seed --schema prisma/seed/seed.ts
+          PRISMA_ENV=test npx prisma db seed --schema=prisma/seed/seed.ts
 
       - name: Run tests
         env:
