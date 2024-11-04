@@ -31,7 +31,7 @@ jobs:
           # Export each variable in .env.test to the GitHub environment
           export $(grep -v '^#' .env.test | xargs -d '\n')
           cat .env.test | grep -v '^#' >> $GITHUB_ENV
-          echo "POSTGRES_URL=postgresql://developer:Latepia@cuecards-postgres-test:30001/postgres?schema=public" >> $GITHUB_ENV
+          echo "POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@cuecards-postgres-${NODE_ENV}:${POSTGRES_PORT_INTERNAL}/${POSTGRES_DB}?schema=public" >> $GITHUB_ENV
 
       - name: Start Docker Compose services
         run: docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
