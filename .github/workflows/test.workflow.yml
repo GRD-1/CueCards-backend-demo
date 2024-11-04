@@ -42,12 +42,12 @@ jobs:
           DB_PORT=$(grep 'POSTGRES_PORT_INTERNAL=' .env.test | cut -d '=' -f2)
           echo "Using DB_CONTAINER_ID: $DB_CONTAINER_ID"
           echo "Using DB_PORT: $DB_PORT"
-          echo "Using POSTGRES_URL: POSTGRES_URL"
-          echo "Using POSTGRES_USER: POSTGRES_USER"
-          echo "Using POSTGRES_PASSWORD: POSTGRES_PASSWORD"
-          echo "Using NODE_ENV: NODE_ENV"
-          echo "Using POSTGRES_PORT_INTERNAL: POSTGRES_PORT_INTERNAL"
-          echo "Using POSTGRES_DB: POSTGRES_DB"
+          echo "Using POSTGRES_URL: $POSTGRES_URL"
+          echo "Using POSTGRES_USER: $POSTGRES_USER"
+          echo "Using POSTGRES_PASSWORD: $POSTGRES_PASSWORD"
+          echo "Using NODE_ENV: $NODE_ENV"
+          echo "Using POSTGRES_PORT_INTERNAL: $POSTGRES_PORT_INTERNAL"
+          echo "Using POSTGRES_DB: $POSTGRES_DB"
   
           for i in {1..30}; do
             if [ -n "$DB_CONTAINER_ID" ] && [ "$(docker inspect -f '{{.State.Health.Status}}' $DB_CONTAINER_ID)" == "healthy" ]; then
