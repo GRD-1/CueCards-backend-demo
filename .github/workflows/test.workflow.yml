@@ -62,15 +62,18 @@ jobs:
           # Create Snaplet config
           mkdir -p prisma/seed/.snaplet
           echo '{
-          "version": "v1",
-          "database": {
-           "provider": "postgresql",
-           "url": "'$POSTGRES_URL'",
-           "schema": "../../prisma/schema.prisma"
-          }
+            "version": "v1",
+            "database": {
+              "provider": "postgresql",
+              "url": "'$POSTGRES_URL'",
+              "schema": "../../prisma/schema.prisma"
+            }
           }' > prisma/seed/.snaplet/config.json
           
-          # Run migrations first
+          # Sync Snaplet to generate the client
+          npx @snaplet/seed sync
+          
+          # Run migrations and seeding
           npx prisma migrate reset --force --skip-generate --schema=prisma/schema.prisma
 
       - name: Run the tests
