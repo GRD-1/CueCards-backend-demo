@@ -57,6 +57,11 @@ jobs:
         run: |
           SCHEMA_PATH=prisma/schema.prisma
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
+          
+          cd prisma/seed
+          npx @snaplet/seed sync  # Ensure the Snaplet client is synced
+          cd ../../          
+          
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
 
       - name: Run tests
