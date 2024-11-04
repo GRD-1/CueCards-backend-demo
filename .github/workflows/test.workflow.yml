@@ -56,11 +56,6 @@ jobs:
         run: |
           SCHEMA_PATH=prisma/schema.prisma
 
-          # Initialize Snaplet
-          cd prisma/seed
-          npx @snaplet/seed init
-          cd ../../
-
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
