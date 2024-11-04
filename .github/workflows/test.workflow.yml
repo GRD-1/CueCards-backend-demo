@@ -56,13 +56,16 @@ jobs:
         run: |
           SCHEMA_PATH=prisma/schema.prisma
 
-          # Run migrations
-          npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
-
           # Sync Snaplet client
           cd prisma/seed
-          npx @snaplet/seed sync
+          if ! npx @snaplet/seed sync; then
+            echo "Error: @snaplet/seed sync failed."
+            exit 1
+          fi
           cd ../../
+
+          # Run migrations
+          npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
 
           # Run the seed command
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
