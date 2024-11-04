@@ -57,7 +57,7 @@ jobs:
           SCHEMA_PATH=prisma/schema.prisma
 
           # Sync Snaplet client
-          npm run npm run prisma:seed-sync
+          npm run prisma:seed-sync
           
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
