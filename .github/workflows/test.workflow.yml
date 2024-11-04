@@ -57,11 +57,15 @@ jobs:
           SCHEMA_PATH=prisma/schema.prisma
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
-
-          # Run the seed command
+          
+          # Initialize Snaplet seed client first
           cd prisma/seed
-          PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
-          cd ../../          
+          npx @snaplet/seed init
+          npx @snaplet/seed sync
+          
+          # Then run the seed command
+          PRISMA_ENV=test npx prisma db seed --schema=../../$SCHEMA_PATH
+          cd ../../
 
       - name: Run tests
         env:
