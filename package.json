@@ -18,6 +18,7 @@
     "prisma:push": "prisma db push",
     "prisma:validate": "prisma validate",
     "prisma:seed": "npx prisma db seed",
+    "prisma:seed-init": "npx @snaplet/seed init",
     "prisma:seed-sync": "npx @snaplet/seed sync",
     "migration:create": "prisma migrate dev --create-only --name ",
     "migration:up": "prisma migrate deploy",
