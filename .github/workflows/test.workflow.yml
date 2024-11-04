@@ -54,41 +54,11 @@ jobs:
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: |
-          # Install dependencies
-          npm install @snaplet/seed
-          
-          # Ensure the .snaplet directory exists
-          mkdir -p prisma/seed/.snaplet
-          
-          # Copy your existing Snaplet config
-          echo '{
-            "version": "v1",
-            "database": {
-              "provider": "postgresql",
-              "url": "'$POSTGRES_URL'"
-            }
-          }' > prisma/seed/.snaplet/config.json
-          
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=prisma/schema.prisma
           
-          # Generate Snaplet client in seed directory
-          cd prisma/seed
-          
-          # Clean any existing snaplet files
-          rm -rf .snaplet/snapshots/* || true
-          
-          # Initialize with existing configuration
-          SNAPLET_DATABASE_URL="$POSTGRES_URL" npx @snaplet/seed init --yes
-          SNAPLET_DATABASE_URL="$POSTGRES_URL" npx @snaplet/seed generate
-          SNAPLET_DATABASE_URL="$POSTGRES_URL" npx @snaplet/seed sync --force
-          
-          # Check generated files
-          ls -la .snaplet/
-          
-          # Run the seed script from root
-          cd ../..
-          PRISMA_ENV=test npx prisma db seed
+          # Run the temporary seed script
+          PRISMA_ENV=test tsx prisma/seed/temp-seed.ts
 
       - name: Run the tests
         env:
