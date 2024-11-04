@@ -50,6 +50,14 @@ jobs:
             fi
           done
 
+      - name: Install and initialize Snaplet
+        run: |
+          npm install -g @snaplet/seed
+          mkdir -p prisma/seed/.snaplet
+          echo '{"version":"v1"}' > prisma/seed/.snaplet/config.json
+          npx @snaplet/seed init --yes
+          npx @snaplet/seed sync
+
       - name: Prepare the database
         env:
           POSTGRES_URL: ${{ env.POSTGRES_URL }}
@@ -58,12 +66,8 @@ jobs:
           # Run migrations
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
           
-          # Initialize Snaplet seed client first
+          # Run the seed command
           cd prisma/seed
-          npx @snaplet/seed init
-          npx @snaplet/seed sync
-          
-          # Then run the seed command
           PRISMA_ENV=test npx prisma db seed --schema=../../$SCHEMA_PATH
           cd ../../
 
