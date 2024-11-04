@@ -56,12 +56,14 @@ jobs:
           SNAPLET_WORKING_DIRECTORY: prisma/seed
         run: |
           SCHEMA_PATH=prisma/schema.prisma
+          
+          # Run migrations with the specified schema path
           npx prisma migrate reset --force --skip-generate --schema=$SCHEMA_PATH
           
-          cd prisma/seed
-          npx @snaplet/seed sync  # Ensure the Snaplet client is synced
-          cd ../../          
+          # Sync the @snaplet/seed client in the specified directory
+          npx @snaplet/seed sync --working-directory prisma/seed
           
+          # Run the seed command with the SNAPLET_WORKING_DIRECTORY pointing to prisma/seed
           PRISMA_ENV=test npx prisma db seed --schema=$SCHEMA_PATH
 
       - name: Run tests
