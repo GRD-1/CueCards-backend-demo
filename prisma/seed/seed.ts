@@ -1,39 +1,23 @@
-/**
- * ! Executing this script will delete all data in your database
- * documentation is here: https://snaplet-seed.netlify.app/seed/getting-started/overview
- */
 import { createSeedClient } from '@snaplet/seed';
-import { parseArgs } from 'node:util';
 import * as dotenv from 'dotenv';
 import * as process from 'node:process';
-import { seedDefault } from './seed.default';
-
-const options: { [key: string]: { type: 'string' } } = {
-  environment: { type: 'string' },
-};
+import { seedDefaultMode } from './seed.default-mode';
+import { seedTestMode } from './seed.test-mode';
 
 const main = async (): Promise<void> => {
   const seedClient = await createSeedClient();
   await seedClient.$resetDatabase();
   dotenv.config();
 
-  const {
-    values: { environment },
-  } = parseArgs({ options });
+  const environment = process.env.PRISMA_ENV;
 
   switch (environment) {
-    case 'development':
-      break;
-    case 'production':
-      break;
-    case 'stage':
-      break;
     case 'test':
+      await seedTestMode(seedClient);
       break;
     default:
-      await seedDefault(seedClient);
+      await seedDefaultMode(seedClient);
   }
   process.exit();
 };
-
 main();

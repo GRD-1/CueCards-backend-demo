@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "incremental": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*", "test/*"]
     },

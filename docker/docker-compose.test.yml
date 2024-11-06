@@ -1,32 +1,16 @@
 version: '3.7'
 
 services:
-  node:
-    image: 'cuecards-nodeimg-${NODE_ENV}'
-    container_name: 'cuecards-node-${NODE_ENV}'
-    restart: on-failure
-    environment:
-      - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
-      - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
-      - 'POSTGRES_USER=${POSTGRES_USER}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
-      - 'POSTGRES_DB=${POSTGRES_DB}'
-    build:
-      context: ..
-      dockerfile: 'docker/Dockerfile-${NODE_ENV}'
-    ports:
-      - '${NODE_PORT_EXTERNAL}:${NODE_PORT_INTERNAL}'
-    volumes:
-      - ../src:/projectFiles/src
-      - ../test:/projectFiles/test
-      - ../env:/projectFiles/env
-    depends_on:
-      - postgres
 
   postgres:
     image: postgres:16
     container_name: 'cuecards-postgres-${NODE_ENV}'
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - 'POSTGRES_HOST=cuecards-postgres-${NODE_ENV}'
       - 'POSTGRES_PORT=${POSTGRES_PORT_INTERNAL}'
@@ -40,7 +24,7 @@ services:
 
   redis:
     image: redis
-    container_name: 'cuecards-redis'
+    container_name: 'cuecards-redis-${NODE_ENV}'
     restart: unless-stopped
     ports:
       - '${REDIS_PORT_EXTERNAL}:${REDIS_PORT_INTERNAL}'

@@ -12,4 +12,3 @@ README.md
 .huskyrc
 .giignore
 prisma/schema.prisma
-src/config/config.schema.ts

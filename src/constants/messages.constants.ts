@@ -1,6 +1,6 @@
 export const EMAIL_MSG = 'The email has been sent';
 export const CONFIRM_EMAIL_MSG = 'A new confirmation email has been sent';
-export const REST_EMAIL_MSG = 'The password reset code has been sent';
+export const RESET_EMAIL_MSG = 'The password reset code has been sent';
 export const LOGOUT_MSG = 'User logged out';
 export const RESET_PASS_EMAIL_MSG = 'The password reset code has been sent to your email address';
 export const DELETE_USER_MSG = 'The account has been deleted';

@@ -50,10 +50,10 @@ export class CardController {
   @Post('create')
   @ApiOperation({ summary: 'Create a new card' })
   @ApiBody({ type: CreateCardDto })
-  @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: 123 } })
+  @ApiCreatedResponse({ description: 'The new card has been created. The id:', schema: { example: { id: 123 } } })
   @ApiBadRequestResponse({ description: 'Bad request', schema: { example: CCBK_ERR_TO_HTTP.CCBK07 } })
   @ApiResponse({ status: 422, description: 'Unique key violation', schema: { example: CCBK_ERR_TO_HTTP.CCBK06 } })
-  async create(@Body() payload: CreateCardDto, @UserId() userId: string): Promise<number> {
+  async create(@Body() payload: CreateCardDto, @UserId() userId: string): Promise<{ id: number }> {
     return this.cardService.create(payload, userId);
   }
 
