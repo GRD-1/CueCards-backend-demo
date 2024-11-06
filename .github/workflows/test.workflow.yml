@@ -1,0 +1,75 @@
+name: Run Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Load environment variables
+        run: |
+          # Export each variable in .env.test to the GitHub environment
+          export $(grep -v '^#' .env.test | xargs -d '\n')
+          cat .env.test | grep -v '^#' >> $GITHUB_ENV
+
+      - name: Start Docker Compose services
+        run: docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          DB_CONTAINER_ID=$(docker ps -qf "name=cuecards-postgres-test")
+          DB_PORT=$(grep 'POSTGRES_PORT_INTERNAL=' .env.test | cut -d '=' -f2)
+  
+          for i in {1..30}; do
+            if [ -n "$DB_CONTAINER_ID" ] && [ "$(docker inspect -f '{{.State.Health.Status}}' $DB_CONTAINER_ID)" == "healthy" ]; then
+              echo "PostgreSQL is healthy!"
+              break
+            else
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            fi
+          done
+
+      - name: Setup and seed database
+        run: |
+          mkdir -p prisma/seed/.snaplet
+          echo '{
+            "version": "v1",
+            "adapter": "prisma",
+            "database": {
+              "provider": "postgresql",
+              "url": "'$POSTGRES_URL'",
+              "schema": "../../prisma/schema.prisma"
+            }
+          }' > prisma/seed/.snaplet/config.json
+          
+          npx prisma migrate reset --force --skip-generate --skip-seed --schema=prisma/schema.prisma
+          npx @snaplet/seed sync
+          PRISMA_ENV=test npx prisma db seed --schema=prisma/schema.prisma         
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Stop Docker Compose services
+        if: always()
+        run: docker compose -f ./docker/docker-compose.test.yml down

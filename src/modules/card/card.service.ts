@@ -17,13 +17,14 @@ import { ACCESS_VIOLATION_ERR_MSG, UNIQUE_VIOLATION_ERR_MSG } from '@/constants/
 export class CardService {
   constructor(private readonly cardRepo: CardRepo) {}
 
-  async create(payload: CardAndTagsInterface, userId: string): Promise<number> {
+  async create(payload: CardAndTagsInterface, userId: string): Promise<{ id: number }> {
     const existingCardId = await this.cardRepo.getIdByValue(payload.fsValue, payload.bsValue);
     if (existingCardId) {
       throw new CueCardsError(CCBK_ERROR_CODES.UNIQUE_VIOLATION, UNIQUE_VIOLATION_ERR_MSG);
     }
+    const id = await this.cardRepo.create(payload, userId);
 
-    return this.cardRepo.create(payload, userId);
+    return { id };
   }
 
   async getList(args: GetCardListInterface): Promise<GetCardListFullRespInterface> {

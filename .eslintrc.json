@@ -52,7 +52,7 @@
     "no-await-in-loop": "off",
     "max-classes-per-file": "off",
     "no-use-before-define": "off",
-    "newline-per-chained-call": ["error", { "ignoreChainWithDepth": 2 }],
+    "newline-per-chained-call": "off",
     "padding-line-between-statements": [
       "error",
       { "blankLine": "always", "prev": "*", "next": "return" }
@@ -68,8 +68,26 @@
     "class-methods-use-this": "off",
     "no-extra-semi": "off",
     "@typescript-eslint/no-extra-semi": "error",
-    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true,
+        "allowTypedFunctionExpressions": true
+      }
+    ],
     "@typescript-eslint/explicit-module-boundary-types": "error",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
 
     // import/export (https://github.com/import-js/eslint-plugin-import/tree/main/docs/rules)
     "import/extensions": "off",
@@ -81,10 +99,6 @@
     "comma-dangle": ["error", "always-multiline"],
     "arrow-body-style": "off",
     "new-cap": ["error", { "newIsCap": false, "capIsNew": false }],
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }
-    ],
 
     // eslint-plugin-prettier rules
     "prettier/prettier": ["error", { "printWidth": 120, "trailingComma": "all" }]

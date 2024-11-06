@@ -29,6 +29,7 @@ import { DictionaryModule } from './modules/dictionary/dictionary.module';
 import { JwtModule } from './modules/jwt/jwt.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CacheService } from './modules/cache/cache.service';
+import * as process from 'node:process';
 
 @Module({
   imports: [
@@ -47,14 +48,15 @@ import { CacheService } from './modules/cache/cache.service';
         userConfig,
       ],
       cache: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
     }),
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         store: redisStore,
-        host: configService.get('REDIS_HOST'),
-        port: configService.get('REDIS_PORT'),
+        host: configService.get('redis').host,
+        port: configService.get('redis').portExternal,
       }),
       inject: [ConfigService],
     }),

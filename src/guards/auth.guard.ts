@@ -37,7 +37,8 @@ export class AuthGuard implements CanActivate {
     if (token) {
       const defaultUser = token === this.userConf.defaultUserPassword;
       const testUser = token === this.userConf.testUserPassword;
-      if (this.nodeConf.mode === 'development' && (defaultUser || testUser)) {
+      const permittedModes = ['development', 'test'];
+      if (permittedModes.includes(this.nodeConf.mode) && (defaultUser || testUser)) {
         this.useDeveloperSettings(request, defaultUser);
 
         return true;

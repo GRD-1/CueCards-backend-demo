@@ -13,8 +13,9 @@ import {
   EMAIL_ERR_MSG,
   EMAIL_INVALID_MSG,
   EMAIL_MSG,
-  REST_EMAIL_MSG,
+  RESET_EMAIL_MSG,
 } from '@/constants/messages.constants';
+import { CONFIRM_EMAIL_SUBJ, RESET_PASS_SUBJ } from '@/modules/mailer/mailer.constants';
 
 @Injectable()
 export class MailerService {
@@ -83,19 +84,17 @@ export class MailerService {
   }
 
   public async sendConfirmationEmail(email: string, code: string, nick?: string): Promise<void> {
-    const subject = 'Confirm your email';
     const nickname = nick || 'User';
     const ttlInMinutes = this.emailConf.ttl / 60;
     const html = this.templates.confirmationCode({ nickname, code, ttlInMinutes });
 
-    await this.sendEmail(email, subject, html, CONFIRM_EMAIL_MSG);
+    await this.sendEmail(email, CONFIRM_EMAIL_SUBJ, html, CONFIRM_EMAIL_MSG);
   }
 
   public async sendResetPasswordEmail(email: string, code: string, nickname: string): Promise<void> {
-    const subject = 'Reset your password';
     const ttlInMinutes = this.emailConf.ttl / 60;
     const html = this.templates.resetPasswordCode({ nickname, code, ttlInMinutes });
 
-    await this.sendEmail(email, subject, html, REST_EMAIL_MSG);
+    await this.sendEmail(email, RESET_PASS_SUBJ, html, RESET_EMAIL_MSG);
   }
 }

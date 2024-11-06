@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 import * as process from 'node:process';
 import { hash } from 'bcrypt';
 
-export const seedDefault = async (seedClient: SeedClient): Promise<void> => {
+export const seedDefaultMode = async (seedClient: SeedClient): Promise<void> => {
   dotenv.config();
   const defaultUser = {
     id: process.env.DEFAULT_USER_ID,

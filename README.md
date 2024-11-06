@@ -5,7 +5,7 @@
   <a href="https://nodejs.org/en/about" target="_blank"><img src="https://img.shields.io/badge/Node.js-v20.14.0-blue?logo=nodedotjs" alt="Node.js Version" /></a>
   <a href="https://www.typescriptlang.org/" target="_blank"><img src="https://img.shields.io/badge/TypeScript-v5.3.2-blue?logo=typescript" alt="TypeScript Version" /></a>
   <a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Nest.js-v9.4.2-blue?logo=nestjs" alt="Nest.js Version" /></a>
-  <a href="" target="_blank"><img src="https://img.shields.io/badge/covarage-0%25-%2300c642?style=flat" alt="Coverage" /></a>
+  <a href="" target="_blank"><img src="https://img.shields.io/badge/covarage-21%25-%2300c642?style=flat" alt="Coverage" /></a>
   <a href="" rel="nofollow"><img src="https://img.shields.io/badge/istall_size-219KB-%23ebdb32?style=flat" alt="install size"></a>
 </p>
 
@@ -64,8 +64,7 @@ $ npm run migration:up
 ```
 10. Seed database:
 ``` bash
-$ npm run prisma:seed-sync
-$ npm run prisma:seed
+$ npm run prisma:seed-sync && npm run prisma:seed
 ```
 11. Run the application using package.json scripts, e.g:
 ``` bash
@@ -75,7 +74,7 @@ $ npm run start:dev
 
 1. Prepare environment:
 ``` bash
-$ docker compose -f ./docker/docker-compose.test.yml --env-file .env.test up -d
+$ npm run prepare-test-env
 ```
 2. Run the specific test set using package.json scripts, or all the tests at once, e.g:
 ``` bash

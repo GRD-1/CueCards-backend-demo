@@ -47,7 +47,7 @@ class CardTags {
 
 export class CardWithSettingsEntity {
   id: number;
-  authorId: number;
+  authorId: string;
   fsValue: string;
   bsValue: string;
   tags: TagEntity[];
