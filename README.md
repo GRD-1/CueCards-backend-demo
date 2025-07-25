@@ -56,7 +56,7 @@ $ cp .env.sample .env
 ```
 8. Run docker:
 ``` bash
-$ docker compose -f ./docker/docker-compose.yml --env-file .env up -d
+$ docker-compose -f ./docker/docker-compose.yml --env-file .env up -d
 ```
 9. Update database:
 ``` bash
